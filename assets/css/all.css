@@ -188,6 +188,10 @@ body {
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   font-family: "Source Sans Pro", sans-serif; }
+a {
+    color: #6200ea;
+    text-decoration: none;
+}
 
 .header {
   background-image: linear-gradient(to top, #311b92, #4527a0);

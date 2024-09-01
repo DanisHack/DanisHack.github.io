@@ -10,9 +10,9 @@ entries:
       - title: "Worked as a Technical Lead at Data Science Team for <a href='https://housing.com/'>Housing.com</a>"
       - title: "Former fellow @InsightDataScience."
       - title: "My superpower: I can learn anything."
-  - title: Reflections
+  - title: My explorations
     post_list: true
-  - title: Brainstorm
+  - title: Contact me
     entries:
       - title: email
         url: mailto:danishmohd3610@gmail.com

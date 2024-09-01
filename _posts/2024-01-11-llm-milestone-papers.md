@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "LLM's Milestone Papers"
+title: "Generative AI Milestone Papers"
 slug: llm-milestone-papers
 ---
 

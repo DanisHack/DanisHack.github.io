@@ -4,8 +4,6 @@ title: "Credit Risk Modelling"
 slug: credit-risk-modelling
 ---
 
-# Credit Risk Modeling
-
 # 1.0 The context
 
 ## 1.1 What Is Credit Risk?

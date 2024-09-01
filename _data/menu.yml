@@ -1,19 +1,19 @@
 entries:
   - title: me
     entries:
-    -title: email
-    url: mailto:danishmohd3610@gmail.com
-    - title: github
+      - title: email
+        url: mailto:danishmohd3610@gmail.com
+      - title: github
         url: https://github.com/DanisHack
-    - title: "Cofounder of <a href='https://plutomoney.in/'>Pluto Money</a>, which is building an AI-powered financial advisor."
-    - title: "Cofounder of SegmentOne, a personalization engine for e-commerce companies, bootstrapped and sold it in 2019."
-    - title: "Previously, I was a VP of Engineering at <a href='https://pixis.ai/'>Pixis AI</a>, AI Infrastructure for Growth Marketing."
-    - title: "Wrote a credit-underwriting model for a small finance bank in India."
-    - title: "Built a telegram bot for screening Indian and US stocks."
-    - title: "I sell subscriptions for two <a href='https://www.tradingview.com/scripts/'>TradingView Scripts</a>. It brings me around $200 each month."
-    - title: "Worked as a Technical Lead at Data Science Team for <a href='https://housing.com/'>Housing.com</a>"
-    - title: "Former fellow @InsightDataScience."
-    - title: "My superpower: I can learn anything."
+      - title: "Cofounder of <a href='https://plutomoney.in/'>Pluto Money</a>, which is building an AI-powered financial advisor."
+      - title: "Cofounder of SegmentOne, a personalization engine for e-commerce companies, bootstrapped and sold it in 2019."
+      - title: "Previously, I was a VP of Engineering at <a href='https://pixis.ai/'>Pixis AI</a>, AI Infrastructure for Growth Marketing."
+      - title: "Wrote a credit-underwriting model for a small finance bank in India."
+      - title: "Built a telegram bot for screening Indian and US stocks."
+      - title: "I sell subscriptions for two <a href='https://www.tradingview.com/scripts/'>TradingView Scripts</a>. It brings me around $200 each month."
+      - title: "Worked as a Technical Lead at Data Science Team for <a href='https://housing.com/'>Housing.com</a>"
+      - title: "Former fellow @InsightDataScience."
+      - title: "My superpower: I can learn anything."
 
   - title: My writings
     post_list: true

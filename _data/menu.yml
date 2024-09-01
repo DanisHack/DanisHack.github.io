@@ -1,5 +1,5 @@
 entries:
-  - title: me
+  - title: About me
     entries:
       - title: email
         url: mailto:danishmohd3610@gmail.com
@@ -15,5 +15,5 @@ entries:
       - title: "Former fellow @InsightDataScience."
       - title: "My superpower: I can learn anything."
 
-  - title: My writings
+  - title: Reflections
     post_list: true

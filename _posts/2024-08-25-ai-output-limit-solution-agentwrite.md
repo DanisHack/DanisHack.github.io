@@ -1,3 +1,8 @@
+---
+layout: post
+title: "LLM's can read a lot, but they can't write a lot"
+---
+
 ![Feature Image](images/1724876819754.jpeg)
 
 # Reality is LLM's can read a lot, but they can't write a lot

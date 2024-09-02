@@ -1,6 +1,6 @@
 ![Feature Image](images/1725278428243.jpeg)
 
-# Boost Your LLM Accuracy with "Writing in the Margins"
+> Boost Your LLM Accuracy with "Writing in the Margins"
 
 Let's talk about something we all face when working with Large Language Models (LLMs) – the more instructions you add, the worse they seem to perform. It’s like trying to juggle more and more balls; eventually, something’s going to drop. But what if I told you there’s a way to keep everything in the air, no matter how complex your prompt gets? Enter "Writing in the Margins."
 

@@ -28,4 +28,6 @@ This approach does more than just sound cool; it actually works. "Writing in the
 
 If you’re working with LLMs, especially on tasks with long prompts or complex instructions, "Writing in the Margins" is like giving your model a cheat sheet. It helps the model keep track of everything, remember the important stuff, and deliver better results. So next time you’re trying to get your LLM to do some heavy lifting, remember – a little margin writing can go a long way.
 
+> I hope that makers of mainstream LLMs like Chatgpt and Claude integrate this in their LLMs so that we can leverage this.
+
 [Read the full paper here](https://arxiv.org/pdf/2408.14906)

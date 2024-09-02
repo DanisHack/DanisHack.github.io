@@ -1,6 +1,4 @@
----
-layout: post
----
+
 
 ![Feature Image](images/1725057209572.jpeg)
 

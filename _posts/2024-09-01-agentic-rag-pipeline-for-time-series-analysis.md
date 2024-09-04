@@ -1,7 +1,5 @@
 ![Feature Image](images/1725307609130.jpeg)
 
-# Why Agentic RAG is the Next Big Thing in Time-Series Analysis
-
 Agentic RAG (Retrieval-Augmented Generation) is quickly becoming a hot topic in AI. And now, we’re about to witness another level up—Agentic RAG, especially for time-series analysis.
 
 So, what is it? And why should you care?

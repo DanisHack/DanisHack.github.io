@@ -1,3 +1,8 @@
+---
+  layout: 'post'
+  title: ''
+---
+
 # Self Study Guide for Learning AI for the Patient Being!
 
 ## Step 1: Learn Python

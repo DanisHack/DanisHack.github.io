@@ -3,7 +3,7 @@
   title: ''
 ---
 
-# Self Study Guide for Learning AI for the Patient Being!
+# Self Study Guide for Learning AI from Scratch!
 
 ## Step 1: Learn Python
 

@@ -1,9 +1,7 @@
 ---
   layout: 'post'
-  title: ''
+  title: 'Self Study Guide for Learning AI from Scratch!'
 ---
-
-# Self Study Guide for Learning AI from Scratch!
 
 ## Step 1: Learn Python
 

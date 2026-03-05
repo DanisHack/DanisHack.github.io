@@ -1,0 +1,1667 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How LLMs Work, Explained Plainly | An Interactive Guide</title>
+<meta name="description" content="What happens between your prompt and the response. Tokenization, embeddings, attention, sampling, training, and context windows with 6 interactive demos.">
+
+<!-- Open Graph -->
+<meta property="og:title" content="How LLMs Work, Explained Plainly">
+<meta property="og:description" content="What happens between your prompt and the response. Interactive guide to LLM internals with 6 hands-on demos.">
+<meta property="og:url" content="https://supergeek.in/llm-explainer/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Danish Khan">
+<meta property="og:locale" content="en_US">
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="How LLMs Work, Explained Plainly">
+<meta name="twitter:description" content="What happens between your prompt and the response. 6 interactive demos.">
+
+<!-- Canonical -->
+<link rel="canonical" href="https://supergeek.in/llm-explainer/">
+
+<!-- Structured Data -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "How LLMs Work, Explained Plainly",
+  "description": "What happens between your prompt and the response. Tokenization, embeddings, attention, sampling, training, and context windows with 6 interactive demos.",
+  "author": {
+    "@type": "Person",
+    "name": "Danish Khan",
+    "url": "https://supergeek.in",
+    "jobTitle": "AI Product Builder",
+    "sameAs": ["https://github.com/DanisHack"]
+  },
+  "publisher": {
+    "@type": "Person",
+    "name": "Danish Khan",
+    "url": "https://supergeek.in"
+  },
+  "datePublished": "2026-03-06",
+  "dateModified": "2026-03-06",
+  "mainEntityOfPage": "https://supergeek.in/llm-explainer/",
+  "keywords": ["LLM", "large language models", "tokenization", "BPE", "embeddings", "attention mechanism", "transformer", "temperature sampling", "top-k", "top-p", "RLHF", "KV cache", "context window"]
+}
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,700;1,6..72,400&family=Figtree:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+/* Reset */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Newsreader', Georgia, serif;
+  font-size: 21px;
+  line-height: 1.4;
+  color: rgb(45,45,45);
+  background: rgb(250,249,247);
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: #5B4AE8; text-decoration: none; }
+a:hover { color: #7B4AE8; }
+
+.content { max-width: 700px; margin: 0 auto; padding: 0 24px; }
+
+.hero {
+  position: relative;
+  border-radius: 16px;
+  margin: 12px auto;
+  max-width: calc(100% - 24px);
+  min-height: 300px;
+  overflow: hidden;
+  display: flex;
+  align-items: flex-end;
+  padding: 48px 40px;
+}
+.hero-bg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.hero .content { position: relative; z-index: 1; max-width: none; padding: 0; }
+.hero h1 {
+  font-family: 'Newsreader', Georgia, serif;
+  font-size: 64px;
+  font-weight: 700;
+  line-height: 1.1;
+  color: #fff;
+  margin-bottom: 12px;
+}
+.post-subtitle {
+  font-family: 'Figtree', system-ui, sans-serif;
+  font-size: 26px;
+  font-weight: 500;
+  line-height: 1.1;
+  color: rgba(255,255,255,0.85);
+}
+
+.intro { margin: 60px auto 40px; }
+.intro-text {
+  font-style: italic;
+  font-size: 23px;
+  line-height: 1.45;
+  color: rgb(80,80,80);
+}
+
+.toc {
+  margin: 0 auto 60px;
+  padding: 24px 28px;
+  background: rgb(242,241,239);
+  border-radius: 12px;
+}
+.toc h4 {
+  font-family: 'Figtree', system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 12px;
+  color: rgb(100,100,100);
+}
+.toc ol { padding-left: 20px; }
+.toc li {
+  font-family: 'Figtree', system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.8;
+  color: rgb(80,80,80);
+}
+.toc a { color: rgb(45,45,45); border-bottom: 1px solid transparent; }
+.toc a:hover { color: #5B4AE8; border-bottom-color: #5B4AE8; }
+
+.section-header {
+  display: flex;
+  align-items: baseline;
+  gap: 20px;
+  padding-top: 100px;
+  margin-bottom: 40px;
+  border-top: 1px solid rgb(220,218,214);
+}
+.section-number {
+  font-family: 'Newsreader', Georgia, serif;
+  font-size: 50px;
+  font-weight: 400;
+  color: rgb(180,178,174);
+  flex-shrink: 0;
+}
+.section-header h2 {
+  font-family: 'Figtree', system-ui, sans-serif;
+  font-size: 44px;
+  font-weight: 700;
+  line-height: 1.1;
+  color: rgb(45,45,45);
+}
+h3 {
+  font-family: 'Figtree', system-ui, sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.1;
+  margin-top: 40px;
+  margin-bottom: 16px;
+}
+
+main p { margin-bottom: 20px; }
+main p strong { font-weight: 700; }
+
+.demo-container {
+  background: rgb(242,241,239);
+  border-radius: 12px;
+  padding: 32px;
+  margin: 32px 0;
+}
+.label {
+  font-family: 'Figtree', system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgb(45,45,45);
+  margin-bottom: 16px;
+}
+figcaption {
+  font-family: 'Newsreader', Georgia, serif;
+  font-style: italic;
+  font-size: 17px;
+  line-height: 1.4;
+  color: rgb(100,100,100);
+  text-align: center;
+  margin-top: 16px;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 16px 0;
+  flex-wrap: wrap;
+}
+.controls label {
+  font-family: 'Figtree', system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: rgb(80,80,80);
+}
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 6px;
+  border-radius: 3px;
+  background: rgb(200,198,194);
+  outline: none;
+  flex: 1;
+  min-width: 120px;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  background: #5B4AE8;
+  cursor: pointer;
+  border: 3px solid #fff;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+}
+input[type="range"]::-moz-range-thumb {
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  background: #5B4AE8;
+  cursor: pointer;
+  border: 3px solid #fff;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+}
+.toggle-btn {
+  font-family: 'Figtree', system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: 1px solid rgb(200,198,194);
+  background: #fff;
+  color: rgb(45,45,45);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.toggle-btn:hover { border-color: #5B4AE8; color: #5B4AE8; }
+.toggle-btn.active { background: #5B4AE8; color: #fff; border-color: #5B4AE8; }
+
+.value-display {
+  font-family: 'Figtree', system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: #5B4AE8;
+  min-width: 60px;
+}
+
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+  margin: 16px 0;
+}
+.stat-card {
+  background: #fff;
+  border-radius: 8px;
+  padding: 16px;
+  text-align: center;
+}
+.stat-value {
+  font-family: 'Figtree', system-ui, sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+.stat-label {
+  font-family: 'Figtree', system-ui, sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: rgb(100,100,100);
+  margin-top: 4px;
+}
+
+.callout {
+  border-left: 4px solid #5B4AE8;
+  padding: 20px 24px;
+  margin: 32px 0;
+  background: rgba(91,74,232,0.04);
+  border-radius: 0 8px 8px 0;
+}
+.callout p { margin-bottom: 8px; }
+.callout p:last-child { margin-bottom: 0; }
+
+.sidenote-trigger {
+  font-family: 'Figtree', system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: #5B4AE8;
+  cursor: pointer;
+  vertical-align: super;
+}
+.sidenote {
+  display: none;
+  background: rgb(242,241,239);
+  padding: 16px 20px;
+  border-radius: 8px;
+  margin: 8px 0 16px;
+}
+.sidenote.open { display: block; }
+.sidenote p {
+  font-family: 'Figtree', system-ui, sans-serif;
+  font-size: 15px;
+  line-height: 1.4;
+  margin-bottom: 8px;
+}
+.sidenote p:last-child { margin-bottom: 0; }
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 20px;
+  margin: 12px 0;
+}
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'Figtree', system-ui, sans-serif;
+  font-size: 13px;
+  color: rgb(80,80,80);
+}
+.legend-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.fade-in {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+.fade-in.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.site-footer {
+  background: #3A2D7A;
+  color: rgba(255,255,255,0.7);
+  padding: 60px 24px;
+  margin-top: 100px;
+  text-align: center;
+}
+.site-footer p:first-child {
+  font-family: 'Newsreader', Georgia, serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 8px;
+}
+.site-footer .footer-tagline {
+  font-family: 'Newsreader', Georgia, serif;
+  font-style: italic;
+  font-size: 17px;
+  color: rgba(255,255,255,0.5);
+  margin-top: 16px;
+}
+.site-footer a { color: rgba(255,255,255,0.8); }
+.site-footer a:hover { color: #fff; }
+
+.attention-info {
+  font-family: 'Figtree', system-ui, sans-serif;
+  font-size: 14px;
+  line-height: 1.4;
+  color: rgb(80,80,80);
+  margin-top: 12px;
+  min-height: 20px;
+}
+
+@media (max-width: 768px) {
+  body { font-size: 19px; }
+  .hero h1 { font-size: 40px; }
+  .post-subtitle { font-size: 20px; }
+  .hero { padding: 32px 24px; min-height: 220px; }
+  .section-header { padding-top: 60px; margin-bottom: 30px; gap: 14px; }
+  .section-number { font-size: 36px; }
+  .section-header h2 { font-size: 32px; }
+  h3 { font-size: 22px; }
+  .intro-text { font-size: 20px; }
+  .demo-container { padding: 20px 16px; }
+  .stat-grid { grid-template-columns: repeat(2, 1fr); }
+  .stat-value { font-size: 22px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
+</style>
+</head>
+<body>
+
+<a href="/" style="display:inline-block;margin:16px 0 0 16px;font-family:'Figtree',system-ui,sans-serif;font-size:15px;font-weight:600;color:rgb(100,100,100);text-decoration:none;" onmouseover="this.style.color='#5B4AE8'" onmouseout="this.style.color='rgb(100,100,100)'">&larr; Danish Khan</a>
+
+<div class="hero">
+  <svg class="hero-bg" viewBox="0 0 1200 400" preserveAspectRatio="xMidYMid slice">
+    <defs>
+      <linearGradient id="heroGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#0a0a1a"/>
+        <stop offset="30%" stop-color="#1a1145"/>
+        <stop offset="60%" stop-color="#2d1f6b"/>
+        <stop offset="100%" stop-color="#5B4AE8"/>
+      </linearGradient>
+      <pattern id="gridP" width="30" height="30" patternUnits="userSpaceOnUse">
+        <path d="M 30 0 L 0 0 0 30" fill="none" stroke="rgba(255,255,255,0.03)" stroke-width="1"/>
+      </pattern>
+    </defs>
+    <rect width="1200" height="400" fill="url(#heroGrad)"/>
+    <rect width="1200" height="400" fill="url(#gridP)"/>
+    <!-- Token blocks flowing left to right -->
+    <rect x="80" y="160" width="50" height="24" rx="4" fill="rgba(232,99,74,0.3)"/>
+    <rect x="145" y="160" width="65" height="24" rx="4" fill="rgba(232,180,74,0.3)"/>
+    <rect x="225" y="160" width="40" height="24" rx="4" fill="rgba(91,174,138,0.3)"/>
+    <rect x="280" y="160" width="55" height="24" rx="4" fill="rgba(74,125,232,0.3)"/>
+    <rect x="350" y="160" width="45" height="24" rx="4" fill="rgba(91,74,232,0.3)"/>
+    <!-- Attention arcs -->
+    <path d="M 105 155 Q 180 100 255 155" fill="none" stroke="rgba(91,74,232,0.2)" stroke-width="1.5"/>
+    <path d="M 175 155 Q 240 110 310 155" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+    <path d="M 255 155 Q 310 120 370 155" fill="none" stroke="rgba(91,74,232,0.15)" stroke-width="1"/>
+    <!-- Probability bars at right -->
+    <rect x="900" y="140" width="8" height="80" rx="2" fill="rgba(91,74,232,0.4)"/>
+    <rect x="920" y="170" width="8" height="50" rx="2" fill="rgba(91,74,232,0.25)"/>
+    <rect x="940" y="190" width="8" height="30" rx="2" fill="rgba(91,74,232,0.15)"/>
+    <rect x="960" y="200" width="8" height="20" rx="2" fill="rgba(91,74,232,0.1)"/>
+    <rect x="980" y="208" width="8" height="12" rx="2" fill="rgba(91,74,232,0.07)"/>
+    <!-- Decorative: softmax curve -->
+    <text x="1050" y="340" text-anchor="middle" font-family="Figtree,sans-serif" font-size="42" font-weight="700" fill="rgba(255,255,255,0.04)">P(next)</text>
+  </svg>
+  <div class="content">
+    <h1>How LLMs Work, Explained</h1>
+    <p class="post-subtitle">What actually happens between your prompt and the response.</p>
+  </div>
+</div>
+
+<main class="content">
+<article>
+
+<section class="intro">
+  <p class="intro-text">You use large language models every day. You type a question, and a few seconds later, coherent text appears. But what happens in those few seconds? The answer involves splitting your words into pieces, mapping those pieces into a high-dimensional space where meaning has geometry, routing information through layers of attention, and sampling from probability distributions. All within a fixed memory budget. None of this requires magic. Every step is math you can see. This explainer walks through each step, from the moment you press Enter to the moment the response appears, with interactive demos you can play with.</p>
+</section>
+
+<nav class="toc">
+  <h4>Contents</h4>
+  <ol>
+    <li><a href="#section-1">Tokenization: Text to Numbers</a></li>
+    <li><a href="#section-2">Embeddings: Numbers to Meaning</a></li>
+    <li><a href="#section-3">Attention: How the Model Connects Words</a></li>
+    <li><a href="#section-4">Generation: Sampling the Next Token</a></li>
+    <li><a href="#section-5">Training: From Random to Useful</a></li>
+    <li><a href="#section-6">Context Windows and the KV Cache</a></li>
+  </ol>
+</nav>
+
+
+<!-- SECTION I -->
+<section id="section-1" class="fade-in">
+  <div class="section-header">
+    <span class="section-number">I.</span>
+    <h2>Tokenization</h2>
+  </div>
+
+  <p>Before a language model can do anything with your text, it has to convert it into numbers. Not whole words, but pieces of words. The process is called <strong>tokenization</strong>, and it determines everything from how much your API call costs to why ChatGPT struggles with counting letters.</p>
+
+  <p>The dominant algorithm is <strong>Byte Pair Encoding</strong> (Sennrich et al., 2016). It starts with individual bytes and iteratively merges the most frequent pair into a new token. After enough merges, common words like "the" become single tokens while rare words get split into subwords: "unhappiness" becomes ["un", "happiness"] and "indistinguishable" might become ["ind", "ist", "ingu", "ish", "able"].</p>
+
+  <p><strong>Vocabulary size</strong> is a tradeoff. A small vocabulary (32K tokens, like Llama) means more tokens per sentence, which means slower inference and higher cost. A large vocabulary (100K tokens, like GPT-4) means fewer tokens per sentence but a bigger embedding table that uses more memory.<span class="sidenote-trigger" onclick="toggleSidenote('sn1')">[1]</span></p>
+  <div class="sidenote" id="sn1"><p>Language inequality is real in tokenization. BPE merges are trained on English-heavy corpora, so English gets roughly 1 token per word. Hindi, Japanese, and other non-Latin scripts often require 3-4 tokens per word. The same question costs 3x more in Hindi than in English.</p></div>
+
+  <div class="callout">
+    <p><strong>The strawberry problem.</strong> When you ask "How many r's in strawberry?", the model sees something like ["str", "aw", "berry"]. The letters are split across token boundaries. The model never sees individual characters. This is why character-level tasks are unreliable.</p>
+  </div>
+
+  <figure>
+    <div class="demo-container" id="tokenizer-demo">
+      <p class="label">BPE Tokenizer Explorer</p>
+      <div class="controls">
+        <button class="toggle-btn active" onclick="selectTokenExample(0)">Simple English</button>
+        <button class="toggle-btn" onclick="selectTokenExample(1)">Morphology</button>
+        <button class="toggle-btn" onclick="selectTokenExample(2)">Numbers</button>
+        <button class="toggle-btn" onclick="selectTokenExample(3)">Hindi</button>
+        <button class="toggle-btn" onclick="selectTokenExample(4)">Japanese</button>
+      </div>
+      <svg id="tokenizer-svg" viewBox="0 0 636 340" width="100%"></svg>
+      <div class="stat-grid" id="tokenizer-stats"></div>
+      <figcaption>Toggle between examples to see how BPE tokenizes different text. Notice how Hindi and Japanese produce far more tokens per character than English.</figcaption>
+      <noscript><p>Large language models split text into tokens before processing it. GPT-4 uses Byte Pair Encoding with a vocabulary of approximately 100,000 tokens. Simple English tokenizes efficiently: "The cat sat on the mat." becomes 7 tokens, roughly one per word. But non-Latin scripts are far less efficient because the BPE merges were trained on English-heavy corpora. The same sentence in Hindi might require 3-4 times more tokens, making API calls more expensive for non-English users. Tokenization also explains why LLMs struggle with character-level tasks: the model never sees individual characters, only token chunks. The word "strawberry" is split into subword pieces, which is why counting specific letters is unreliable.</p></noscript>
+    </div>
+  </figure>
+</section>
+
+
+<!-- SECTION II -->
+<section id="section-2" class="fade-in">
+  <div class="section-header">
+    <span class="section-number">II.</span>
+    <h2>Embeddings</h2>
+  </div>
+
+  <p>A token ID is just an index into a lookup table. Token 4344 means nothing on its own. The model needs to convert each token into a <strong>vector</strong>, a list of numbers that encodes meaning. These vectors are called embeddings, and they are where the magic starts.</p>
+
+  <p>Each token maps to a vector of 1,536 to 12,288 dimensions, depending on model size. These vectors are <strong>learned during training</strong>, not hand-designed. Similar words end up close together: "king" near "queen", "dog" near "puppy". The geometry is remarkably structured.</p>
+
+  <p>Mikolov et al. showed in 2013 that <strong>vector arithmetic captures analogies</strong>: vector("king") - vector("man") + vector("woman") lands close to vector("queen"). This works because the model learned that "king" and "queen" differ in the same directional way as "man" and "woman".<span class="sidenote-trigger" onclick="toggleSidenote('sn2')">[2]</span></p>
+  <div class="sidenote" id="sn2"><p>Embeddings are why semantic search works. You can search for "affordable sedan for commuting" and find a document that says "budget-friendly four-door car for daily drives" even though they share zero keywords. Both phrases land in the same region of vector space.</p></div>
+
+  <figure>
+    <div class="demo-container" id="embedding-demo">
+      <p class="label">Embedding Space Explorer</p>
+      <div class="controls">
+        <button class="toggle-btn" onclick="selectArithmetic(0)">king - man + woman = ?</button>
+        <button class="toggle-btn" onclick="selectArithmetic(1)">Paris - France + Japan = ?</button>
+        <button class="toggle-btn" onclick="selectArithmetic(2)">puppy - dog + cat = ?</button>
+      </div>
+      <svg id="embedding-svg" viewBox="0 0 636 420" width="100%"></svg>
+      <div class="stat-grid" id="embedding-stats"></div>
+      <div class="legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#5B4AE8;"></div>Royalty</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#E8634A;"></div>Animals</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#E8B44A;"></div>Emotions</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#5BAE8A;"></div>Food</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#4A7DE8;"></div>Programming</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#7B4AE8;"></div>Countries</div>
+      </div>
+      <figcaption>Click any word to see its nearest neighbors. Use the buttons above to see vector arithmetic in action: the result lands near the expected word.</figcaption>
+      <noscript><p>Word embeddings convert tokens into high-dimensional vectors where geometric distance encodes semantic similarity. In a trained embedding space, "king" and "queen" are close together, as are "dog" and "puppy". The structure goes deeper: vector arithmetic captures analogies. The vector for "king" minus "man" plus "woman" lands near "queen", because the gender relationship is encoded as a consistent directional offset. Similarly, "Paris" minus "France" plus "Japan" lands near "Tokyo". This geometry emerges from training on billions of words of text (Mikolov et al., 2013). Modern LLMs use contextual embeddings where the vector for "bank" changes depending on context, but the core principle of meaning-as-geometry remains.</p></noscript>
+    </div>
+  </figure>
+</section>
+
+
+<!-- SECTION III -->
+<section id="section-3" class="fade-in">
+  <div class="section-header">
+    <span class="section-number">III.</span>
+    <h2>Attention</h2>
+  </div>
+
+  <p>Embeddings give each token a meaning. But meaning depends on context. The word "bank" means something different in "river bank" versus "bank account." The mechanism that lets each token look at every other token and decide what is relevant is called <strong>self-attention</strong>. It is the core innovation of the Transformer architecture (Vaswani et al., 2017).</p>
+
+  <p>Each token computes three vectors: a <strong>query</strong> ("what am I looking for?"), a <strong>key</strong> ("what do I contain?"), and a <strong>value</strong> ("what information do I carry"). The attention score between two tokens is the dot product of the query and key, scaled and normalized through softmax.</p>
+
+  <p><strong>Multi-head attention</strong> runs multiple attention computations in parallel (32 to 96 heads in modern models). Each head learns different relationships. One might learn syntax (subject-verb agreement), another coreference (what "it" refers to), another positional patterns (attending to nearby tokens).<span class="sidenote-trigger" onclick="toggleSidenote('sn3')">[3]</span></p>
+  <div class="sidenote" id="sn3"><p>The computational cost is O(n&sup2;) where n is sequence length. Every token computes an attention score with every other token. Doubling the sequence length quadruples the computation. This is the fundamental bottleneck that limits context window sizes.</p></div>
+
+  <div class="callout">
+    <p><strong>The key insight.</strong> The transformer replaced recurrence (processing tokens one at a time, like RNNs) with attention (processing all tokens simultaneously). This made training massively parallelizable on GPUs, which is why transformers scaled where RNNs could not.</p>
+  </div>
+
+  <figure>
+    <div class="demo-container" id="attention-demo">
+      <p class="label">Attention Heatmap Explorer</p>
+      <div class="controls">
+        <button class="toggle-btn active" onclick="selectAttentionSentence(0)">Pronoun resolution</button>
+        <button class="toggle-btn" onclick="selectAttentionSentence(1)">Disambiguation</button>
+        <button class="toggle-btn" onclick="selectAttentionSentence(2)">Long-range</button>
+      </div>
+      <div class="controls">
+        <button class="toggle-btn active" onclick="selectAttentionHead(0)">Syntax</button>
+        <button class="toggle-btn" onclick="selectAttentionHead(1)">Coreference</button>
+        <button class="toggle-btn" onclick="selectAttentionHead(2)">Position</button>
+        <button class="toggle-btn" onclick="selectAttentionHead(3)">Semantic</button>
+      </div>
+      <svg id="attention-svg" viewBox="0 0 636 420" width="100%"></svg>
+      <div class="attention-info" id="attention-info"></div>
+      <div class="stat-grid" id="attention-stats"></div>
+      <figcaption>Toggle sentences and attention heads. In "The cat sat on the mat because it was tired", the coreference head assigns high weight from "it" to "cat".</figcaption>
+      <noscript><p>Self-attention is the core mechanism of the Transformer architecture (Vaswani et al., 2017). Each token computes how much to attend to every other token by comparing query and key vectors. In the sentence "The cat sat on the mat because it was tired", attention head 2 (coreference) assigns high weight from "it" to "cat", resolving the pronoun without explicit rules. Different attention heads learn different patterns: syntax, coreference, positional proximity, and semantic similarity. The computational cost is O(n squared) where n is sequence length: a 1,000-token input requires 1,000,000 attention score computations per head, per layer. This quadratic scaling is the fundamental bottleneck limiting context windows.</p></noscript>
+    </div>
+  </figure>
+</section>
+
+
+<!-- SECTION IV -->
+<section id="section-4" class="fade-in">
+  <div class="section-header">
+    <span class="section-number">IV.</span>
+    <h2>Generation</h2>
+  </div>
+
+  <p>A language model does not generate text the way you write it. It predicts <strong>one token at a time</strong>. At each step, the model outputs a probability distribution over its entire vocabulary: a list of 100,000 numbers that sum to one. The next token is sampled from this distribution. How you sample determines whether the output is creative or repetitive, coherent or chaotic.</p>
+
+  <p><strong>Temperature</strong> divides the raw logits by T before softmax. T &lt; 1 sharpens the distribution (more confident, less creative). T &gt; 1 flattens it (more random, more creative). T approaching 0 is effectively greedy decoding: always pick the highest-probability token.</p>
+
+  <p><strong>Top-k</strong> keeps only the k highest-probability tokens and zeros out the rest. <strong>Top-p</strong> (nucleus sampling, Holtzman et al., 2020) keeps tokens whose cumulative probability reaches p. Top-p adapts automatically: when the model is confident, few tokens pass the filter. When it is uncertain, many do.<span class="sidenote-trigger" onclick="toggleSidenote('sn4')">[4]</span></p>
+  <div class="sidenote" id="sn4"><p>Temperature 0 does not mean "perfectly accurate." It means "always pick the most likely token." If the model's probability distribution is wrong, temperature 0 will confidently give you the wrong answer every time. This is why temperature 0 is not a substitute for model quality.</p></div>
+
+  <figure>
+    <div class="demo-container" id="sampling-demo">
+      <p class="label">Token Sampling Playground</p>
+      <div class="controls">
+        <button class="toggle-btn active" onclick="selectPrompt(0)">High confidence</button>
+        <button class="toggle-btn" onclick="selectPrompt(1)">Medium confidence</button>
+        <button class="toggle-btn" onclick="selectPrompt(2)">Low confidence</button>
+      </div>
+      <div class="controls">
+        <label>Temperature:</label>
+        <input type="range" id="temp-slider" min="1" max="20" step="1" value="10">
+        <span class="value-display" id="temp-val">1.0</span>
+      </div>
+      <div class="controls">
+        <label>Top-k:</label>
+        <input type="range" id="topk-slider" min="1" max="20" step="1" value="20">
+        <span class="value-display" id="topk-val">20</span>
+      </div>
+      <div class="controls">
+        <label>Top-p:</label>
+        <input type="range" id="topp-slider" min="1" max="10" step="1" value="10">
+        <span class="value-display" id="topp-val">1.0</span>
+      </div>
+      <svg id="sampling-svg" viewBox="0 0 636 400" width="100%"></svg>
+      <div class="stat-grid" id="sampling-stats"></div>
+      <figcaption>Adjust temperature, top-k, and top-p. Watch how the probability bars change and tokens get filtered out. Low temperature concentrates probability; high temperature spreads it.</figcaption>
+      <noscript><p>LLMs generate text one token at a time by sampling from a probability distribution over the vocabulary. Three parameters control sampling. Temperature scales the logits before softmax: temperature 0.1 makes the model almost deterministic, while temperature 2.0 makes it nearly random. Top-k limits the candidate pool to the k most probable tokens. Top-p (nucleus sampling, Holtzman et al., 2020) keeps tokens until their cumulative probability reaches a threshold. For a confident prediction like "The capital of France is ___", Paris might have 92% probability and only 1-2 tokens pass any filter. For an open-ended prompt like "The meaning of life is ___", dozens of tokens share probability mass and sampling parameters significantly change the output character.</p></noscript>
+    </div>
+  </figure>
+</section>
+
+
+<!-- SECTION V -->
+<section id="section-5" class="fade-in">
+  <div class="section-header">
+    <span class="section-number">V.</span>
+    <h2>Training</h2>
+  </div>
+
+  <p>A freshly initialized LLM is just random numbers. Its embeddings are random. Its attention weights are random. Ask it anything and you get noise. Training is the process of turning this noise into something useful, and it happens in <strong>three distinct phases</strong>.</p>
+
+  <p><strong>Phase 1: Pretraining.</strong> The model reads trillions of tokens from the internet: Common Crawl, Wikipedia, books, code. The objective is simple: predict the next token. The model gradually learns grammar, facts, reasoning patterns, and coding ability, all from prediction. GPT-4 reportedly cost over $100M in compute and took months on thousands of GPUs.</p>
+
+  <p><strong>Phase 2: Supervised Fine-tuning (SFT).</strong> Humans write high-quality instruction-response pairs, typically 10K to 100K examples. The model learns to follow instructions, not just complete random web text. This phase takes days, not months, and turns a "text completer" into a "question answerer."</p>
+
+  <p><strong>Phase 3: RLHF.</strong> Humans rank multiple model outputs for the same prompt. A reward model is trained on these rankings. The LLM is then optimized to produce outputs the reward model scores highly (Ouyang et al., 2022). This is what makes the model helpful and safe rather than just capable.<span class="sidenote-trigger" onclick="toggleSidenote('sn5')">[5]</span></p>
+  <div class="sidenote" id="sn5"><p>The data volume shrinks dramatically across phases: pretraining uses ~15 trillion tokens, SFT uses ~100K examples, RLHF uses ~50K comparisons. But each phase matters critically. RLHF is why GPT-4-base and GPT-4-chat behave completely differently despite being the same architecture trained on the same pretraining data.</p></div>
+
+  <figure>
+    <div class="demo-container" id="training-demo">
+      <p class="label">Training Pipeline Visualizer</p>
+      <div class="controls">
+        <button class="toggle-btn active" onclick="selectPhase(0)">Pretraining</button>
+        <button class="toggle-btn" onclick="selectPhase(1)">Fine-tuning</button>
+        <button class="toggle-btn" onclick="selectPhase(2)">RLHF</button>
+      </div>
+      <svg id="training-svg" viewBox="0 0 636 380" width="100%"></svg>
+      <div class="stat-grid" id="training-stats"></div>
+      <figcaption>Toggle between training phases. Watch how the loss curve shape, data volume, and compute cost change dramatically. Pretraining takes months; RLHF takes weeks.</figcaption>
+      <noscript><p>LLM training proceeds in three phases. Pretraining exposes the model to trillions of tokens of internet text, optimizing next-token prediction. This phase costs the most compute (GPT-4 reportedly required approximately 2 times 10 to the 25 FLOPs and cost over $100 million) and takes 3-6 months on thousands of GPUs. Supervised fine-tuning then trains the model on approximately 100,000 human-written instruction-response pairs over 1-3 days, converting a text completer into an instruction follower. Finally, RLHF uses approximately 50,000 human comparisons to train a reward model, then optimizes the LLM to produce outputs humans prefer. Each successive phase uses dramatically less data but shapes behavior in qualitatively different ways.</p></noscript>
+    </div>
+  </figure>
+</section>
+
+
+<!-- SECTION VI -->
+<section id="section-6" class="fade-in">
+  <div class="section-header">
+    <span class="section-number">VI.</span>
+    <h2>Context Windows</h2>
+  </div>
+
+  <p>Every LLM has a <strong>context window</strong>: the maximum number of tokens it can process at once. GPT-4 Turbo supports 128K tokens. Claude supports 200K. Llama 3 starts at 8K. But these numbers do not just limit how much text you can input. They determine how much memory the model uses, how fast it responds, and how much your API call costs.</p>
+
+  <p>During generation, the model caches the <strong>key and value tensors</strong> (the KV cache) for all previously generated tokens, so it does not recompute them at each step. For a model like Llama 70B, the KV cache requires roughly 2.6 MB per token. At 8K tokens, that is 20 GB. At 128K tokens, that is 330 GB.</p>
+
+  <p>Attention computation is <strong>O(n&sup2;)</strong>: doubling context length quadruples the attention FLOPs. This is why long-context queries cost more and respond slower. Techniques like Grouped Query Attention (Ainslie et al., 2023) reduce the KV cache by sharing keys across heads, but the fundamental quadratic attention cost remains.<span class="sidenote-trigger" onclick="toggleSidenote('sn6')">[6]</span></p>
+  <div class="sidenote" id="sn6"><p>When you paste a 100-page PDF into Claude and ask a question, the model is not "remembering" the document. It is holding the entire document in its KV cache: hundreds of gigabytes of GPU memory, just for your conversation. This is why long-context queries are expensive to serve.</p></div>
+
+  <figure>
+    <div class="demo-container" id="context-demo">
+      <p class="label">Context Window Memory Calculator</p>
+      <div class="controls">
+        <button class="toggle-btn active" onclick="selectModel(0)">GPT-4 (128K)</button>
+        <button class="toggle-btn" onclick="selectModel(1)">Claude (200K)</button>
+        <button class="toggle-btn" onclick="selectModel(2)">Llama 70B</button>
+        <button class="toggle-btn" onclick="selectModel(3)">Llama 8B</button>
+      </div>
+      <div class="controls">
+        <label>Context length:</label>
+        <input type="range" id="context-slider" min="0" max="8" step="1" value="3">
+        <span class="value-display" id="context-val">8K</span>
+      </div>
+      <svg id="context-svg" viewBox="0 0 636 400" width="100%"></svg>
+      <div class="stat-grid" id="context-stats"></div>
+      <figcaption>Drag the slider to increase context length. Watch the KV cache memory grow. Larger models need more memory per token; longer contexts multiply that cost.</figcaption>
+      <noscript><p>Every LLM maintains a KV (key-value) cache during generation, storing intermediate attention results for all previous tokens. Memory grows linearly with sequence length: for Llama 70B, the KV cache requires approximately 2.6 MB per token, meaning an 8K context uses 20 GB but a 128K context uses 330 GB. Attention computation grows quadratically: doubling context length quadruples FLOPs. For GPT-4 with 128K context, processing the full window requires over 16 billion attention score computations per layer per head. This is why long-context queries cost more and respond slower. Techniques like Grouped Query Attention reduce the KV cache by sharing keys, but the fundamental quadratic attention cost remains the binding constraint.</p></noscript>
+    </div>
+  </figure>
+
+  <div class="callout">
+    <p><strong>The machine that reads by predicting.</strong> Every step we walked through, tokenization, embeddings, attention, sampling, serves a single objective: predict the next token. There is no explicit module for "understanding." No separate system for "reasoning." The model learns all of these as side effects of getting better at prediction. Whether that is intelligence is a question this explainer cannot answer. But now you know the mechanism.</p>
+  </div>
+
+  <p style="margin-top:40px;font-size:16px;color:rgb(120,120,120);font-style:italic;">Based on the work of Vaswani et al. (Attention Is All You Need, 2017), Mikolov et al. (Word2Vec, 2013), Holtzman et al. (Nucleus Sampling, 2020), Ouyang et al. (InstructGPT, 2022), Sennrich et al. (BPE, 2016), and Shazeer (Multi-Query Attention, 2019).</p>
+
+</article>
+</main>
+
+<footer class="site-footer">
+  <div class="content">
+    <p>Compounding Intelligence</p>
+    <p><a href="https://supergeek.in">supergeek.in</a></p>
+    <p class="footer-tagline">Because you don&rsquo;t understand something until you can play with it.</p>
+  </div>
+</footer>
+
+<script>
+function toggleSidenote(id) {
+  var el = document.getElementById(id);
+  if (el) el.classList.toggle('open');
+}
+
+
+// ════════════════════════════════════════════════════
+// WIDGET 1: BPE Tokenizer Explorer
+// ════════════════════════════════════════════════════
+(function() {
+  var svg = document.getElementById('tokenizer-svg');
+  var statsEl = document.getElementById('tokenizer-stats');
+  if (!svg) return;
+
+  var colors = ['#5B4AE8','#E8634A','#5BAE8A','#E8B44A','#4A7DE8','#7B4AE8','#C84A9A','#D45B5B','#5B8AE8','#8AE85B'];
+  var currentExample = 0;
+
+  var examples = [
+    {
+      text: 'The cat sat on the mat.',
+      tokens: ['The',' cat',' sat',' on',' the',' mat','.'],
+      ids: [791,4344,7732,389,279,1901,13]
+    },
+    {
+      text: 'Unhappiness is not the opposite of happiness.',
+      tokens: ['Un','happiness',' is',' not',' the',' opposite',' of',' happiness','.'],
+      ids: [1844,97455,374,539,279,14329,315,23871,13]
+    },
+    {
+      text: 'GPT-4 costs $0.03 per 1K tokens.',
+      tokens: ['G','PT','-','4',' costs',' $','0','.','03',' per',' ','1','K',' tokens','.'],
+      ids: [38,2898,12,19,7194,400,15,13,2437,824,220,16,42,11460,13]
+    },
+    {
+      text: '\u092E\u0941\u091D\u0947 \u0939\u093F\u0928\u094D\u0926\u0940 \u092E\u0947\u0902 \u091C\u0935\u093E\u092C \u0926\u094B\u0964',
+      tokens: ['\u092E\u0941','\u091D\u0947',' \u0939\u093F','\u0928\u094D','\u0926\u0940',' \u092E\u0947\u0902',' \u091C','\u0935\u093E','\u092C',' \u0926\u094B','\u0964'],
+      ids: [38843,55050,40468,42526,31768,11747,25765,29729,38310,10765,31743]
+    },
+    {
+      text: '\u6771\u4EAC\u306F\u65E5\u672C\u306E\u9996\u90FD\u3067\u3059\u3002',
+      tokens: ['\u6771\u4EAC','\u306F','\u65E5\u672C','\u306E','\u9996\u90FD','\u3067\u3059','\u3002'],
+      ids: [16555,15682,11526,15024,45678,30267,1811]
+    }
+  ];
+
+  window.selectTokenExample = function(idx) {
+    currentExample = idx;
+    var btns = document.querySelectorAll('#tokenizer-demo .controls:first-of-type .toggle-btn');
+    for (var i = 0; i < btns.length; i++) btns[i].className = 'toggle-btn';
+    btns[idx].className = 'toggle-btn active';
+    render();
+  };
+
+  function render() {
+    var ex = examples[currentExample];
+    var tokens = ex.tokens;
+    var n = tokens.length;
+    var textLen = ex.text.length;
+
+    var pad = { top: 30, right: 20, bottom: 20, left: 20 };
+    var totalW = 636, totalH = 340;
+    var w = totalW - pad.left - pad.right;
+
+    var html = '<rect width="' + totalW + '" height="' + totalH + '" fill="rgb(242,241,239)" rx="4"/>';
+
+    // Title
+    html += '<text x="' + (totalW / 2) + '" y="' + (pad.top - 8) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="12" font-weight="600" fill="rgb(100,100,100)">Original Text</text>';
+
+    // Character row
+    var charY = pad.top + 30;
+    var charW = Math.min(w / textLen, 16);
+    var startX = pad.left + (w - charW * textLen) / 2;
+
+    html += '<rect x="' + (startX - 4) + '" y="' + (charY - 16) + '" width="' + (charW * textLen + 8) + '" height="28" fill="#fff" rx="4"/>';
+    for (var i = 0; i < textLen; i++) {
+      var cx = startX + i * charW + charW / 2;
+      var ch = ex.text[i];
+      if (ch === '<') ch = '&lt;';
+      if (ch === '>') ch = '&gt;';
+      if (ch === '&') ch = '&amp;';
+      html += '<text x="' + cx + '" y="' + (charY) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="' + Math.min(charW - 1, 13) + '" fill="rgb(45,45,45)">' + ch + '</text>';
+    }
+
+    // Token label
+    html += '<text x="' + (totalW / 2) + '" y="' + (charY + 50) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="12" font-weight="600" fill="rgb(100,100,100)">Tokens (' + n + ')</text>';
+
+    // Token blocks
+    var tokY = charY + 70;
+    var totalTokW = 0;
+    var tokWidths = [];
+    for (var i = 0; i < n; i++) {
+      var tw = Math.max(tokens[i].length * 10 + 16, 30);
+      tokWidths.push(tw);
+      totalTokW += tw + 6;
+    }
+    totalTokW -= 6;
+    var tokStartX = pad.left + (w - totalTokW) / 2;
+
+    var runX = tokStartX;
+    for (var i = 0; i < n; i++) {
+      var col = colors[i % colors.length];
+      html += '<rect x="' + runX + '" y="' + (tokY) + '" width="' + tokWidths[i] + '" height="30" fill="' + col + '" rx="5" opacity="0.85"/>';
+      var displayTok = tokens[i].replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/&/g, '&amp;');
+      html += '<text x="' + (runX + tokWidths[i] / 2) + '" y="' + (tokY + 19) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="11" font-weight="600" fill="#fff">' + displayTok + '</text>';
+      // Token ID below
+      html += '<text x="' + (runX + tokWidths[i] / 2) + '" y="' + (tokY + 46) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="9" fill="rgb(150,150,150)">' + ex.ids[i] + '</text>';
+
+      // Connecting lines from character positions to token blocks
+      var charOffset = 0;
+      for (var j = 0; j < i; j++) {
+        var raw = tokens[j];
+        charOffset += raw.length;
+      }
+      var tokChars = tokens[i].length;
+      var charCenterX = startX + (charOffset + tokChars / 2) * charW;
+      var tokCenterX = runX + tokWidths[i] / 2;
+      html += '<line x1="' + charCenterX + '" y1="' + (charY + 8) + '" x2="' + tokCenterX + '" y2="' + tokY + '" stroke="' + col + '" stroke-width="1" opacity="0.3"/>';
+
+      runX += tokWidths[i] + 6;
+    }
+
+    // BPE merge visualization
+    var mergeY = tokY + 70;
+    html += '<text x="' + (totalW / 2) + '" y="' + (mergeY) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="12" font-weight="600" fill="rgb(100,100,100)">BPE Merge Process</text>';
+
+    // Show 3 example merge steps
+    var mergeSteps = [];
+    if (currentExample === 0) {
+      mergeSteps = ['"t" + "h" \u2192 "th"', '"th" + "e" \u2192 "the"', '"s" + "a" \u2192 "sa"'];
+    } else if (currentExample === 1) {
+      mergeSteps = ['"h" + "a" \u2192 "ha"', '"ha" + "pp" \u2192 "happ"', '"happ" + "iness" \u2192 "happiness"'];
+    } else if (currentExample === 2) {
+      mergeSteps = ['"G" + "P" \u2192 "GP"', '"GP" + "T" \u2192 "GPT"', '"to" + "kens" \u2192 "tokens"'];
+    } else if (currentExample === 3) {
+      mergeSteps = ['Hindi: each syllable \u2192 1-2 tokens', '5 chars \u2192 11 tokens (2.2x English)', 'BPE trained on English-heavy corpus'];
+    } else {
+      mergeSteps = ['Japanese: each kanji \u2192 1 token', '11 chars \u2192 7 tokens', 'CJK benefits from dedicated merges'];
+    }
+    for (var s = 0; s < mergeSteps.length; s++) {
+      html += '<text x="' + (totalW / 2) + '" y="' + (mergeY + 22 + s * 20) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="12" fill="rgb(80,80,80)">' + mergeSteps[s] + '</text>';
+    }
+
+    svg.innerHTML = html;
+
+    var charsPerToken = (textLen / n).toFixed(1);
+    var estCost = ((n / 1000) * 0.03).toFixed(4);
+
+    statsEl.innerHTML =
+      '<div class="stat-card"><div class="stat-value">' + textLen + '</div><div class="stat-label">Characters</div></div>' +
+      '<div class="stat-card"><div class="stat-value" style="color:#5B4AE8">' + n + '</div><div class="stat-label">Tokens</div></div>' +
+      '<div class="stat-card"><div class="stat-value">' + charsPerToken + '</div><div class="stat-label">Chars/Token</div></div>' +
+      '<div class="stat-card"><div class="stat-value" style="color:#5BAE8A">$' + estCost + '</div><div class="stat-label">Est. Cost</div></div>';
+  }
+
+  render();
+})();
+
+
+// ════════════════════════════════════════════════════
+// WIDGET 2: Embedding Space Explorer
+// ════════════════════════════════════════════════════
+(function() {
+  var svg = document.getElementById('embedding-svg');
+  var statsEl = document.getElementById('embedding-stats');
+  if (!svg) return;
+
+  var clusterColors = {
+    royalty: '#5B4AE8', animals: '#E8634A', emotions: '#E8B44A',
+    food: '#5BAE8A', programming: '#4A7DE8', countries: '#7B4AE8'
+  };
+
+  var words = [
+    { text:'king', x:310, y:95, c:'royalty', nb:['queen','prince','monarch'], sim:[0.87,0.82,0.79] },
+    { text:'queen', x:340, y:80, c:'royalty', nb:['king','princess','prince'], sim:[0.87,0.84,0.80] },
+    { text:'prince', x:325, y:115, c:'royalty', nb:['princess','king','queen'], sim:[0.85,0.82,0.80] },
+    { text:'princess', x:355, y:100, c:'royalty', nb:['prince','queen','king'], sim:[0.85,0.84,0.79] },
+    { text:'monarch', x:295, y:110, c:'royalty', nb:['king','queen','prince'], sim:[0.79,0.77,0.75] },
+    { text:'man', x:270, y:145, c:'royalty', nb:['woman','king','boy'], sim:[0.76,0.68,0.72] },
+    { text:'woman', x:365, y:130, c:'royalty', nb:['man','queen','girl'], sim:[0.76,0.70,0.73] },
+    { text:'dog', x:100, y:200, c:'animals', nb:['puppy','cat','wolf'], sim:[0.85,0.80,0.78] },
+    { text:'cat', x:130, y:185, c:'animals', nb:['kitten','dog','mouse'], sim:[0.86,0.80,0.72] },
+    { text:'puppy', x:85, y:220, c:'animals', nb:['dog','kitten','cat'], sim:[0.85,0.79,0.76] },
+    { text:'kitten', x:145, y:210, c:'animals', nb:['cat','puppy','dog'], sim:[0.86,0.79,0.75] },
+    { text:'horse', x:115, y:240, c:'animals', nb:['dog','cat','wolf'], sim:[0.72,0.68,0.70] },
+    { text:'wolf', x:75, y:250, c:'animals', nb:['dog','horse','fox'], sim:[0.78,0.70,0.74] },
+    { text:'happy', x:480, y:180, c:'emotions', nb:['joyful','glad','sad'], sim:[0.89,0.85,0.72] },
+    { text:'sad', x:510, y:210, c:'emotions', nb:['unhappy','angry','happy'], sim:[0.84,0.71,0.72] },
+    { text:'angry', x:495, y:230, c:'emotions', nb:['furious','sad','upset'], sim:[0.88,0.71,0.82] },
+    { text:'joyful', x:465, y:195, c:'emotions', nb:['happy','glad','cheerful'], sim:[0.89,0.86,0.84] },
+    { text:'love', x:450, y:165, c:'emotions', nb:['happy','joyful','heart'], sim:[0.78,0.76,0.73] },
+    { text:'pizza', x:180, y:320, c:'food', nb:['pasta','bread','burger'], sim:[0.82,0.75,0.80] },
+    { text:'bread', x:210, y:340, c:'food', nb:['rice','pasta','pizza'], sim:[0.77,0.76,0.75] },
+    { text:'rice', x:195, y:355, c:'food', nb:['bread','pasta','noodle'], sim:[0.77,0.74,0.78] },
+    { text:'pasta', x:165, y:335, c:'food', nb:['pizza','bread','rice'], sim:[0.82,0.76,0.74] },
+    { text:'code', x:520, y:310, c:'programming', nb:['python','function','program'], sim:[0.81,0.78,0.80] },
+    { text:'python', x:540, y:330, c:'programming', nb:['code','function','java'], sim:[0.81,0.76,0.79] },
+    { text:'function', x:505, y:345, c:'programming', nb:['variable','code','python'], sim:[0.77,0.78,0.76] },
+    { text:'variable', x:535, y:360, c:'programming', nb:['function','code','data'], sim:[0.77,0.74,0.72] },
+    { text:'India', x:380, y:290, c:'countries', nb:['Japan','France','Brazil'], sim:[0.74,0.72,0.70] },
+    { text:'Japan', x:410, y:275, c:'countries', nb:['India','France','Tokyo'], sim:[0.74,0.73,0.82] },
+    { text:'France', x:395, y:310, c:'countries', nb:['Paris','Japan','India'], sim:[0.83,0.73,0.72] },
+    { text:'Brazil', x:365, y:325, c:'countries', nb:['India','France','Japan'], sim:[0.70,0.69,0.68] },
+    { text:'Paris', x:415, y:305, c:'countries', nb:['France','Tokyo','London'], sim:[0.83,0.76,0.78] },
+    { text:'Tokyo', x:430, y:285, c:'countries', nb:['Japan','Paris','India'], sim:[0.82,0.76,0.71] }
+  ];
+
+  var arithmetic = [
+    { label:'king - man + woman = ?', start:'king', minus:'man', plus:'woman', result:'queen' },
+    { label:'Paris - France + Japan = ?', start:'Paris', minus:'France', plus:'Japan', result:'Tokyo' },
+    { label:'puppy - dog + cat = ?', start:'puppy', minus:'dog', plus:'cat', result:'kitten' }
+  ];
+
+  var selectedWord = -1;
+  var activeArith = -1;
+
+  function findWord(name) {
+    for (var i = 0; i < words.length; i++) {
+      if (words[i].text === name) return i;
+    }
+    return -1;
+  }
+
+  window.selectArithmetic = function(idx) {
+    activeArith = activeArith === idx ? -1 : idx;
+    selectedWord = -1;
+    var btns = document.querySelectorAll('#embedding-demo .controls .toggle-btn');
+    for (var i = 0; i < btns.length; i++) btns[i].className = 'toggle-btn';
+    if (activeArith >= 0) btns[activeArith].className = 'toggle-btn active';
+    render();
+  };
+
+  function render() {
+    var pad = { top: 20, right: 20, bottom: 20, left: 20 };
+    var totalW = 636, totalH = 420;
+
+    var html = '<rect width="' + totalW + '" height="' + totalH + '" fill="rgb(242,241,239)" rx="4"/>';
+    html += '<rect x="' + pad.left + '" y="' + pad.top + '" width="' + (totalW - pad.left - pad.right) + '" height="' + (totalH - pad.top - pad.bottom) + '" fill="#fff" rx="4"/>';
+
+    // Draw words
+    for (var i = 0; i < words.length; i++) {
+      var w = words[i];
+      var col = clusterColors[w.c];
+      var opacity = 0.7;
+      var r = 5;
+
+      if (selectedWord === i) { opacity = 1; r = 7; }
+
+      html += '<circle cx="' + w.x + '" cy="' + w.y + '" r="' + r + '" fill="' + col + '" opacity="' + opacity + '" style="cursor:pointer" onclick="clickEmbWord(' + i + ')"/>';
+      html += '<text x="' + (w.x + 9) + '" y="' + (w.y + 4) + '" font-family="Figtree,sans-serif" font-size="10" fill="rgb(60,60,60)" style="cursor:pointer" onclick="clickEmbWord(' + i + ')">' + w.text + '</text>';
+    }
+
+    // Neighbor lines
+    if (selectedWord >= 0) {
+      var sw = words[selectedWord];
+      for (var n = 0; n < sw.nb.length; n++) {
+        var ni = findWord(sw.nb[n]);
+        if (ni >= 0) {
+          html += '<line x1="' + sw.x + '" y1="' + sw.y + '" x2="' + words[ni].x + '" y2="' + words[ni].y + '" stroke="' + clusterColors[sw.c] + '" stroke-width="1.5" stroke-dasharray="4,3" opacity="0.5"/>';
+          html += '<text x="' + ((sw.x + words[ni].x) / 2) + '" y="' + ((sw.y + words[ni].y) / 2 - 6) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="9" font-weight="600" fill="' + clusterColors[sw.c] + '">' + sw.sim[n].toFixed(2) + '</text>';
+        }
+      }
+      html += '<circle cx="' + sw.x + '" cy="' + sw.y + '" r="12" fill="none" stroke="' + clusterColors[sw.c] + '" stroke-width="2" opacity="0.4"/>';
+    }
+
+    // Arithmetic visualization
+    if (activeArith >= 0) {
+      var ar = arithmetic[activeArith];
+      var si = findWord(ar.start);
+      var mi = findWord(ar.minus);
+      var pi = findWord(ar.plus);
+      var ri = findWord(ar.result);
+
+      if (si >= 0 && mi >= 0 && pi >= 0 && ri >= 0) {
+        // Arrow from start to result showing the arithmetic path
+        var midX = words[si].x - (words[mi].x - words[si].x);
+        var midY = words[si].y - (words[mi].y - words[si].y);
+
+        // start -> (start - minus direction)
+        html += '<line x1="' + words[si].x + '" y1="' + words[si].y + '" x2="' + midX + '" y2="' + midY + '" stroke="#E8634A" stroke-width="2" stroke-dasharray="6,3" marker-end="url(#arrowR)"/>';
+        // intermediate -> result (+ plus direction)
+        html += '<line x1="' + midX + '" y1="' + midY + '" x2="' + words[ri].x + '" y2="' + words[ri].y + '" stroke="#5BAE8A" stroke-width="2" stroke-dasharray="6,3"/>';
+
+        // Highlight involved words
+        html += '<circle cx="' + words[si].x + '" cy="' + words[si].y + '" r="10" fill="none" stroke="#5B4AE8" stroke-width="2.5"/>';
+        html += '<circle cx="' + words[ri].x + '" cy="' + words[ri].y + '" r="10" fill="none" stroke="#5BAE8A" stroke-width="2.5"/>';
+
+        // Result label
+        html += '<text x="' + (words[ri].x) + '" y="' + (words[ri].y - 15) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="11" font-weight="700" fill="#5BAE8A">\u2248 ' + ar.result + '!</text>';
+      }
+    }
+
+    svg.innerHTML = html;
+
+    // Stats
+    if (selectedWord >= 0) {
+      var sw = words[selectedWord];
+      statsEl.innerHTML =
+        '<div class="stat-card"><div class="stat-value" style="color:' + clusterColors[sw.c] + '">' + sw.text + '</div><div class="stat-label">Selected Word</div></div>' +
+        '<div class="stat-card"><div class="stat-value">' + sw.nb[0] + '</div><div class="stat-label">Nearest</div></div>' +
+        '<div class="stat-card"><div class="stat-value" style="color:#5B4AE8">' + sw.sim[0].toFixed(2) + '</div><div class="stat-label">Similarity</div></div>' +
+        '<div class="stat-card"><div class="stat-value">' + sw.c + '</div><div class="stat-label">Cluster</div></div>';
+    } else if (activeArith >= 0) {
+      var ar = arithmetic[activeArith];
+      statsEl.innerHTML =
+        '<div class="stat-card"><div class="stat-value" style="color:#5B4AE8">' + ar.start + '</div><div class="stat-label">Start</div></div>' +
+        '<div class="stat-card"><div class="stat-value" style="color:#E8634A">- ' + ar.minus + '</div><div class="stat-label">Subtract</div></div>' +
+        '<div class="stat-card"><div class="stat-value" style="color:#5BAE8A">+ ' + ar.plus + '</div><div class="stat-label">Add</div></div>' +
+        '<div class="stat-card"><div class="stat-value" style="color:#5BAE8A">' + ar.result + '</div><div class="stat-label">Result</div></div>';
+    } else {
+      statsEl.innerHTML =
+        '<div class="stat-card"><div class="stat-value">32</div><div class="stat-label">Words</div></div>' +
+        '<div class="stat-card"><div class="stat-value" style="color:#5B4AE8">6</div><div class="stat-label">Clusters</div></div>' +
+        '<div class="stat-card"><div class="stat-value">2D</div><div class="stat-label">Projection</div></div>' +
+        '<div class="stat-card"><div class="stat-value">t-SNE</div><div class="stat-label">Method</div></div>';
+    }
+  }
+
+  window.clickEmbWord = function(idx) {
+    selectedWord = selectedWord === idx ? -1 : idx;
+    activeArith = -1;
+    var btns = document.querySelectorAll('#embedding-demo .controls .toggle-btn');
+    for (var i = 0; i < btns.length; i++) btns[i].className = 'toggle-btn';
+    render();
+  };
+
+  render();
+})();
+
+
+// ════════════════════════════════════════════════════
+// WIDGET 3: Attention Heatmap Explorer
+// ════════════════════════════════════════════════════
+(function() {
+  var svg = document.getElementById('attention-svg');
+  var statsEl = document.getElementById('attention-stats');
+  var infoEl = document.getElementById('attention-info');
+  if (!svg) return;
+
+  var sentIdx = 0, headIdx = 0;
+
+  var sentences = [
+    { tokens: ['The','cat','sat','on','the','mat','because','it','was','tired','.'] },
+    { tokens: ['The','bank','by','the','river','had','no','money','.'] },
+    { tokens: ['She','gave','him','the','book','that','she','bought','.'] }
+  ];
+
+  // Pre-computed attention matrices [sentence][head] = 2D array
+  // Each value 0-1, rows=query, cols=key
+  function makeMatrix(n, pattern) {
+    var m = [];
+    for (var i = 0; i < n; i++) {
+      var row = [];
+      for (var j = 0; j < n; j++) row.push(pattern(i, j, n));
+      // Normalize row
+      var sum = 0;
+      for (var j = 0; j < n; j++) sum += row[j];
+      for (var j = 0; j < n; j++) row[j] = sum > 0 ? row[j] / sum : 1/n;
+      m.push(row);
+    }
+    return m;
+  }
+
+  // Sentence 0: "The cat sat on the mat because it was tired."
+  var s0syntax = makeMatrix(11, function(i,j,n) {
+    // verbs attend to subjects: sat(2)->cat(1), was(8)->it(7)
+    if (i===2 && j===1) return 3; if (i===8 && j===7) return 3;
+    if (i===5 && j===3) return 2; // mat->on
+    return Math.exp(-Math.abs(i-j)*0.5);
+  });
+  var s0coref = makeMatrix(11, function(i,j,n) {
+    // "it"(7) attends strongly to "cat"(1)
+    if (i===7 && j===1) return 8;
+    if (i===8 && j===1) return 2; // "was" also somewhat
+    return 0.2;
+  });
+  var s0pos = makeMatrix(11, function(i,j,n) {
+    return Math.exp(-Math.abs(i-j)*1.0);
+  });
+  var s0sem = makeMatrix(11, function(i,j,n) {
+    // content words attend to content words
+    var content = [1,2,5,7,9]; // cat,sat,mat,it,tired
+    var ic = content.indexOf(i) >= 0 ? 1 : 0;
+    var jc = content.indexOf(j) >= 0 ? 1 : 0;
+    return ic * jc * 2 + 0.3;
+  });
+
+  // Sentence 1: "The bank by the river had no money."
+  var s1syntax = makeMatrix(9, function(i,j,n) {
+    if (i===5 && j===1) return 3; // had->bank
+    if (i===7 && j===5) return 2; // money->had
+    return Math.exp(-Math.abs(i-j)*0.5);
+  });
+  var s1coref = makeMatrix(9, function(i,j,n) {
+    // "bank"(1) attends to "river"(4) for disambiguation
+    if (i===1 && j===4) return 5;
+    if (i===7 && j===1) return 3; // money->bank
+    return 0.3;
+  });
+  var s1pos = makeMatrix(9, function(i,j,n) {
+    return Math.exp(-Math.abs(i-j)*1.0);
+  });
+  var s1sem = makeMatrix(9, function(i,j,n) {
+    var content = [1,4,5,7]; // bank,river,had,money
+    var ic = content.indexOf(i) >= 0 ? 1 : 0;
+    var jc = content.indexOf(j) >= 0 ? 1 : 0;
+    return ic * jc * 2 + 0.3;
+  });
+
+  // Sentence 2: "She gave him the book that she bought."
+  var s2syntax = makeMatrix(9, function(i,j,n) {
+    if (i===1 && j===0) return 3; // gave->She
+    if (i===7 && j===6) return 3; // bought->she
+    if (i===4 && j===1) return 2; // book->gave
+    return Math.exp(-Math.abs(i-j)*0.5);
+  });
+  var s2coref = makeMatrix(9, function(i,j,n) {
+    // "she"(6) attends to "She"(0)
+    if (i===6 && j===0) return 7;
+    if (i===7 && j===4) return 3; // bought->book
+    return 0.3;
+  });
+  var s2pos = makeMatrix(9, function(i,j,n) {
+    return Math.exp(-Math.abs(i-j)*1.0);
+  });
+  var s2sem = makeMatrix(9, function(i,j,n) {
+    var content = [0,1,2,4,6,7];
+    var ic = content.indexOf(i) >= 0 ? 1 : 0;
+    var jc = content.indexOf(j) >= 0 ? 1 : 0;
+    return ic * jc * 2 + 0.3;
+  });
+
+  var allMatrices = [
+    [s0syntax,s0coref,s0pos,s0sem],
+    [s1syntax,s1coref,s1pos,s1sem],
+    [s2syntax,s2coref,s2pos,s2sem]
+  ];
+
+  var headNames = ['Syntax','Coreference','Position','Semantic'];
+
+  window.selectAttentionSentence = function(idx) {
+    sentIdx = idx;
+    var btns = document.querySelectorAll('#attention-demo .controls:first-of-type .toggle-btn');
+    for (var i = 0; i < btns.length; i++) btns[i].className = 'toggle-btn';
+    btns[idx].className = 'toggle-btn active';
+    render();
+  };
+
+  window.selectAttentionHead = function(idx) {
+    headIdx = idx;
+    var btns = document.querySelectorAll('#attention-demo .controls:nth-of-type(2) .toggle-btn');
+    for (var i = 0; i < btns.length; i++) btns[i].className = 'toggle-btn';
+    btns[idx].className = 'toggle-btn active';
+    render();
+  };
+
+  function render() {
+    var sent = sentences[sentIdx];
+    var tokens = sent.tokens;
+    var n = tokens.length;
+    var matrix = allMatrices[sentIdx][headIdx];
+
+    var pad = { top: 60, right: 20, bottom: 20, left: 70 };
+    var totalW = 636, totalH = 420;
+    var gridW = totalW - pad.left - pad.right;
+    var gridH = totalH - pad.top - pad.bottom;
+    var cellW = gridW / n;
+    var cellH = gridH / n;
+
+    var html = '<rect width="' + totalW + '" height="' + totalH + '" fill="rgb(242,241,239)" rx="4"/>';
+
+    // Column labels (keys)
+    for (var j = 0; j < n; j++) {
+      var cx = pad.left + j * cellW + cellW / 2;
+      html += '<text x="' + cx + '" y="' + (pad.top - 8) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="' + Math.min(11, cellW - 2) + '" fill="rgb(80,80,80)" transform="rotate(-35,' + cx + ',' + (pad.top - 8) + ')">' + tokens[j] + '</text>';
+    }
+
+    // Row labels (queries) and cells
+    for (var i = 0; i < n; i++) {
+      var ry = pad.top + i * cellH + cellH / 2 + 4;
+      html += '<text x="' + (pad.left - 6) + '" y="' + ry + '" text-anchor="end" font-family="Figtree,sans-serif" font-size="' + Math.min(11, cellH - 2) + '" fill="rgb(80,80,80)">' + tokens[i] + '</text>';
+
+      for (var j = 0; j < n; j++) {
+        var val = matrix[i][j];
+        var opacity = Math.min(val * 2, 1);
+        var cx = pad.left + j * cellW;
+        var cy = pad.top + i * cellH;
+        html += '<rect x="' + cx + '" y="' + cy + '" width="' + cellW + '" height="' + cellH + '" fill="#5B4AE8" opacity="' + opacity.toFixed(2) + '" stroke="rgb(242,241,239)" stroke-width="1"/>';
+      }
+    }
+
+    // Head label
+    html += '<text x="' + (pad.left + gridW / 2) + '" y="' + (pad.top - 40) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="13" font-weight="700" fill="rgb(80,80,80)">Head: ' + headNames[headIdx] + '</text>';
+
+    svg.innerHTML = html;
+
+    // Find strongest link
+    var maxVal = 0, maxI = 0, maxJ = 0;
+    for (var i = 0; i < n; i++) {
+      for (var j = 0; j < n; j++) {
+        if (i !== j && matrix[i][j] > maxVal) {
+          maxVal = matrix[i][j]; maxI = i; maxJ = j;
+        }
+      }
+    }
+
+    var nSq = n * n;
+    statsEl.innerHTML =
+      '<div class="stat-card"><div class="stat-value">' + n + '</div><div class="stat-label">Tokens</div></div>' +
+      '<div class="stat-card"><div class="stat-value" style="color:#E8634A">' + nSq + '</div><div class="stat-label">Attention Scores (n\u00B2)</div></div>' +
+      '<div class="stat-card"><div class="stat-value" style="color:#5B4AE8">' + headNames[headIdx] + '</div><div class="stat-label">Active Head</div></div>' +
+      '<div class="stat-card"><div class="stat-value" style="color:#5BAE8A">' + tokens[maxI] + '\u2192' + tokens[maxJ] + '</div><div class="stat-label">Strongest Link</div></div>';
+
+    if (infoEl) infoEl.innerHTML = '<strong>' + tokens[maxI] + '</strong> attends most strongly to <strong>' + tokens[maxJ] + '</strong> (weight: ' + maxVal.toFixed(2) + ')';
+  }
+
+  render();
+})();
+
+
+// ════════════════════════════════════════════════════
+// WIDGET 4: Token Sampling Playground
+// ════════════════════════════════════════════════════
+(function() {
+  var svg = document.getElementById('sampling-svg');
+  var statsEl = document.getElementById('sampling-stats');
+  var tempSlider = document.getElementById('temp-slider');
+  var topkSlider = document.getElementById('topk-slider');
+  var toppSlider = document.getElementById('topp-slider');
+  var tempVal = document.getElementById('temp-val');
+  var topkVal = document.getElementById('topk-val');
+  var toppVal = document.getElementById('topp-val');
+  if (!svg || !tempSlider) return;
+
+  var promptIdx = 0;
+
+  var prompts = [
+    {
+      text: 'The capital of France is',
+      tokens: [' Paris',' the',' a',' located',' known',' one',' in',' called',' French',' considered',' not',' now',' home',' where',' being',' also',' an',' its',' famous',' actually'],
+      logits: [12.5,6.2,5.8,5.1,4.8,4.2,4.0,3.8,3.5,3.2,2.9,2.7,2.5,2.3,2.1,1.9,1.7,1.5,1.3,1.1]
+    },
+    {
+      text: 'Once upon a time, there was a',
+      tokens: [' young',' small',' man',' beautiful',' little',' king',' great',' wise',' poor',' brave',' lonely',' rich',' girl',' boy',' woman',' large',' old',' magic',' tiny',' kind'],
+      logits: [5.8,5.5,5.3,5.2,5.0,4.8,4.6,4.4,4.2,4.0,3.8,3.6,3.5,3.4,3.3,3.1,3.0,2.9,2.8,2.7]
+    },
+    {
+      text: 'The meaning of life is',
+      tokens: [' a',' to',' not',' something',' the',' found',' subjective',' different',' what',' often',' that',' complex',' perhaps',' about',' deeply',' one',' truly',' never',' beyond',' always'],
+      logits: [4.2,4.1,4.0,3.9,3.8,3.7,3.6,3.5,3.4,3.3,3.2,3.1,3.0,2.9,2.8,2.7,2.6,2.5,2.4,2.3]
+    }
+  ];
+
+  window.selectPrompt = function(idx) {
+    promptIdx = idx;
+    var btns = document.querySelectorAll('#sampling-demo .controls:first-of-type .toggle-btn');
+    for (var i = 0; i < btns.length; i++) btns[i].className = 'toggle-btn';
+    btns[idx].className = 'toggle-btn active';
+    render();
+  };
+
+  function softmax(logits, temp) {
+    var maxL = -Infinity;
+    for (var i = 0; i < logits.length; i++) {
+      var scaled = logits[i] / temp;
+      if (scaled > maxL) maxL = scaled;
+    }
+    var exps = [];
+    var sum = 0;
+    for (var i = 0; i < logits.length; i++) {
+      var e = Math.exp(logits[i] / temp - maxL);
+      exps.push(e);
+      sum += e;
+    }
+    var probs = [];
+    for (var i = 0; i < exps.length; i++) probs.push(exps[i] / sum);
+    return probs;
+  }
+
+  function render() {
+    var prompt = prompts[promptIdx];
+    var temp = parseInt(tempSlider.value) / 10;
+    var topk = parseInt(topkSlider.value);
+    var topp = parseInt(toppSlider.value) / 10;
+
+    tempVal.textContent = temp.toFixed(1);
+    topkVal.textContent = topk;
+    toppVal.textContent = topp.toFixed(1);
+
+    var probs = softmax(prompt.logits, temp);
+
+    // Apply top-k
+    var sorted = [];
+    for (var i = 0; i < probs.length; i++) sorted.push({ idx: i, prob: probs[i] });
+    sorted.sort(function(a, b) { return b.prob - a.prob; });
+
+    var active = [];
+    for (var i = 0; i < sorted.length; i++) {
+      active.push(i < topk);
+    }
+
+    // Apply top-p
+    var cumProb = 0;
+    for (var i = 0; i < sorted.length; i++) {
+      cumProb += sorted[i].prob;
+      if (cumProb > topp && i > 0) {
+        for (var j = i; j < sorted.length; j++) active[j] = false;
+        break;
+      }
+    }
+
+    var pad = { top: 30, right: 80, bottom: 20, left: 80 };
+    var totalW = 636, totalH = 400;
+    var w = totalW - pad.left - pad.right;
+    var h = totalH - pad.top - pad.bottom;
+    var barH = h / 20 - 2;
+
+    var html = '<rect width="' + totalW + '" height="' + totalH + '" fill="rgb(242,241,239)" rx="4"/>';
+
+    // Prompt label
+    html += '<text x="' + (totalW / 2) + '" y="' + (pad.top - 10) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="12" font-weight="600" fill="rgb(100,100,100)">"' + prompt.text + ' ___"</text>';
+
+    var maxProb = sorted[0].prob;
+    var candidates = 0;
+    var entropy = 0;
+
+    for (var i = 0; i < 20; i++) {
+      var item = sorted[i];
+      var by = pad.top + i * (barH + 2);
+      var barW = (item.prob / maxProb) * w * 0.8;
+      var col = active[i] ? '#5B4AE8' : 'rgb(200,200,200)';
+      var textCol = active[i] ? 'rgb(45,45,45)' : 'rgb(180,180,180)';
+
+      html += '<rect x="' + pad.left + '" y="' + by + '" width="' + barW + '" height="' + barH + '" fill="' + col + '" rx="3" opacity="' + (active[i] ? 0.8 : 0.3) + '"/>';
+      html += '<text x="' + (pad.left - 4) + '" y="' + (by + barH / 2 + 4) + '" text-anchor="end" font-family="Figtree,sans-serif" font-size="10" fill="' + textCol + '">' + prompt.tokens[item.idx] + '</text>';
+      html += '<text x="' + (pad.left + barW + 4) + '" y="' + (by + barH / 2 + 4) + '" font-family="Figtree,sans-serif" font-size="9" fill="' + textCol + '">' + (item.prob * 100).toFixed(1) + '%</text>';
+
+      if (active[i]) {
+        candidates++;
+        if (item.prob > 0) entropy -= item.prob * Math.log2(item.prob);
+      }
+    }
+
+    svg.innerHTML = html;
+
+    statsEl.innerHTML =
+      '<div class="stat-card"><div class="stat-value" style="color:#5B4AE8">' + candidates + '</div><div class="stat-label">Candidates</div></div>' +
+      '<div class="stat-card"><div class="stat-value" style="color:#5BAE8A">' + prompt.tokens[sorted[0].idx] + '</div><div class="stat-label">Top Token</div></div>' +
+      '<div class="stat-card"><div class="stat-value">' + entropy.toFixed(2) + '</div><div class="stat-label">Entropy (bits)</div></div>';
+  }
+
+  tempSlider.addEventListener('input', render);
+  topkSlider.addEventListener('input', render);
+  toppSlider.addEventListener('input', render);
+  render();
+})();
+
+
+// ════════════════════════════════════════════════════
+// WIDGET 5: Training Pipeline Visualizer
+// ════════════════════════════════════════════════════
+(function() {
+  var svg = document.getElementById('training-svg');
+  var statsEl = document.getElementById('training-stats');
+  if (!svg) return;
+
+  var phaseIdx = 0;
+
+  var phases = [
+    {
+      name: 'Pretraining',
+      yLabel: 'Cross-Entropy Loss',
+      curve: [{x:0,y:11},{x:0.05,y:6.5},{x:0.1,y:4.8},{x:0.15,y:3.9},{x:0.2,y:3.4},{x:0.3,y:2.8},{x:0.4,y:2.5},{x:0.5,y:2.25},{x:0.6,y:2.1},{x:0.7,y:2.0},{x:0.8,y:1.92},{x:0.9,y:1.85},{x:1.0,y:1.8}],
+      xLabels: ['0','2T','4T','6T','8T','10T','12T','15T'],
+      yMin: 1, yMax: 12,
+      color: '#5B4AE8',
+      stats: { data:'15T tokens', compute:'~10\u00B2\u2075 FLOPs', duration:'3-6 months', changes:'Grammar, facts, reasoning' },
+      icons: ['Common Crawl','Wikipedia','Books','Code']
+    },
+    {
+      name: 'Fine-tuning (SFT)',
+      yLabel: 'Instruction Loss',
+      curve: [{x:0,y:2.0},{x:0.05,y:1.5},{x:0.1,y:1.2},{x:0.15,y:1.05},{x:0.2,y:0.95},{x:0.3,y:0.88},{x:0.5,y:0.82},{x:0.7,y:0.80},{x:1.0,y:0.78}],
+      xLabels: ['0','20K','40K','60K','80K','100K'],
+      yMin: 0.5, yMax: 2.5,
+      color: '#5BAE8A',
+      stats: { data:'100K examples', compute:'~10\u00B2\u2070 FLOPs', duration:'1-3 days', changes:'Instruction following' },
+      icons: ['Human-written','Q&A pairs','Instructions']
+    },
+    {
+      name: 'RLHF',
+      yLabel: 'Reward Score',
+      curve: [{x:0,y:0.3},{x:0.05,y:0.42},{x:0.1,y:0.52},{x:0.15,y:0.58},{x:0.2,y:0.63},{x:0.3,y:0.70},{x:0.4,y:0.74},{x:0.5,y:0.78},{x:0.7,y:0.82},{x:1.0,y:0.85}],
+      xLabels: ['0','10K','20K','30K','40K','50K'],
+      yMin: 0, yMax: 1.0,
+      color: '#E8B44A',
+      stats: { data:'50K comparisons', compute:'~10\u00B2\u2070 FLOPs', duration:'1-2 weeks', changes:'Helpfulness, safety' },
+      icons: ['Human rankings','Reward model','PPO/DPO']
+    }
+  ];
+
+  window.selectPhase = function(idx) {
+    phaseIdx = idx;
+    var btns = document.querySelectorAll('#training-demo .controls .toggle-btn');
+    for (var i = 0; i < btns.length; i++) btns[i].className = 'toggle-btn';
+    btns[idx].className = 'toggle-btn active';
+    render();
+  };
+
+  function render() {
+    var phase = phases[phaseIdx];
+    var curve = phase.curve;
+
+    var pad = { top: 40, right: 30, bottom: 80, left: 55 };
+    var totalW = 636, totalH = 380;
+    var w = totalW - pad.left - pad.right;
+    var h = totalH - pad.top - pad.bottom;
+
+    var html = '<rect width="' + totalW + '" height="' + totalH + '" fill="rgb(242,241,239)" rx="4"/>';
+    html += '<rect x="' + pad.left + '" y="' + pad.top + '" width="' + w + '" height="' + h + '" fill="#fff" rx="2"/>';
+
+    // Title
+    html += '<text x="' + (pad.left + w / 2) + '" y="' + (pad.top - 12) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="14" font-weight="700" fill="rgb(45,45,45)">' + phase.name + '</text>';
+
+    // Y axis
+    var yRange = phase.yMax - phase.yMin;
+    for (var g = 0; g <= 4; g++) {
+      var gy = pad.top + h - (g / 4) * h;
+      var gVal = phase.yMin + (g / 4) * yRange;
+      html += '<line x1="' + pad.left + '" y1="' + gy + '" x2="' + (pad.left + w) + '" y2="' + gy + '" stroke="rgb(243,243,243)"/>';
+      html += '<text x="' + (pad.left - 8) + '" y="' + (gy + 4) + '" text-anchor="end" font-family="Figtree,sans-serif" font-size="10" fill="rgb(150,150,150)">' + gVal.toFixed(1) + '</text>';
+    }
+
+    // Y label
+    html += '<text x="14" y="' + (pad.top + h / 2) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="11" font-weight="600" fill="rgb(80,80,80)" transform="rotate(-90,14,' + (pad.top + h / 2) + ')">' + phase.yLabel + '</text>';
+
+    // X labels
+    var nLabels = phase.xLabels.length;
+    for (var i = 0; i < nLabels; i++) {
+      var lx = pad.left + (i / (nLabels - 1)) * w;
+      html += '<text x="' + lx + '" y="' + (pad.top + h + 18) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="10" fill="rgb(150,150,150)">' + phase.xLabels[i] + '</text>';
+    }
+
+    // Curve fill
+    var fillPath = 'M' + pad.left + ',' + (pad.top + h);
+    for (var i = 0; i < curve.length; i++) {
+      var cx = pad.left + curve[i].x * w;
+      var cy = pad.top + h - ((curve[i].y - phase.yMin) / yRange) * h;
+      fillPath += 'L' + cx + ',' + cy;
+    }
+    fillPath += 'L' + (pad.left + curve[curve.length - 1].x * w) + ',' + (pad.top + h) + 'Z';
+    html += '<path d="' + fillPath + '" fill="' + phase.color + '" opacity="0.1"/>';
+
+    // Curve line
+    for (var i = 1; i < curve.length; i++) {
+      var x1 = pad.left + curve[i - 1].x * w;
+      var y1 = pad.top + h - ((curve[i - 1].y - phase.yMin) / yRange) * h;
+      var x2 = pad.left + curve[i].x * w;
+      var y2 = pad.top + h - ((curve[i].y - phase.yMin) / yRange) * h;
+      html += '<line x1="' + x1 + '" y1="' + y1 + '" x2="' + x2 + '" y2="' + y2 + '" stroke="' + phase.color + '" stroke-width="2.5"/>';
+    }
+
+    // End point
+    var endX = pad.left + curve[curve.length - 1].x * w;
+    var endY = pad.top + h - ((curve[curve.length - 1].y - phase.yMin) / yRange) * h;
+    html += '<circle cx="' + endX + '" cy="' + endY + '" r="5" fill="' + phase.color + '" stroke="#fff" stroke-width="2"/>';
+    html += '<text x="' + (endX - 10) + '" y="' + (endY - 10) + '" text-anchor="end" font-family="Figtree,sans-serif" font-size="11" font-weight="700" fill="' + phase.color + '">' + curve[curve.length - 1].y.toFixed(1) + '</text>';
+
+    // Data pipeline icons
+    var iconY = pad.top + h + 40;
+    var icons = phase.icons;
+    var iconW = w / icons.length;
+    for (var i = 0; i < icons.length; i++) {
+      var ix = pad.left + i * iconW + iconW / 2;
+      html += '<rect x="' + (ix - 35) + '" y="' + (iconY - 10) + '" width="70" height="24" fill="' + phase.color + '" rx="12" opacity="0.15"/>';
+      html += '<text x="' + ix + '" y="' + (iconY + 6) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="10" font-weight="600" fill="' + phase.color + '">' + icons[i] + '</text>';
+      if (i < icons.length - 1) {
+        html += '<text x="' + (ix + iconW / 2) + '" y="' + (iconY + 6) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="14" fill="rgb(180,180,180)">\u2192</text>';
+      }
+    }
+
+    svg.innerHTML = html;
+
+    statsEl.innerHTML =
+      '<div class="stat-card"><div class="stat-value" style="color:' + phase.color + '">' + phase.stats.data + '</div><div class="stat-label">Data Volume</div></div>' +
+      '<div class="stat-card"><div class="stat-value">' + phase.stats.compute + '</div><div class="stat-label">Compute</div></div>' +
+      '<div class="stat-card"><div class="stat-value">' + phase.stats.duration + '</div><div class="stat-label">Duration</div></div>' +
+      '<div class="stat-card"><div class="stat-value" style="color:#5BAE8A">' + phase.stats.changes + '</div><div class="stat-label">What Changes</div></div>';
+  }
+
+  render();
+})();
+
+
+// ════════════════════════════════════════════════════
+// WIDGET 6: Context Window Memory Calculator
+// ════════════════════════════════════════════════════
+(function() {
+  var svg = document.getElementById('context-svg');
+  var statsEl = document.getElementById('context-stats');
+  var slider = document.getElementById('context-slider');
+  var valLabel = document.getElementById('context-val');
+  if (!svg || !slider) return;
+
+  var modelIdx = 0;
+
+  var contextSteps = [1000, 2000, 4000, 8000, 16000, 32000, 64000, 128000, 200000];
+  var contextLabels = ['1K','2K','4K','8K','16K','32K','64K','128K','200K'];
+
+  var models = [
+    { name:'GPT-4 (128K)', layers:120, heads:96, headDim:128, bytesPerParam:2, maxCtx:128000, weightGB:350 },
+    { name:'Claude (200K)', layers:80, heads:64, headDim:128, bytesPerParam:2, maxCtx:200000, weightGB:250 },
+    { name:'Llama 70B', layers:80, heads:64, headDim:128, bytesPerParam:2, maxCtx:128000, weightGB:140 },
+    { name:'Llama 8B', layers:32, heads:32, headDim:128, bytesPerParam:2, maxCtx:8192, weightGB:16 }
+  ];
+
+  window.selectModel = function(idx) {
+    modelIdx = idx;
+    var btns = document.querySelectorAll('#context-demo .controls:first-of-type .toggle-btn');
+    for (var i = 0; i < btns.length; i++) btns[i].className = 'toggle-btn';
+    btns[idx].className = 'toggle-btn active';
+    render();
+  };
+
+  function kvCacheGB(model, seqLen) {
+    return 2 * model.layers * model.heads * model.headDim * seqLen * model.bytesPerParam / (1024 * 1024 * 1024);
+  }
+
+  function render() {
+    var ctxIdx = parseInt(slider.value);
+    var ctxLen = contextSteps[ctxIdx];
+    valLabel.textContent = contextLabels[ctxIdx];
+
+    var model = models[modelIdx];
+
+    var pad = { top: 40, right: 30, bottom: 40, left: 55 };
+    var totalW = 636, totalH = 400;
+    var w = totalW - pad.left - pad.right;
+    var h = totalH - pad.top - pad.bottom;
+
+    var html = '<rect width="' + totalW + '" height="' + totalH + '" fill="rgb(242,241,239)" rx="4"/>';
+    html += '<rect x="' + pad.left + '" y="' + pad.top + '" width="' + w + '" height="' + h + '" fill="#fff" rx="2"/>';
+
+    // Title
+    html += '<text x="' + (pad.left + w / 2) + '" y="' + (pad.top - 12) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="14" font-weight="700" fill="rgb(45,45,45)">' + model.name + ' Memory Usage</text>';
+
+    // Compute all points
+    var points = [];
+    var maxMem = 0;
+    for (var i = 0; i < contextSteps.length; i++) {
+      var kv = kvCacheGB(model, contextSteps[i]);
+      var total = model.weightGB + kv;
+      points.push({ ctx: contextSteps[i], kv: kv, weight: model.weightGB, total: total });
+      if (total > maxMem) maxMem = total;
+    }
+    maxMem = Math.ceil(maxMem / 100) * 100;
+    if (maxMem < 100) maxMem = 100;
+
+    // Y grid
+    for (var g = 0; g <= 4; g++) {
+      var gy = pad.top + h - (g / 4) * h;
+      var gVal = Math.round((g / 4) * maxMem);
+      html += '<line x1="' + pad.left + '" y1="' + gy + '" x2="' + (pad.left + w) + '" y2="' + gy + '" stroke="rgb(243,243,243)"/>';
+      html += '<text x="' + (pad.left - 8) + '" y="' + (gy + 4) + '" text-anchor="end" font-family="Figtree,sans-serif" font-size="10" fill="rgb(150,150,150)">' + gVal + ' GB</text>';
+    }
+
+    // X labels
+    for (var i = 0; i < contextLabels.length; i++) {
+      var lx = pad.left + (i / (contextLabels.length - 1)) * w;
+      html += '<text x="' + lx + '" y="' + (pad.top + h + 18) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="9" fill="rgb(150,150,150)">' + contextLabels[i] + '</text>';
+    }
+    html += '<text x="' + (pad.left + w / 2) + '" y="' + (pad.top + h + 34) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="11" font-weight="600" fill="rgb(80,80,80)">Context Length</text>';
+
+    // Model weights area (constant)
+    var weightY = pad.top + h - (model.weightGB / maxMem) * h;
+    html += '<rect x="' + pad.left + '" y="' + weightY + '" width="' + w + '" height="' + (pad.top + h - weightY) + '" fill="#4A7DE8" opacity="0.15"/>';
+
+    // KV cache area (growing)
+    var kvPath = 'M';
+    for (var i = 0; i < points.length; i++) {
+      var px = pad.left + (i / (points.length - 1)) * w;
+      var py = pad.top + h - (points[i].total / maxMem) * h;
+      kvPath += (i === 0 ? '' : 'L') + px + ',' + py;
+    }
+    kvPath += 'L' + (pad.left + w) + ',' + weightY;
+    kvPath += 'L' + pad.left + ',' + weightY + 'Z';
+    html += '<path d="' + kvPath + '" fill="#5B4AE8" opacity="0.2"/>';
+
+    // Total line
+    for (var i = 1; i < points.length; i++) {
+      var x1 = pad.left + ((i - 1) / (points.length - 1)) * w;
+      var y1 = pad.top + h - (points[i - 1].total / maxMem) * h;
+      var x2 = pad.left + (i / (points.length - 1)) * w;
+      var y2 = pad.top + h - (points[i].total / maxMem) * h;
+      html += '<line x1="' + x1 + '" y1="' + y1 + '" x2="' + x2 + '" y2="' + y2 + '" stroke="#5B4AE8" stroke-width="2.5"/>';
+    }
+
+    // Weight line
+    html += '<line x1="' + pad.left + '" y1="' + weightY + '" x2="' + (pad.left + w) + '" y2="' + weightY + '" stroke="#4A7DE8" stroke-width="1.5" stroke-dasharray="6,3"/>';
+
+    // Current position marker
+    var curX = pad.left + (ctxIdx / (points.length - 1)) * w;
+    var curTotal = points[ctxIdx].total;
+    var curY = pad.top + h - (curTotal / maxMem) * h;
+    html += '<line x1="' + curX + '" y1="' + pad.top + '" x2="' + curX + '" y2="' + (pad.top + h) + '" stroke="#E8634A" stroke-width="1.5" stroke-dasharray="4,3" opacity="0.7"/>';
+    html += '<circle cx="' + curX + '" cy="' + curY + '" r="6" fill="#5B4AE8" stroke="#fff" stroke-width="2"/>';
+    html += '<text x="' + (curX + 10) + '" y="' + (curY - 8) + '" font-family="Figtree,sans-serif" font-size="11" font-weight="700" fill="#5B4AE8">' + curTotal.toFixed(0) + ' GB</text>';
+
+    // Legend
+    html += '<rect x="' + (pad.left + 10) + '" y="' + (pad.top + 10) + '" width="10" height="10" fill="#4A7DE8" opacity="0.4" rx="2"/>';
+    html += '<text x="' + (pad.left + 26) + '" y="' + (pad.top + 19) + '" font-family="Figtree,sans-serif" font-size="10" fill="rgb(100,100,100)">Model Weights</text>';
+    html += '<rect x="' + (pad.left + 10) + '" y="' + (pad.top + 26) + '" width="10" height="10" fill="#5B4AE8" opacity="0.4" rx="2"/>';
+    html += '<text x="' + (pad.left + 26) + '" y="' + (pad.top + 35) + '" font-family="Figtree,sans-serif" font-size="10" fill="rgb(100,100,100)">KV Cache</text>';
+
+    // Max context warning
+    if (ctxLen > model.maxCtx) {
+      html += '<text x="' + (pad.left + w / 2) + '" y="' + (pad.top + h / 2) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="14" font-weight="700" fill="#E8634A">Exceeds max context (' + (model.maxCtx / 1000) + 'K)</text>';
+    }
+
+    svg.innerHTML = html;
+
+    var curKV = points[ctxIdx].kv;
+    var gpusNeeded = Math.ceil(curTotal / 80);
+
+    statsEl.innerHTML =
+      '<div class="stat-card"><div class="stat-value" style="color:#5B4AE8">' + curKV.toFixed(1) + ' GB</div><div class="stat-label">KV Cache</div></div>' +
+      '<div class="stat-card"><div class="stat-value" style="color:#4A7DE8">' + model.weightGB + ' GB</div><div class="stat-label">Model Weights</div></div>' +
+      '<div class="stat-card"><div class="stat-value">' + curTotal.toFixed(0) + ' GB</div><div class="stat-label">Total Memory</div></div>' +
+      '<div class="stat-card"><div class="stat-value" style="color:' + (gpusNeeded > 4 ? '#E8634A' : '#5BAE8A') + '">' + gpusNeeded + '</div><div class="stat-label">A100 GPUs (80GB)</div></div>';
+  }
+
+  slider.addEventListener('input', render);
+  render();
+})();
+
+
+// ════════════════════════════════════════════════════
+// SCROLL REVEAL
+// ════════════════════════════════════════════════════
+(function() {
+  var observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+  document.querySelectorAll('.fade-in').forEach(function(el) { observer.observe(el); });
+})();
+</script>
+</body>
+</html>

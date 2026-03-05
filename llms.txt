@@ -11,6 +11,7 @@ These are in-depth, interactive articles with hands-on visualizations. They are 
 - [Credit Scoring, Explained Plainly](https://supergeek.in/credit-scoring/): How banks decide who gets a loan in 30 seconds. Covers FICO components, Weight of Evidence binning, logistic regression scorecards, XGBoost vs LightGBM comparison, SHAP explainability for regulatory compliance, and PSI drift monitoring. 6 interactive demos.
 - [Causal AI in Wealth, Explained](https://supergeek.in/causal-ai/): Why every wealth app confuses correlation with causation. Covers confounders vs colliders, Pearl's causal ladder, causal graphs for SIP cancellation, the engagement trap (collider bias in fintech), and counterfactual reasoning for investor behavior. 6 interactive demos.
 - [ML-Based Trading, Explained Plainly](https://supergeek.in/ml-trading/): What actually works in ML trading, what doesn't, and why most quant strategies fail. Covers technical indicators (RSI, MACD, Bollinger), momentum vs mean reversion, overfitting detection, drawdown analysis, SHAP feature importance, and efficient frontier portfolio optimization using real Nifty 50 data. 6 interactive demos.
+- [How LLMs Work, Explained Plainly](https://supergeek.in/llm-explainer/): What happens between your prompt and the response. Covers BPE tokenization, embedding spaces, self-attention mechanics, token sampling (temperature, top-k, top-p), the training pipeline (pretraining, SFT, RLHF), and KV cache memory scaling. 6 interactive demos.
 
 ## Writing
 
@@ -24,7 +25,6 @@ These are in-depth, interactive articles with hands-on visualizations. They are 
 - [Datasets worth using for LLM training](https://supergeek.in/datasets-for-llm-training/): Curated list of datasets for pretraining, fine-tuning, and instruction tuning LLMs.
 - [Tools for evaluating, training, and deploying LLMs](https://supergeek.in/llm-evaluation-training-deployment/): Practical tools and frameworks across the LLM lifecycle.
 - [The papers that shaped generative AI](https://supergeek.in/llm-milestone-papers/): Annotated list of milestone papers from Transformer to GPT-4, with key contributions of each.
-- [Everything I read to understand LLMs](https://supergeek.in/llm-learning-resources/): Curated learning resources for understanding large language models.
 - [A list of open-source LLMs worth knowing](https://supergeek.in/opem-llms/): Comparison of open-source language models with architecture details and use cases.
 
 ## Optional

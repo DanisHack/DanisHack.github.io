@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Measuring whether your RAG actually works | Danish Mohd</title>
+<meta property="og:title" content="Measuring whether your RAG actually works" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="How to measure RAG pipeline quality: context precision, context recall, faithfulness, and answer relevance — with practical evaluation frameworks." />
+<meta property="og:description" content="How to measure RAG pipeline quality: context precision, context recall, faithfulness, and answer relevance — with practical evaluation frameworks." />
+<link rel="canonical" href="https://supergeek.in/evaluate-rag-pipelines/" />
+<meta property="og:url" content="https://supergeek.in/evaluate-rag-pipelines/" />
+<meta property="og:site_name" content="Danish Mohd" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2024-07-14T00:00:00+05:30" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:title" content="Measuring whether your RAG actually works" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2024-07-14T00:00:00+05:30","datePublished":"2024-07-14T00:00:00+05:30","description":"How to measure RAG pipeline quality: context precision, context recall, faithfulness, and answer relevance — with practical evaluation frameworks.","headline":"Measuring whether your RAG actually works","mainEntityOfPage":{"@type":"WebPage","@id":"https://supergeek.in/evaluate-rag-pipelines/"},"author":{"@type":"Person","name":"Danish Mohd","url":"https://supergeek.in"},"url":"https://supergeek.in/evaluate-rag-pipelines/"}</script>
+
+  <link rel="stylesheet" href="/assets/css/post.css">
+</head>
+<body>
+  <div class="post-container">
+
+    <a class="post-back" href="/">&larr; Danish Mohd</a>
+
+    <header class="post-header">
+      <div class="post-date">July 14, 2024</div>
+      <h1 class="post-title">Measuring whether your RAG actually works</h1>
+      <hr class="post-header-rule">
+    </header>
+
+    <article class="post-content">
+      <p><img src="images/bbb1c16e0f2ea349f275b83fb59f62cfcc0f6bd0-431x442.png" alt="Feature Image" /></p>
+
+<h1 id="how-to-evaluate-rag-pipelines-a-simple-guide-to-getting-it-right">How to Evaluate RAG Pipelines: A Simple Guide to Getting It Right</h1>
+
+<p>🤷‍♀️ Evaluating RAG pipelines is like building a house: you wouldn’t start decorating before ensuring the foundation is strong, would you? Before you add all the fancy features, you need to make sure your evaluation setup is solid. It’s crucial but often overlooked. That’s why I’ve put together this quick guide to help you navigate the process.</p>
+
+<p>I’ve broken it down into two main parts because, just like a good conversation, RAG pipelines involve both listening and responding. In tech terms, that means <strong>retrieving</strong> information and then <strong>generating</strong> a response. Each part needs its own set of evaluation metrics.</p>
+
+<h2 id="-retrieval-dimensions-the-listening-part">📖 Retrieval Dimensions: The Listening Part</h2>
+
+<ol>
+  <li>
+    <p><strong>Context Precision</strong>: Think of this as how well you’re tuning in to the conversation. Are you picking up the most important details first, or are you getting sidetracked? It’s about prioritizing the most relevant bits of information.</p>
+  </li>
+  <li>
+    <p><strong>Context Recall</strong>: This is your memory check. Did you remember all the key points of the conversation? It’s about making sure you retrieve information that closely matches what was asked.</p>
+  </li>
+  <li>
+    <p><strong>Context Relevance</strong>: Imagine you’re at a party, and someone asks about your favorite book. Do you respond with something on-topic, or do you start talking about your love for pizza? This dimension checks whether the retrieved context is actually relevant to the question.</p>
+  </li>
+  <li>
+    <p><strong>Context Entity Recall</strong>: Are you getting the names and places right? This checks whether all the important entities (like people, places, or things) are correctly recalled from your memory bank.</p>
+  </li>
+  <li>
+    <p><strong>Noise Robustness</strong>: Ever had someone throw random facts into a conversation, making it hard to follow? This dimension evaluates how well the model can handle irrelevant or distracting information.</p>
+  </li>
+</ol>
+
+<h2 id="-generation-dimensions-the-responding-part">📖 Generation Dimensions: The Responding Part</h2>
+
+<ol>
+  <li>
+    <p><strong>Faithfulness</strong>: This is about trustworthiness. When you generate a response, is it factually correct based on the information you retrieved? It’s like making sure you’re not just making stuff up.</p>
+  </li>
+  <li>
+    <p><strong>Answer Relevance</strong>: Imagine if someone asked you for advice and you gave them a completely unrelated answer. Not very helpful, right? This checks if the generated response actually answers the question.</p>
+  </li>
+  <li>
+    <p><strong>Information Integration</strong>: This is like being a good storyteller. Can you combine different pieces of information into a coherent and useful answer?</p>
+  </li>
+  <li>
+    <p><strong>Counterfactual Robustness</strong>: Sometimes, people get things wrong. This dimension checks if the model can spot and correct these inaccuracies, making sure it doesn’t fall for misinformation.</p>
+  </li>
+  <li>
+    <p><strong>Negative Rejection</strong>: Sometimes, the best response is no response. This measures if the model can resist the urge to answer when it doesn’t have the right information.</p>
+  </li>
+</ol>
+
+<h2 id="why-all-this-matters">Why All This Matters</h2>
+
+<p>😎 Understanding these dimensions is like having a roadmap for evaluating your RAG pipeline. Without them, you’re just guessing whether it’s working well or not. Many frameworks already include these dimensions, so before you dive into your project, make sure to check them out. They’re your toolkit for building a robust and reliable system.</p>
+
+<h2 id="metrics--frameworks">Metrics &amp; Frameworks</h2>
+
+<p>Just like how a chef needs the right tools to create a great dish, evaluating RAG pipelines requires the right metrics and frameworks. Here’s a quick rundown of what’s typically used:</p>
+
+<ul>
+  <li><strong>Metrics</strong>: Accuracy, Precision, Recall, Cosine Similarity, BLEU, ROUGE, and more.</li>
+  <li><strong>Frameworks</strong>: RAGas, TruLens, ARES, DeepEval, and others.</li>
+</ul>
+
+<p>The image guide I’ve shared covers these in more detail, so be sure to check it out. Whether you’re new to evaluating RAG pipelines or just need a refresher, these dimensions will help you ensure your model is both a good listener and a great responder.</p>
+
+<p>So, before you add those fancy features, make sure your foundation is solid. It’s the key to a successful and reliable RAG pipeline.</p>
+
+<p>Happy building! 🏗️</p>
+
+    </article>
+
+    <footer class="post-footer">
+      <a href="/">&larr; Back home</a>
+      <span class="post-footer-copy">&copy; 2026 Danish Mohd</span>
+    </footer>
+
+  </div>
+</body>
+</html>

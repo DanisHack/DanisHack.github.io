@@ -1,0 +1,294 @@
+/* ── Reset & Base ── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  height: 100%;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-size: 1.1rem;
+  line-height: 1.72;
+  color: #333;
+  background: #fff;
+  min-height: 100%;
+}
+
+/* ── Layout ── */
+.post-container {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 3rem 1.5rem 4rem;
+}
+
+/* ── Back Link ── */
+.post-back {
+  display: inline-block;
+  font-family: "SF Mono", SFMono-Regular, ui-monospace, Menlo, Consolas, monospace;
+  font-size: 0.85rem;
+  color: #aaa;
+  text-decoration: none;
+  margin-bottom: 2.5rem;
+  transition: color 0.2s ease;
+}
+
+.post-back:hover {
+  color: #5B5EA6;
+}
+
+/* ── Post Header ── */
+.post-header {
+  margin-bottom: 2.5rem;
+}
+
+.post-date {
+  font-family: "SF Mono", SFMono-Regular, ui-monospace, Menlo, Consolas, monospace;
+  font-size: 0.78rem;
+  color: #aaa;
+  letter-spacing: 0.02em;
+  margin-bottom: 0.5rem;
+}
+
+.post-title {
+  font-size: 1.85rem;
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+  color: #111;
+}
+
+.post-header-rule {
+  margin-top: 1.5rem;
+  height: 1px;
+  border: none;
+  background: #eee;
+}
+
+/* ── Article Content ── */
+.post-content h1 {
+  font-size: 1.65rem;
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  color: #111;
+  margin-top: 2.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.post-content h2 {
+  font-size: 1.35rem;
+  font-weight: 650;
+  line-height: 1.35;
+  color: #1a1a1a;
+  margin-top: 2.25rem;
+  margin-bottom: 0.6rem;
+}
+
+.post-content h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-top: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.post-content h4, .post-content h5, .post-content h6 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #333;
+  margin-top: 1.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.post-content p {
+  margin-bottom: 1.25rem;
+}
+
+/* ── Links ── */
+.post-content a {
+  color: #5B5EA6;
+  text-decoration: none;
+  border-bottom: 1px solid #d4d4f7;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.post-content a:hover {
+  color: #3d3f7a;
+  border-bottom-color: #5B5EA6;
+}
+
+/* ── Lists ── */
+.post-content ul,
+.post-content ol {
+  margin-bottom: 1.25rem;
+  padding-left: 1.5rem;
+}
+
+.post-content li {
+  margin-bottom: 0.4rem;
+}
+
+.post-content li > ul,
+.post-content li > ol {
+  margin-top: 0.3rem;
+  margin-bottom: 0.3rem;
+}
+
+/* ── Images ── */
+.post-content img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 1.75rem auto;
+  border-radius: 4px;
+}
+
+/* ── Blockquotes ── */
+.post-content blockquote {
+  border-left: 3px solid #5B5EA6;
+  padding: 0.1rem 0 0.1rem 1.25rem;
+  margin: 1.5rem 0;
+  color: #555;
+  font-style: italic;
+}
+
+.post-content blockquote p {
+  margin-bottom: 0.5rem;
+}
+
+.post-content blockquote p:last-child {
+  margin-bottom: 0;
+}
+
+/* ── Code ── */
+.post-content code {
+  font-family: "SF Mono", SFMono-Regular, ui-monospace, Menlo, Consolas, monospace;
+  font-size: 0.88em;
+  background: #f5f5f5;
+  color: #333;
+  padding: 0.15em 0.4em;
+  border-radius: 3px;
+}
+
+.post-content pre {
+  margin: 1.5rem 0;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.post-content pre code,
+.post-content div.highlighter-rouge code {
+  display: block;
+  background: #1e1e2e;
+  color: #cdd6f4;
+  padding: 1.1rem 1.25rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  line-height: 1.55;
+  white-space: pre;
+  overflow-x: auto;
+}
+
+/* ── Tables ── */
+.post-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5rem 0;
+  font-size: 0.92rem;
+}
+
+.post-content th,
+.post-content td {
+  border: 1px solid #e5e5e5;
+  padding: 0.6rem 0.75rem;
+  text-align: left;
+}
+
+.post-content th {
+  background: #fafafa;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+/* ── Horizontal Rules ── */
+.post-content hr {
+  border: none;
+  height: 1px;
+  background: #eee;
+  margin: 2.25rem 0;
+}
+
+/* ── Strong & Emphasis ── */
+.post-content strong {
+  font-weight: 650;
+  color: #1a1a1a;
+}
+
+.post-content em {
+  font-style: italic;
+}
+
+/* ── Post Footer ── */
+.post-footer {
+  margin-top: 3rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #f0f0f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.post-footer a {
+  font-family: "SF Mono", SFMono-Regular, ui-monospace, Menlo, Consolas, monospace;
+  font-size: 0.82rem;
+  color: #aaa;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.post-footer a:hover {
+  color: #5B5EA6;
+}
+
+.post-footer-copy {
+  font-family: "SF Mono", SFMono-Regular, ui-monospace, Menlo, Consolas, monospace;
+  font-size: 0.72rem;
+  color: #ccc;
+}
+
+/* ── Responsive ── */
+@media (max-width: 480px) {
+  body {
+    font-size: 1.05rem;
+    line-height: 1.7;
+  }
+
+  .post-container {
+    padding: 2rem 1.25rem 3rem;
+  }
+
+  .post-title {
+    font-size: 1.55rem;
+  }
+
+  .post-content h1 {
+    font-size: 1.4rem;
+  }
+
+  .post-content h2 {
+    font-size: 1.2rem;
+  }
+
+  .post-content pre code,
+  .post-content div.highlighter-rouge code {
+    font-size: 0.8rem;
+    padding: 0.9rem 1rem;
+  }
+}

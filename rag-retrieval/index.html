@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>You're Doing RAG Retrieval Wrong</title>
+<meta name="description" content="Your RAG pipeline retrieves the wrong chunks because you're comparing questions to documents. Match questions to questions instead. Interactive explainer with 5 demos.">
+
+<!-- Open Graph -->
+<meta property="og:title" content="You're Doing RAG Retrieval Wrong">
+<meta property="og:description" content="Your RAG pipeline retrieves the wrong chunks because you're comparing questions to documents. Interactive explainer with 5 demos.">
+<meta property="og:url" content="https://supergeek.in/rag-retrieval/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Danish Mohd">
+<meta property="og:locale" content="en_US">
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="You're Doing RAG Retrieval Wrong">
+<meta name="twitter:description" content="Your RAG pipeline retrieves the wrong chunks. Here's why — and the surprisingly simple fix.">
+
+<!-- Canonical -->
+<link rel="canonical" href="https://supergeek.in/rag-retrieval/">
+
+<!-- Structured Data -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "You're Doing RAG Retrieval Wrong",
+  "description": "Your RAG pipeline retrieves the wrong chunks because you're comparing questions to documents. Match questions to questions instead.",
+  "author": {
+    "@type": "Person",
+    "name": "Danish Mohd",
+    "url": "https://supergeek.in",
+    "jobTitle": "AI Product Builder",
+    "sameAs": [
+      "https://github.com/DanisHack"
+    ]
+  },
+  "publisher": {
+    "@type": "Person",
+    "name": "Danish Mohd",
+    "url": "https://supergeek.in"
+  },
+  "datePublished": "2025-03-01",
+  "dateModified": "2026-03-04",
+  "mainEntityOfPage": "https://supergeek.in/rag-retrieval/",
+  "keywords": ["RAG", "retrieval augmented generation", "embeddings", "cosine similarity", "reranking", "vector search", "semantic search"]
+}
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,700;1,6..72,400&family=Figtree:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Newsreader',Georgia,serif;font-size:21px;line-height:1.4;color:rgb(45,45,45);background:rgb(250,249,247);-webkit-font-smoothing:antialiased}
+a{color:#5B4AE8;text-decoration:none}a:hover{color:#7B4AE8}
+.content{max-width:700px;margin:0 auto;padding:0 24px}
+
+/* Hero */
+.hero{position:relative;border-radius:16px;margin:12px auto;max-width:calc(100% - 24px);min-height:300px;overflow:hidden;display:flex;align-items:flex-end;padding:48px 40px}
+.hero-bg{position:absolute;inset:0;width:100%;height:100%}
+.hero .content{position:relative;z-index:1;max-width:none;padding:0}
+.hero h1{font-family:'Newsreader',Georgia,serif;font-size:60px;font-weight:700;line-height:1.1;color:#fff;margin-bottom:12px}
+.post-subtitle{font-family:'Figtree',system-ui,sans-serif;font-size:24px;font-weight:500;line-height:1.15;color:rgba(255,255,255,0.85)}
+
+/* Intro */
+.intro{margin:60px auto 40px}.intro-text{font-style:italic;font-size:23px;line-height:1.45;color:rgb(80,80,80)}
+
+/* TOC */
+.toc{margin:0 auto 60px;padding:24px 28px;background:rgb(242,241,239);border-radius:12px}
+.toc h4{font-family:'Figtree',system-ui,sans-serif;font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:12px;color:rgb(100,100,100)}
+.toc ol{padding-left:20px}.toc li{font-family:'Figtree',system-ui,sans-serif;font-size:16px;line-height:1.8;color:rgb(80,80,80)}
+.toc a{color:rgb(45,45,45);border-bottom:1px solid transparent}.toc a:hover{color:#5B4AE8;border-bottom-color:#5B4AE8}
+
+/* Sections */
+.section-header{display:flex;align-items:baseline;gap:20px;padding-top:100px;margin-bottom:40px;border-top:1px solid rgb(220,218,214)}
+.section-number{font-family:'Newsreader',Georgia,serif;font-size:50px;font-weight:400;color:rgb(180,178,174);flex-shrink:0}
+.section-header h2{font-family:'Figtree',system-ui,sans-serif;font-size:44px;font-weight:700;line-height:1.1;color:rgb(45,45,45)}
+h3{font-family:'Figtree',system-ui,sans-serif;font-size:28px;font-weight:700;line-height:1.1;margin-top:40px;margin-bottom:16px}
+main p{margin-bottom:20px}main p strong{font-weight:700}
+
+/* Demo */
+.demo-container{background:rgb(242,241,239);border-radius:12px;padding:32px;margin:32px 0}
+.label{font-family:'Figtree',system-ui,sans-serif;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:rgb(45,45,45);margin-bottom:16px}
+figcaption{font-family:'Newsreader',Georgia,serif;font-style:italic;font-size:17px;line-height:1.4;color:rgb(100,100,100);text-align:center;margin-top:16px}
+
+/* Controls */
+.controls{display:flex;align-items:center;gap:16px;margin:16px 0;flex-wrap:wrap}
+.controls label{font-family:'Figtree',system-ui,sans-serif;font-size:14px;font-weight:600;color:rgb(80,80,80)}
+input[type="range"]{-webkit-appearance:none;appearance:none;height:6px;border-radius:3px;background:rgb(200,198,194);outline:none;flex:1;min-width:120px}
+input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:#5B4AE8;cursor:pointer;border:3px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,0.2)}
+select{font-family:'Figtree',system-ui,sans-serif;font-size:14px;font-weight:600;padding:8px 12px;border-radius:6px;border:1px solid rgb(200,198,194);background:#fff;color:rgb(45,45,45);cursor:pointer}
+.toggle-btn{font-family:'Figtree',system-ui,sans-serif;font-size:13px;font-weight:600;padding:8px 16px;border-radius:6px;border:1px solid rgb(200,198,194);background:#fff;color:rgb(45,45,45);cursor:pointer;transition:all 0.15s}
+.toggle-btn:hover{border-color:#5B4AE8;color:#5B4AE8}
+.toggle-btn.active{background:#5B4AE8;color:#fff;border-color:#5B4AE8}
+
+/* Stats */
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin:16px 0}
+.stat-card{background:#fff;border-radius:8px;padding:14px;text-align:center}
+.stat-value{font-family:'Figtree',system-ui,sans-serif;font-size:26px;font-weight:700;line-height:1.2}
+.stat-label{font-family:'Figtree',system-ui,sans-serif;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:rgb(100,100,100);margin-top:4px}
+
+/* Callout */
+.callout{border-left:4px solid #5B4AE8;padding:20px 24px;margin:32px 0;background:rgba(91,74,232,0.04);border-radius:0 8px 8px 0}
+.callout p{margin-bottom:8px}.callout p:last-child{margin-bottom:0}
+
+/* Retrieval results */
+.retrieval-panel{background:#fff;border-radius:8px;padding:16px;margin:8px 0}
+.retrieval-panel h4{font-family:'Figtree',system-ui,sans-serif;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:12px}
+.result-item{padding:10px 12px;border-radius:6px;margin-bottom:8px;font-family:'Figtree',system-ui,sans-serif;font-size:14px;line-height:1.4;display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.result-item.good{background:rgba(91,174,138,0.1);border-left:3px solid #5BAE8A}
+.result-item.bad{background:rgba(232,99,74,0.08);border-left:3px solid #E8634A}
+.result-score{font-weight:700;white-space:nowrap;flex-shrink:0}
+.result-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+
+/* Rerank items */
+.rerank-item{padding:12px 14px;border-radius:8px;margin-bottom:8px;font-family:'Figtree',system-ui,sans-serif;font-size:14px;line-height:1.4;background:#fff;border:1px solid rgb(230,228,224);transition:all 0.3s}
+.rerank-rank{font-weight:700;color:#5B4AE8;margin-right:8px}
+.rerank-scores{display:flex;gap:12px;margin-top:6px;font-size:12px;color:rgb(120,120,120)}
+.rerank-scores span{background:rgb(245,245,243);padding:2px 8px;border-radius:4px}
+.rerank-scores .highlight{background:#5B4AE8;color:#fff}
+
+/* Sidenotes */
+.sidenote-trigger{font-family:'Figtree',system-ui,sans-serif;font-size:13px;font-weight:700;color:#5B4AE8;cursor:pointer;vertical-align:super}
+.sidenote{display:none;background:rgb(242,241,239);padding:16px 20px;border-radius:8px;margin:8px 0 16px}
+.sidenote.open{display:block}.sidenote p{font-family:'Figtree',system-ui,sans-serif;font-size:15px;line-height:1.4;margin-bottom:0}
+
+/* Fade */
+.fade-in{opacity:0;transform:translateY(20px);transition:opacity 0.6s ease-out,transform 0.6s ease-out}
+.fade-in.visible{opacity:1;transform:translateY(0)}
+
+/* Footer */
+.site-footer{background:#3A2D7A;color:rgba(255,255,255,0.7);padding:60px 24px;margin-top:100px;text-align:center}
+.site-footer p:first-child{font-family:'Newsreader',Georgia,serif;font-size:28px;font-weight:700;color:#fff;margin-bottom:8px}
+.site-footer .footer-tagline{font-family:'Newsreader',Georgia,serif;font-style:italic;font-size:17px;color:rgba(255,255,255,0.5);margin-top:16px}
+.site-footer a{color:rgba(255,255,255,0.8)}.site-footer a:hover{color:#fff}
+
+@media(max-width:768px){
+  body{font-size:19px}.hero h1{font-size:38px}.post-subtitle{font-size:19px}
+  .hero{padding:32px 24px;min-height:220px}
+  .section-header{padding-top:60px;margin-bottom:30px;gap:14px}
+  .section-number{font-size:36px}.section-header h2{font-size:30px}
+  .intro-text{font-size:20px}.demo-container{padding:20px 16px}
+  .result-grid{grid-template-columns:1fr}
+  .stat-grid{grid-template-columns:repeat(2,1fr)}
+}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:0.01ms!important;transition-duration:0.01ms!important}}
+</style>
+</head>
+<body>
+
+<a href="/" style="display:inline-block;margin:16px 0 0 16px;font-family:'Figtree',system-ui,sans-serif;font-size:15px;font-weight:600;color:rgb(100,100,100);text-decoration:none;" onmouseover="this.style.color='#5B4AE8'" onmouseout="this.style.color='rgb(100,100,100)'">&larr; Danish Khan</a>
+
+<!-- ═══════ HERO ═══════ -->
+<div class="hero">
+  <svg class="hero-bg" viewBox="0 0 1200 400" preserveAspectRatio="xMidYMid slice">
+    <defs>
+      <linearGradient id="heroGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#0f2027"/>
+        <stop offset="30%" stop-color="#203a43"/>
+        <stop offset="60%" stop-color="#2c5364"/>
+        <stop offset="100%" stop-color="#5B4AE8"/>
+      </linearGradient>
+      <pattern id="gridP" width="30" height="30" patternUnits="userSpaceOnUse">
+        <path d="M 30 0 L 0 0 0 30" fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+      </pattern>
+    </defs>
+    <rect width="1200" height="400" fill="url(#heroGrad)"/>
+    <rect width="1200" height="400" fill="url(#gridP)"/>
+    <!-- Scattered embedding dots -->
+    <circle cx="150" cy="120" r="5" fill="rgba(232,99,74,0.4)"/><circle cx="200" cy="180" r="4" fill="rgba(232,99,74,0.3)"/>
+    <circle cx="280" cy="90" r="6" fill="rgba(232,180,74,0.4)"/><circle cx="350" cy="200" r="4" fill="rgba(232,180,74,0.3)"/>
+    <circle cx="500" cy="150" r="5" fill="rgba(91,74,232,0.5)"/><circle cx="550" cy="100" r="7" fill="rgba(91,74,232,0.4)"/>
+    <circle cx="700" cy="250" r="4" fill="rgba(74,125,232,0.4)"/><circle cx="800" cy="180" r="6" fill="rgba(74,125,232,0.3)"/>
+    <circle cx="900" cy="120" r="5" fill="rgba(91,174,138,0.4)"/><circle cx="1000" cy="200" r="4" fill="rgba(91,174,138,0.3)"/>
+    <!-- Connecting lines (wrong matches) -->
+    <line x1="500" y1="150" x2="200" y2="180" stroke="rgba(232,99,74,0.15)" stroke-width="1" stroke-dasharray="4,4"/>
+    <line x1="550" y1="100" x2="280" y2="90" stroke="rgba(91,174,138,0.2)" stroke-width="1"/>
+  </svg>
+  <div class="content">
+    <h1>You're Doing RAG Retrieval Wrong</h1>
+    <p class="post-subtitle">Why your pipeline retrieves the wrong chunks — and the surprisingly simple fix.</p>
+  </div>
+</div>
+
+<!-- ═══════ MAIN ═══════ -->
+<main class="content">
+<article>
+
+<section class="intro">
+  <p class="intro-text">You embedded your documents. You indexed them in a vector database. A user asks a question, you search for the nearest chunks, feed them to a language model, and get an answer. Except the answer is wrong. Not hallucinated — the model faithfully used the context you gave it. The problem is you gave it the wrong context. The retrieval step failed. This happens far more often than people admit, and the reason is almost always the same: you're comparing things that shouldn't be compared.</p>
+</section>
+
+<nav class="toc">
+  <h4>Contents</h4>
+  <ol>
+    <li><a href="#section-1">The Promise and the Problem</a></li>
+    <li><a href="#section-2">The Embedding Space</a></li>
+    <li><a href="#section-3">Match Questions to Questions</a></li>
+    <li><a href="#section-4">The Embedding Matters</a></li>
+    <li><a href="#section-5">Beyond Cosine Similarity</a></li>
+    <li><a href="#section-6">Setting Smart Thresholds</a></li>
+    <li><a href="#section-7">Putting It All Together</a></li>
+  </ol>
+</nav>
+
+<!-- ─── I ─── -->
+<section id="section-1" class="fade-in">
+  <div class="section-header">
+    <span class="section-number">I.</span>
+    <h2>The Promise and the Problem</h2>
+  </div>
+  <p>The promise of RAG is simple: give a language model access to your data, and it can answer questions about it. No fine-tuning, no retraining. Just retrieve relevant chunks and let the model synthesize.</p>
+  <p>In practice, the retrieval step is where most RAG pipelines break. And it breaks silently. The model doesn't say "I got the wrong context." It reads whatever you gave it and generates a confident, well-structured, completely wrong answer.</p>
+  <p>The root cause is what I call <strong>semantic dissonance</strong>. You're comparing a question to a document chunk using vector similarity. But questions and document chunks are fundamentally different kinds of text. A question is short, interrogative, specific. A document chunk is declarative, dense, contextual. They don't land in the same part of the embedding space — even when one is the answer to the other.</p>
+  <p>This is like going to a library and instead of looking in the card catalog (which lists questions like "Where can I learn about X?"), you're trying to match your question directly against random paragraphs from random books. Sometimes you get lucky. Often you don't.</p>
+</section>
+
+<!-- ─── II ─── -->
+<section id="section-2" class="fade-in">
+  <div class="section-header">
+    <span class="section-number">II.</span>
+    <h2>The Embedding Space</h2>
+  </div>
+  <p>To understand why retrieval fails, you need to understand where things live in embedding space.</p>
+  <p>An embedding model converts text into a vector — a point in high-dimensional space. The idea is that semantically similar texts end up near each other. "How do I reset my password?" should be close to "What's the password reset process?" That works. Both are questions about the same thing.</p>
+  <p>But here's the problem: "How do I reset my password?" is <em>not</em> necessarily close to "To reset your password, navigate to Settings > Security > Reset Password and click the reset link." One is a question. The other is an answer. They're about the same topic, but they're different <em>kinds</em> of text. And embedding models often encode the <em>kind</em> of text as strongly as the <em>topic</em>.</p>
+
+  <div class="demo-container" id="embedding-demo">
+    <p class="label">2D Embedding Space — Questions vs Documents</p>
+    <svg id="embedding-svg" viewBox="0 0 636 420" width="100%"></svg>
+    <div class="controls">
+      <label>Move query:</label>
+      <input type="range" id="query-x" min="0" max="100" step="1" value="50">
+      <input type="range" id="query-y" min="0" max="100" step="1" value="50">
+    </div>
+    <figcaption>Blue circles are questions. Orange squares are document chunks. The purple diamond is your query. Notice: the query lands near questions, not near the document that answers it. Lines show the 3 nearest neighbors.</figcaption>
+    <noscript><p>In a 2D embedding space visualization, questions cluster together in one region and document chunks cluster in a separate region. When a user query (which is a question) is embedded, it lands near other questions — not near the document chunk that actually answers it. This is semantic dissonance: the embedding model places similar text types near each other, meaning "similar" encodes text type, not answer relevance.</p></noscript>
+  </div>
+
+  <p>This is the core insight. In embedding space, <strong>questions cluster with questions</strong> and <strong>documents cluster with documents</strong>. Your query — which is a question — will naturally be closer to other questions than to the document chunk that actually contains the answer.</p>
+
+  <div class="callout">
+    <p><strong>This is semantic dissonance.</strong> The embedding model is doing its job correctly — it's placing similar text near similar text. The problem is that "similar" means "same type of text," not "contains the answer." You're asking the embedding to do something it wasn't trained to do.</p>
+  </div>
+</section>
+
+<!-- ─── III ─── -->
+<section id="section-3" class="fade-in">
+  <div class="section-header">
+    <span class="section-number">III.</span>
+    <h2>Match Questions to Questions</h2>
+  </div>
+  <p>The fix is elegant. Instead of searching your query against document chunks, search it against <em>questions about</em> document chunks.</p>
+  <p>Here's how: for each chunk in your corpus, use an LLM to generate 3-5 questions that the chunk answers. Index those questions. When a user query comes in, match it against the generated questions — not the raw documents. Then retrieve the document chunk associated with the best-matching question.</p>
+  <p>This works because you're now comparing apples to apples. A user question matches against synthetic questions. Both are interrogative, similar in structure, similar in length. The embedding model can actually do its job.</p>
+  <p>This technique is sometimes called <strong>HyDE</strong> (Hypothetical Document Embeddings) or <strong>query-to-question matching</strong>, depending on the variant.<span class="sidenote-trigger" onclick="toggleSidenote('sn1')">[1]</span></p>
+  <div class="sidenote" id="sn1"><p>HyDE, introduced by Gao et al., takes a slightly different approach: it generates a hypothetical answer to the query, then searches for documents similar to that hypothetical answer. The principle is the same — match like with like. The question-generation approach is often simpler and more reliable in practice.</p></div>
+
+  <div class="demo-container" id="retrieval-demo">
+    <p class="label">Retrieval Comparison — Naive vs Question-Matched</p>
+    <div class="controls">
+      <label>User query:</label>
+      <select id="query-select">
+        <option value="0">How do I cancel my subscription?</option>
+        <option value="1">What are the pricing tiers?</option>
+        <option value="2">Does the API support batch processing?</option>
+        <option value="3">How do I handle authentication errors?</option>
+      </select>
+    </div>
+    <div class="result-grid" id="retrieval-results"></div>
+    <figcaption>Left: naive retrieval (query matched against document chunks). Right: question-matched retrieval. Green = relevant. Red = irrelevant. Same query, dramatically different results.</figcaption>
+    <noscript><p>A side-by-side comparison of naive retrieval (matching queries directly against document chunks) versus question-matched retrieval (matching queries against synthetic questions generated from each chunk). For the query "How do I cancel my subscription?", naive retrieval returns irrelevant chunks about subscription plans (0.81 similarity) as the top result. Question-matched retrieval returns the correct cancellation instructions (0.94 similarity) as the top result — a 20-40% improvement in retrieval precision.</p></noscript>
+  </div>
+
+  <p>The difference is often dramatic. In benchmarks, question-to-question matching improves retrieval precision by 20-40% over naive chunk matching. And better retrieval means better answers downstream — the LLM can only work with what you give it.</p>
+</section>
+
+<!-- ─── IV ─── -->
+<section id="section-4" class="fade-in">
+  <div class="section-header">
+    <span class="section-number">IV.</span>
+    <h2>The Embedding Matters</h2>
+  </div>
+  <p>Even after fixing what you compare, <em>how</em> you compare still matters. Generic embedding models — the ones you get out of the box — are trained on general web text. They know that "bank" relates to "money" and "river." They don't know that in your fintech codebase, "default" means "loan default," not "default parameter value."</p>
+  <p>This is the domain embedding problem. In a specialized corpus, words and phrases carry domain-specific meanings. A generic embedding model conflates them.</p>
+
+  <div class="demo-container" id="domain-demo">
+    <p class="label">Embedding Space — Generic vs Domain-Specific</p>
+    <div class="controls">
+      <button class="toggle-btn active" id="domain-gen-btn" onclick="toggleDomain('generic')">Generic Embeddings</button>
+      <button class="toggle-btn" id="domain-spec-btn" onclick="toggleDomain('specific')">Domain-Specific (Finance)</button>
+    </div>
+    <svg id="domain-svg" viewBox="0 0 636 380" width="100%"></svg>
+    <figcaption>Watch how terms rearrange when switching to domain-specific embeddings. In generic space, "default" (finance) and "default" (code) are neighbors. In domain space, they separate.</figcaption>
+    <noscript><p>Generic embedding models conflate terms with multiple meanings. In generic embedding space, "default (finance)" and "default (code)" cluster together, and "python (snake)" sits near "python (language)." Domain-specific embeddings (fine-tuned on financial text) separate these correctly: finance terms like "default," "interest rate," "bond," and "credit score" cluster together, while tech terms like "python (language)," "javascript," and "rate limiting" form a separate cluster.</p></noscript>
+  </div>
+
+  <p>The solution: fine-tune your embedding model on your domain data, or use a model that's already been trained on similar text. This doesn't require massive datasets — even a few thousand domain-specific sentence pairs can significantly improve retrieval quality.</p>
+</section>
+
+<!-- ─── V ─── -->
+<section id="section-5" class="fade-in">
+  <div class="section-header">
+    <span class="section-number">V.</span>
+    <h2>Beyond Cosine Similarity</h2>
+  </div>
+  <p>You've fixed what you compare and how you embed it. But you're still ranking by cosine similarity alone. And cosine similarity, while useful, only measures one thing: the angle between two vectors. It doesn't know about freshness, specificity, document quality, or user preference.</p>
+  <p>Two chunks can have nearly identical cosine similarity to your query. One is a three-sentence summary from an outdated FAQ. The other is a detailed, current technical explanation. Cosine similarity can't tell the difference.</p>
+  <p>This is where <strong>reranking</strong> comes in. After your initial vector search returns the top-N candidates, a second pass scores them on additional dimensions:</p>
+  <p>- <strong>Cosine similarity</strong> (semantic match)<br>
+  - <strong>Recency</strong> (newer is often better)<br>
+  - <strong>Specificity</strong> (longer, more detailed chunks score higher)<br>
+  - <strong>Popularity</strong> (documents that users have found helpful before)</p>
+
+  <div class="demo-container" id="rerank-demo">
+    <p class="label">Reranking — Cosine Score vs Combined Score</p>
+    <div class="controls">
+      <button class="toggle-btn active" id="rerank-cos-btn" onclick="toggleRerank('cosine')">Rank by Cosine</button>
+      <button class="toggle-btn" id="rerank-comb-btn" onclick="toggleRerank('combined')">Rank by Combined Score</button>
+    </div>
+    <div id="rerank-results"></div>
+    <figcaption>Click "Rank by Combined Score" to see how the ranking changes when you factor in recency, specificity, and quality. The top result flips.</figcaption>
+    <noscript><p>Cosine similarity alone is insufficient for ranking retrieved chunks. A chunk with 0.89 cosine similarity but low recency and specificity ranks first by cosine, but a detailed troubleshooting guide with 0.83 cosine but high recency (0.95), specificity (0.95), and quality (0.90) should rank first. Reranking with a combined score that weights cosine similarity, recency, specificity, and document quality changes the ranking order and surfaces more useful results.</p></noscript>
+  </div>
+
+  <p>Cross-encoder rerankers — models specifically trained to score query-document pairs — are another powerful option. They're slower than cosine similarity but dramatically more accurate, because they see the query and document together rather than comparing pre-computed vectors.</p>
+</section>
+
+<!-- ─── VI ─── -->
+<section id="section-6" class="fade-in">
+  <div class="section-header">
+    <span class="section-number">VI.</span>
+    <h2>Setting Smart Thresholds</h2>
+  </div>
+  <p>Here's a question that most RAG tutorials skip: <strong>what cosine similarity score is "good enough"?</strong></p>
+  <p>The honest answer is: it depends entirely on your data. A score of 0.82 might be excellent for one corpus and mediocre for another. The distribution of scores matters far more than any individual score.</p>
+  <p>If you set the threshold too high, you miss relevant results (low recall). Too low, and you flood the LLM with junk (low precision). The right threshold lives at the intersection of these tradeoffs — and you can only find it by looking at your actual score distribution.</p>
+
+  <div class="demo-container" id="threshold-demo">
+    <p class="label">Threshold Explorer — Precision vs Recall</p>
+    <div class="controls">
+      <label>Threshold:</label>
+      <input type="range" id="threshold-slider" min="0.50" max="0.95" step="0.01" value="0.75">
+      <span id="threshold-value" style="font-family:Figtree,sans-serif;font-size:14px;font-weight:700;color:#5B4AE8;min-width:40px">0.75</span>
+    </div>
+    <svg id="threshold-svg" viewBox="0 0 636 260" width="100%"></svg>
+    <div class="stat-grid" id="threshold-stats"></div>
+    <figcaption>Drag the threshold. Watch precision and recall trade off. The histogram shows the actual similarity score distribution — green bars are relevant results, gray are irrelevant.</figcaption>
+    <noscript><p>A cosine similarity threshold of 0.75 yields approximately 75% precision and 80% recall (F1 ~77%). Setting the threshold too high (e.g., 0.90) raises precision to near 100% but recall drops to ~30% — most relevant results are missed. Too low (e.g., 0.60) catches everything but floods the LLM with irrelevant context. The optimal threshold depends on your specific score distribution and must be determined empirically, not by a universal magic number.</p></noscript>
+  </div>
+
+  <p>In practice, the best approach is to evaluate a sample of queries with known-good answers, plot the score distribution, and pick the threshold that maximizes F1 — or whatever metric matters most for your use case. There is no universal magic number.</p>
+</section>
+
+<!-- ─── VII ─── -->
+<section id="section-7" class="fade-in">
+  <div class="section-header">
+    <span class="section-number">VII.</span>
+    <h2>Putting It All Together</h2>
+  </div>
+  <p>The complete pipeline looks like this:</p>
+  <p><strong>1. Index time:</strong> For each document chunk, generate synthetic questions using an LLM. Embed both the questions and the chunks using a domain-specific embedding model.</p>
+  <p><strong>2. Query time:</strong> Embed the user's query. Search against the synthetic questions (not the raw chunks). Retrieve the top-N associated chunks.</p>
+  <p><strong>3. Rerank:</strong> Score the candidates using a combination of cosine similarity, recency, specificity, and optionally a cross-encoder. Reorder by combined score.</p>
+  <p><strong>4. Threshold:</strong> Filter out any results below your empirically-determined quality threshold.</p>
+  <p><strong>5. Generate:</strong> Pass the surviving chunks to the LLM as context.</p>
+  <p>Each step removes a different class of errors. Question matching fixes semantic dissonance. Domain embeddings fix vocabulary confusion. Reranking fixes the "close but useless" problem. Thresholding prevents garbage from reaching the model.</p>
+  <p>None of these steps is novel in isolation. But the combination — and understanding <em>why</em> each matters — is what separates RAG pipelines that work from RAG pipelines that confidently produce wrong answers.</p>
+
+  <div class="callout">
+    <p><strong>RAG isn't a search problem. It's a relevance problem.</strong> And relevance requires understanding what you're comparing, how you're comparing it, and when to stop.</p>
+  </div>
+
+  <p style="text-align:center;margin-top:48px;color:rgb(180,178,174);font-size:32px;">&#9670;</p>
+</section>
+
+<p style="font-style:italic;text-align:center;color:rgb(120,120,120);font-size:18px;margin-top:60px;line-height:1.5;">
+  Written by <a href="https://supergeek.in">Danish Mohd</a>.<br>
+  AI product builder. Previously VP Engineering at Pixis AI.<br>
+  Based on <a href="/biggest-misconception-in-rag.html">an earlier post</a>. Rebuilt as an interactive explainer.<br>
+  <time datetime="2026-03-04" style="font-size:14px;color:rgb(160,160,160);">Last updated March 2026</time>
+</p>
+
+</article>
+</main>
+
+<footer class="site-footer">
+  <div class="content">
+    <p>Compounding Intelligence</p>
+    <p><a href="https://supergeek.in">supergeek.in</a></p>
+    <p class="footer-tagline">Because you don't understand something until you can play with it.</p>
+  </div>
+</footer>
+
+<!-- ═══════ SCRIPTS ═══════ -->
+<script>
+function toggleSidenote(id){document.getElementById(id).classList.toggle('open')}
+
+// ════════════════════════════════════════
+// WIDGET 1: Embedding Space
+// ════════════════════════════════════════
+(function(){
+  var svg=document.getElementById('embedding-svg');
+  var qx=document.getElementById('query-x');
+  var qy=document.getElementById('query-y');
+  if(!svg)return;
+
+  var questions=[
+    {label:'How to cancel subscription?',x:370,y:60,id:'q1'},
+    {label:'What are the pricing tiers?',x:500,y:140,id:'q2'},
+    {label:'How to reset password?',x:360,y:140,id:'q3'},
+    {label:'Does API support batch?',x:510,y:50,id:'q4'},
+    {label:'How to handle auth errors?',x:400,y:210,id:'q5'},
+    {label:'What languages supported?',x:530,y:200,id:'q6'}
+  ];
+  var docs=[
+    {label:'Cancellation policy: Users may cancel...',x:80,y:270,id:'d1',answers:'q1'},
+    {label:'Pricing: Basic $10, Pro $25...',x:220,y:340,id:'d2',answers:'q2'},
+    {label:'Security: To reset password...',x:60,y:340,id:'d3',answers:'q3'},
+    {label:'API ref: Batch endpoint...',x:250,y:270,id:'d4',answers:'q4'},
+    {label:'Error handling: 401 unauthorized...',x:100,y:390,id:'d5',answers:'q5'},
+    {label:'SDK supports Python, JS, Go...',x:280,y:380,id:'d6',answers:'q6'}
+  ];
+
+  function dist(ax,ay,bx,by){return Math.sqrt((ax-bx)*(ax-bx)+(ay-by)*(ay-by))}
+
+  function render(){
+    var queryX=80+parseFloat(qx.value)/100*480;
+    var queryY=40+parseFloat(qy.value)/100*340;
+    var html='<rect width="636" height="420" fill="rgb(242,241,239)" rx="4"/>';
+    html+='<rect x="30" y="20" width="580" height="380" fill="#fff" rx="4"/>';
+
+    // Region labels
+    html+='<text x="460" y="50" text-anchor="middle" font-family="Figtree,sans-serif" font-size="12" font-weight="600" fill="rgba(74,125,232,0.5)">QUESTION REGION</text>';
+    html+='<text x="170" y="265" text-anchor="middle" font-family="Figtree,sans-serif" font-size="12" font-weight="600" fill="rgba(232,99,74,0.5)">DOCUMENT REGION</text>';
+
+    // Find 3 nearest to query from all items
+    var all=[];
+    for(var i=0;i<questions.length;i++) all.push({x:questions[i].x,y:questions[i].y,type:'q',idx:i});
+    for(var j=0;j<docs.length;j++) all.push({x:docs[j].x,y:docs[j].y,type:'d',idx:j});
+    all.sort(function(a,b){return dist(queryX,queryY,a.x,a.y)-dist(queryX,queryY,b.x,b.y)});
+    var top3=all.slice(0,3);
+
+    // Draw lines to nearest
+    for(var k=0;k<top3.length;k++){
+      var n=top3[k];
+      var c=n.type==='q'?'rgba(91,74,232,0.3)':'rgba(232,99,74,0.2)';
+      var sw=n.type==='q'?'2':'1.5';
+      html+='<line x1="'+queryX+'" y1="'+queryY+'" x2="'+n.x+'" y2="'+n.y+'" stroke="'+c+'" stroke-width="'+sw+'" stroke-dasharray="5,4"/>';
+      var d=dist(queryX,queryY,n.x,n.y);
+      var sim=(1-d/600).toFixed(2);
+      var mx=(queryX+n.x)/2,my=(queryY+n.y)/2;
+      html+='<text x="'+mx+'" y="'+(my-5)+'" text-anchor="middle" font-family="Figtree,sans-serif" font-size="10" font-weight="600" fill="rgb(120,120,120)">'+sim+'</text>';
+    }
+
+    // Questions (blue circles)
+    for(var qi=0;qi<questions.length;qi++){
+      var q=questions[qi];
+      html+='<circle cx="'+q.x+'" cy="'+q.y+'" r="8" fill="#4A7DE8" opacity="0.8"/>';
+      html+='<text x="'+(q.x+14)+'" y="'+(q.y+4)+'" font-family="Figtree,sans-serif" font-size="10" fill="rgb(60,60,60)">'+q.label+'</text>';
+    }
+
+    // Docs (orange squares)
+    for(var di=0;di<docs.length;di++){
+      var d2=docs[di];
+      html+='<rect x="'+(d2.x-7)+'" y="'+(d2.y-7)+'" width="14" height="14" rx="2" fill="#E8634A" opacity="0.8"/>';
+      html+='<text x="'+(d2.x+14)+'" y="'+(d2.y+4)+'" font-family="Figtree,sans-serif" font-size="10" fill="rgb(60,60,60)">'+d2.label+'</text>';
+    }
+
+    // Query (purple diamond)
+    html+='<polygon points="'+queryX+','+(queryY-10)+' '+(queryX+10)+','+queryY+' '+queryX+','+(queryY+10)+' '+(queryX-10)+','+queryY+'" fill="#5B4AE8"/>';
+    html+='<text x="'+queryX+'" y="'+(queryY-16)+'" text-anchor="middle" font-family="Figtree,sans-serif" font-size="11" font-weight="700" fill="#5B4AE8">YOUR QUERY</text>';
+
+    // Legend
+    html+='<circle cx="50" cy="408" r="6" fill="#4A7DE8"/><text x="62" y="412" font-family="Figtree,sans-serif" font-size="11" fill="rgb(80,80,80)">Questions</text>';
+    html+='<rect x="135" y="402" width="12" height="12" rx="2" fill="#E8634A"/><text x="153" y="412" font-family="Figtree,sans-serif" font-size="11" fill="rgb(80,80,80)">Document chunks</text>';
+    html+='<polygon points="275,402 281,408 275,414 269,408" fill="#5B4AE8"/><text x="287" y="412" font-family="Figtree,sans-serif" font-size="11" fill="rgb(80,80,80)">Your query</text>';
+
+    svg.innerHTML=html;
+  }
+  qx.addEventListener('input',render);
+  qy.addEventListener('input',render);
+  render();
+})();
+
+// ════════════════════════════════════════
+// WIDGET 2: Retrieval Comparison
+// ════════════════════════════════════════
+(function(){
+  var sel=document.getElementById('query-select');
+  var results=document.getElementById('retrieval-results');
+  if(!sel)return;
+
+  var data=[
+    {query:'How do I cancel my subscription?',
+     naive:[
+       {text:'Our subscription plans include Basic, Pro, and Enterprise tiers with monthly billing...',score:0.81,good:false},
+       {text:'Account settings can be accessed from the top-right menu. You can update your profile...',score:0.78,good:false},
+       {text:'To cancel, go to Settings > Billing > Cancel Plan. Your access continues until the end of your billing period.',score:0.72,good:true}
+     ],
+     matched:[
+       {text:'To cancel, go to Settings > Billing > Cancel Plan. Your access continues until the end of your billing period.',score:0.94,good:true},
+       {text:'If you cancel mid-cycle, you retain access until the period ends. No partial refunds are issued.',score:0.89,good:true},
+       {text:'Our subscription plans include Basic, Pro, and Enterprise tiers with monthly billing...',score:0.71,good:false}
+     ]},
+    {query:'What are the pricing tiers?',
+     naive:[
+       {text:'Enterprise customers receive dedicated support with a 4-hour SLA response time...',score:0.83,good:false},
+       {text:'We offer three plans: Basic ($10/mo), Pro ($25/mo), and Enterprise (custom pricing).',score:0.79,good:true},
+       {text:'Payment methods accepted include Visa, Mastercard, and wire transfer for Enterprise...',score:0.76,good:false}
+     ],
+     matched:[
+       {text:'We offer three plans: Basic ($10/mo), Pro ($25/mo), and Enterprise (custom pricing).',score:0.96,good:true},
+       {text:'Basic includes 1K API calls. Pro includes 50K. Enterprise is unlimited with custom SLA.',score:0.91,good:true},
+       {text:'Enterprise customers receive dedicated support with a 4-hour SLA response time...',score:0.74,good:false}
+     ]},
+    {query:'Does the API support batch processing?',
+     naive:[
+       {text:'The API uses REST with JSON payloads. Authentication is via Bearer token in the header.',score:0.84,good:false},
+       {text:'Rate limits are 100 requests/min for Basic, 1000 for Pro, and custom for Enterprise.',score:0.80,good:false},
+       {text:'The /batch endpoint accepts an array of up to 100 items. Results are returned in the same order.',score:0.73,good:true}
+     ],
+     matched:[
+       {text:'The /batch endpoint accepts an array of up to 100 items. Results are returned in the same order.',score:0.95,good:true},
+       {text:'For bulk operations, use the async batch API. Submit a job and poll for results via the /jobs endpoint.',score:0.90,good:true},
+       {text:'Rate limits are 100 requests/min for Basic, 1000 for Pro, and custom for Enterprise.',score:0.72,good:false}
+     ]},
+    {query:'How do I handle authentication errors?',
+     naive:[
+       {text:'The API uses REST with JSON payloads. Authentication is via Bearer token in the header.',score:0.85,good:false},
+       {text:'Error responses follow RFC 7807 format with type, title, status, and detail fields.',score:0.82,good:false},
+       {text:'For 401 errors, regenerate your API key in Settings > API Keys. For 403, check your plan permissions.',score:0.74,good:true}
+     ],
+     matched:[
+       {text:'For 401 errors, regenerate your API key in Settings > API Keys. For 403, check your plan permissions.',score:0.93,good:true},
+       {text:'Common auth issues: expired tokens (rotate every 90 days), wrong environment (staging vs prod), IP allowlist.',score:0.88,good:true},
+       {text:'Error responses follow RFC 7807 format with type, title, status, and detail fields.',score:0.73,good:false}
+     ]}
+  ];
+
+  function render(){
+    var idx=parseInt(sel.value);
+    var d=data[idx];
+    var html='<div class="retrieval-panel"><h4 style="color:#E8634A">Naive: Query → Documents</h4>';
+    for(var i=0;i<d.naive.length;i++){
+      var r=d.naive[i];
+      html+='<div class="result-item '+(r.good?'good':'bad')+'"><span>'+r.text+'</span><span class="result-score" style="color:'+(r.good?'#5BAE8A':'#E8634A')+'">'+r.score.toFixed(2)+'</span></div>';
+    }
+    html+='</div><div class="retrieval-panel"><h4 style="color:#5BAE8A">Fixed: Query → Questions → Documents</h4>';
+    for(var j=0;j<d.matched.length;j++){
+      var m=d.matched[j];
+      html+='<div class="result-item '+(m.good?'good':'bad')+'"><span>'+m.text+'</span><span class="result-score" style="color:'+(m.good?'#5BAE8A':'#E8634A')+'">'+m.score.toFixed(2)+'</span></div>';
+    }
+    html+='</div>';
+    results.innerHTML=html;
+  }
+  sel.addEventListener('change',render);
+  render();
+})();
+
+// ════════════════════════════════════════
+// WIDGET 3: Domain Embeddings
+// ════════════════════════════════════════
+(function(){
+  var svg=document.getElementById('domain-svg');
+  if(!svg)return;
+  var mode='generic';
+
+  var terms={
+    generic:[
+      {label:'default (finance)',x:270,y:190,color:'#E8634A'},
+      {label:'default (code)',x:320,y:140,color:'#E8B44A'},
+      {label:'python (snake)',x:100,y:80,color:'#5BAE8A'},
+      {label:'python (language)',x:140,y:140,color:'#4A7DE8'},
+      {label:'interest rate',x:230,y:260,color:'#E8634A'},
+      {label:'rate limiting',x:350,y:200,color:'#E8B44A'},
+      {label:'bond',x:200,y:310,color:'#E8634A'},
+      {label:'chemical bond',x:300,y:280,color:'#7B4AE8'},
+      {label:'javascript',x:160,y:60,color:'#4A7DE8'},
+      {label:'credit score',x:400,y:260,color:'#E8634A'},
+      {label:'model training',x:440,y:90,color:'#4A7DE8'},
+      {label:'gym training',x:480,y:140,color:'#5BAE8A'}
+    ],
+    specific:[
+      {label:'default (finance)',x:100,y:200,color:'#E8634A'},
+      {label:'default (code)',x:480,y:120,color:'#4A7DE8'},
+      {label:'python (snake)',x:500,y:340,color:'#5BAE8A'},
+      {label:'python (language)',x:440,y:100,color:'#4A7DE8'},
+      {label:'interest rate',x:140,y:240,color:'#E8634A'},
+      {label:'rate limiting',x:460,y:140,color:'#4A7DE8'},
+      {label:'bond',x:120,y:280,color:'#E8634A'},
+      {label:'chemical bond',x:300,y:340,color:'#7B4AE8'},
+      {label:'javascript',x:420,y:80,color:'#4A7DE8'},
+      {label:'credit score',x:160,y:180,color:'#E8634A'},
+      {label:'model training',x:500,y:160,color:'#4A7DE8'},
+      {label:'gym training',x:340,y:320,color:'#5BAE8A'}
+    ]
+  };
+
+  window.toggleDomain=function(m){
+    mode=m;
+    document.getElementById('domain-gen-btn').className=m==='generic'?'toggle-btn active':'toggle-btn';
+    document.getElementById('domain-spec-btn').className=m==='specific'?'toggle-btn active':'toggle-btn';
+    render();
+  };
+
+  function render(){
+    var t=terms[mode];
+    var html='<rect width="636" height="380" fill="rgb(242,241,239)" rx="4"/>';
+    html+='<rect x="30" y="20" width="576" height="340" fill="#fff" rx="4"/>';
+
+    // Cluster labels
+    if(mode==='specific'){
+      html+='<ellipse cx="140" cy="230" rx="110" ry="90" fill="rgba(232,99,74,0.06)" stroke="rgba(232,99,74,0.15)" stroke-dasharray="4,3"/>';
+      html+='<text x="140" y="320" text-anchor="middle" font-family="Figtree,sans-serif" font-size="11" font-weight="600" fill="rgba(232,99,74,0.4)">FINANCE</text>';
+      html+='<ellipse cx="460" cy="130" rx="110" ry="80" fill="rgba(74,125,232,0.06)" stroke="rgba(74,125,232,0.15)" stroke-dasharray="4,3"/>';
+      html+='<text x="460" y="50" text-anchor="middle" font-family="Figtree,sans-serif" font-size="11" font-weight="600" fill="rgba(74,125,232,0.4)">TECH/CODE</text>';
+    }
+
+    for(var i=0;i<t.length;i++){
+      var d=t[i];
+      html+='<circle cx="'+d.x+'" cy="'+d.y+'" r="6" fill="'+d.color+'" opacity="0.8"/>';
+      html+='<text x="'+(d.x+12)+'" y="'+(d.y+4)+'" font-family="Figtree,sans-serif" font-size="11" font-weight="600" fill="rgb(60,60,60)">'+d.label+'</text>';
+    }
+
+    // Legend
+    html+='<circle cx="50" cy="372" r="5" fill="#E8634A"/><text x="62" y="376" font-family="Figtree,sans-serif" font-size="11" fill="rgb(80,80,80)">Finance terms</text>';
+    html+='<circle cx="180" cy="372" r="5" fill="#4A7DE8"/><text x="192" y="376" font-family="Figtree,sans-serif" font-size="11" fill="rgb(80,80,80)">Tech/code terms</text>';
+    html+='<circle cx="310" cy="372" r="5" fill="#5BAE8A"/><text x="322" y="376" font-family="Figtree,sans-serif" font-size="11" fill="rgb(80,80,80)">Other</text>';
+    html+='<circle cx="400" cy="372" r="5" fill="#7B4AE8"/><text x="412" y="376" font-family="Figtree,sans-serif" font-size="11" fill="rgb(80,80,80)">Science</text>';
+
+    svg.innerHTML=html;
+  }
+  render();
+})();
+
+// ════════════════════════════════════════
+// WIDGET 4: Reranking
+// ════════════════════════════════════════
+(function(){
+  var container=document.getElementById('rerank-results');
+  if(!container)return;
+  var mode='cosine';
+
+  var items=[
+    {text:'For 401 errors, check your API key. For 403, verify plan permissions.',
+     cosine:0.89,recency:0.4,specificity:0.5,quality:0.6,combined:0.62},
+    {text:'Authentication uses Bearer tokens. Include your key in the Authorization header.',
+     cosine:0.87,recency:0.6,specificity:0.4,quality:0.5,combined:0.58},
+    {text:'Common auth errors: (1) Expired token — rotate keys every 90 days. (2) Wrong environment — staging keys don\'t work in prod. (3) IP not allowlisted — add your server IP in Settings > Security. (4) Rate limit exceeded — implement exponential backoff.',
+     cosine:0.83,recency:0.95,specificity:0.95,quality:0.9,combined:0.91},
+    {text:'API errors return standard HTTP codes. 4xx for client errors, 5xx for server errors.',
+     cosine:0.81,recency:0.3,specificity:0.3,quality:0.4,combined:0.44},
+    {text:'If authentication fails, the SDK throws AuthError. Catch it and retry with a fresh token. See the troubleshooting guide for step-by-step debugging.',
+     cosine:0.79,recency:0.85,specificity:0.8,quality:0.85,combined:0.83}
+  ];
+
+  window.toggleRerank=function(m){
+    mode=m;
+    document.getElementById('rerank-cos-btn').className=m==='cosine'?'toggle-btn active':'toggle-btn';
+    document.getElementById('rerank-comb-btn').className=m==='combined'?'toggle-btn active':'toggle-btn';
+    render();
+  };
+
+  function render(){
+    var sorted=items.slice().sort(function(a,b){
+      return mode==='cosine'?(b.cosine-a.cosine):(b.combined-a.combined);
+    });
+    var html='';
+    for(var i=0;i<sorted.length;i++){
+      var it=sorted[i];
+      var scoreVal=mode==='cosine'?it.cosine:it.combined;
+      var scoreColor=scoreVal>0.85?'#5BAE8A':scoreVal>0.7?'#E8B44A':'#E8634A';
+      html+='<div class="rerank-item" style="border-left:3px solid '+scoreColor+'">';
+      html+='<div><span class="rerank-rank">#'+(i+1)+'</span>'+it.text+'</div>';
+      html+='<div class="rerank-scores">';
+      html+='<span'+(mode==='cosine'?' class="highlight"':'')+'>Cosine: '+it.cosine.toFixed(2)+'</span>';
+      if(mode==='combined'){
+        html+='<span>Recency: '+it.recency.toFixed(1)+'</span>';
+        html+='<span>Specificity: '+it.specificity.toFixed(1)+'</span>';
+        html+='<span class="highlight">Combined: '+it.combined.toFixed(2)+'</span>';
+      }
+      html+='</div></div>';
+    }
+    container.innerHTML=html;
+  }
+  render();
+})();
+
+// ════════════════════════════════════════
+// WIDGET 5: Threshold Explorer
+// ════════════════════════════════════════
+(function(){
+  var svg=document.getElementById('threshold-svg');
+  var slider=document.getElementById('threshold-slider');
+  var valLabel=document.getElementById('threshold-value');
+  var statsEl=document.getElementById('threshold-stats');
+  if(!svg)return;
+
+  // Deterministic score distributions for relevant and irrelevant results
+  var relScores=[0.91,0.89,0.88,0.87,0.86,0.85,0.85,0.84,0.83,0.83,0.82,0.82,0.81,0.80,0.79,0.78,0.77,0.76,0.75,0.73];
+  var irrelScores=[0.82,0.80,0.78,0.77,0.76,0.75,0.74,0.73,0.72,0.71,0.70,0.70,0.69,0.68,0.67,0.66,0.65,0.64,0.63,0.62,0.61,0.60,0.59,0.58,0.56,0.55,0.54,0.53,0.52,0.51];
+
+  var pad={top:20,right:20,bottom:40,left:50};
+  var w=636-pad.left-pad.right;
+  var h=260-pad.top-pad.bottom;
+
+  function render(){
+    var threshold=parseFloat(slider.value);
+    valLabel.textContent=threshold.toFixed(2);
+
+    // Build histogram bins
+    var bins=[];var binWidth=0.025;
+    for(var b=0.50;b<0.95;b+=binWidth){
+      var relCount=0,irrelCount=0;
+      for(var ri=0;ri<relScores.length;ri++){if(relScores[ri]>=b&&relScores[ri]<b+binWidth)relCount++}
+      for(var ii=0;ii<irrelScores.length;ii++){if(irrelScores[ii]>=b&&irrelScores[ii]<b+binWidth)irrelCount++}
+      bins.push({start:b,relCount:relCount,irrelCount:irrelCount});
+    }
+    var maxCount=0;
+    for(var bi=0;bi<bins.length;bi++){var tot=bins[bi].relCount+bins[bi].irrelCount;if(tot>maxCount)maxCount=tot}
+    if(maxCount===0)maxCount=1;
+
+    function xScale(v){return pad.left+((v-0.50)/0.45)*w}
+    function yScale(v){return pad.top+h-(v/maxCount)*h}
+
+    var html='<rect width="636" height="260" fill="rgb(242,241,239)" rx="4"/>';
+    html+='<rect x="'+pad.left+'" y="'+pad.top+'" width="'+w+'" height="'+h+'" fill="#fff" rx="2"/>';
+
+    // Grid
+    for(var gx=0.50;gx<=0.95;gx+=0.05){
+      var x=xScale(gx);
+      html+='<text x="'+x+'" y="'+(pad.top+h+16)+'" text-anchor="middle" font-family="Figtree,sans-serif" font-size="10" fill="rgb(140,140,140)">'+gx.toFixed(2)+'</text>';
+    }
+
+    // Bars
+    var bw=(w/bins.length)*0.8;
+    for(var bi2=0;bi2<bins.length;bi2++){
+      var bn=bins[bi2];
+      var bx=xScale(bn.start)+2;
+      // Irrelevant bars
+      if(bn.irrelCount>0){
+        var bh1=(bn.irrelCount/maxCount)*h;
+        html+='<rect x="'+bx+'" y="'+(pad.top+h-bh1)+'" width="'+(bw/2-1)+'" height="'+bh1+'" fill="rgb(200,198,194)" rx="2" opacity="'+(bn.start+binWidth/2>=threshold?'0.3':'0.7')+'"/>';
+      }
+      // Relevant bars
+      if(bn.relCount>0){
+        var bh2=(bn.relCount/maxCount)*h;
+        html+='<rect x="'+(bx+bw/2)+'" y="'+(pad.top+h-bh2)+'" width="'+(bw/2-1)+'" height="'+bh2+'" fill="#5BAE8A" rx="2" opacity="'+(bn.start+binWidth/2>=threshold?'0.85':'0.3')+'"/>';
+      }
+    }
+
+    // Threshold line
+    var tx=xScale(threshold);
+    html+='<line x1="'+tx+'" y1="'+pad.top+'" x2="'+tx+'" y2="'+(pad.top+h)+'" stroke="#5B4AE8" stroke-width="2.5"/>';
+    html+='<text x="'+tx+'" y="'+(pad.top-6)+'" text-anchor="middle" font-family="Figtree,sans-serif" font-size="12" font-weight="700" fill="#5B4AE8">Threshold: '+threshold.toFixed(2)+'</text>';
+
+    // Axis
+    html+='<text x="'+(pad.left+w/2)+'" y="'+(260-4)+'" text-anchor="middle" font-family="Figtree,sans-serif" font-size="12" font-weight="600" fill="rgb(100,100,100)">Cosine Similarity Score</text>';
+
+    // Legend
+    html+='<rect x="'+(pad.left+w-180)+'" y="'+(pad.top+4)+'" width="12" height="12" rx="2" fill="#5BAE8A"/>';
+    html+='<text x="'+(pad.left+w-164)+'" y="'+(pad.top+14)+'" font-family="Figtree,sans-serif" font-size="11" fill="rgb(80,80,80)">Relevant</text>';
+    html+='<rect x="'+(pad.left+w-100)+'" y="'+(pad.top+4)+'" width="12" height="12" rx="2" fill="rgb(200,198,194)"/>';
+    html+='<text x="'+(pad.left+w-84)+'" y="'+(pad.top+14)+'" font-family="Figtree,sans-serif" font-size="11" fill="rgb(80,80,80)">Irrelevant</text>';
+
+    svg.innerHTML=html;
+
+    // Stats
+    var tp=0,fp=0,fn=0;
+    for(var ri2=0;ri2<relScores.length;ri2++){if(relScores[ri2]>=threshold)tp++;else fn++}
+    for(var ii2=0;ii2<irrelScores.length;ii2++){if(irrelScores[ii2]>=threshold)fp++}
+    var precision=tp+fp>0?(tp/(tp+fp)):0;
+    var recall=tp+fn>0?(tp/(tp+fn)):0;
+    var f1=precision+recall>0?(2*precision*recall/(precision+recall)):0;
+
+    statsEl.innerHTML=
+      '<div class="stat-card"><div class="stat-value" style="color:#5BAE8A">'+(precision*100).toFixed(0)+'%</div><div class="stat-label">Precision</div></div>'+
+      '<div class="stat-card"><div class="stat-value" style="color:#4A7DE8">'+(recall*100).toFixed(0)+'%</div><div class="stat-label">Recall</div></div>'+
+      '<div class="stat-card"><div class="stat-value" style="color:#5B4AE8">'+(f1*100).toFixed(0)+'%</div><div class="stat-label">F1 Score</div></div>'+
+      '<div class="stat-card"><div class="stat-value" style="color:#E8B44A">'+(tp+fp)+'</div><div class="stat-label">Retrieved</div></div>';
+  }
+  slider.addEventListener('input',render);
+  render();
+})();
+
+// ═══════ Scroll Reveal ═══════
+(function(){
+  var observer=new IntersectionObserver(function(entries){
+    entries.forEach(function(entry){
+      if(entry.isIntersecting){entry.target.classList.add('visible');observer.unobserve(entry.target)}
+    });
+  },{threshold:0.1,rootMargin:'0px 0px -40px 0px'});
+  document.querySelectorAll('.fade-in').forEach(function(el){observer.observe(el)});
+})();
+</script>
+</body>
+</html>

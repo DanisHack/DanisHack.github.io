@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Multidimensional data modeling before the warehouse | Danish Mohd</title>
+<meta property="og:title" content="Multidimensional data modeling before the warehouse" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Dimensional modeling concepts for data warehouses: star schemas, slowly changing dimensions, and fact table design." />
+<meta property="og:description" content="Dimensional modeling concepts for data warehouses: star schemas, slowly changing dimensions, and fact table design." />
+<link rel="canonical" href="https://supergeek.in/multidimensional-data-model/" />
+<meta property="og:url" content="https://supergeek.in/multidimensional-data-model/" />
+<meta property="og:site_name" content="Danish Mohd" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2024-01-25T00:00:00+05:30" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:title" content="Multidimensional data modeling before the warehouse" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2024-01-25T00:00:00+05:30","datePublished":"2024-01-25T00:00:00+05:30","description":"Dimensional modeling concepts for data warehouses: star schemas, slowly changing dimensions, and fact table design.","headline":"Multidimensional data modeling before the warehouse","mainEntityOfPage":{"@type":"WebPage","@id":"https://supergeek.in/multidimensional-data-model/"},"author":{"@type":"Person","name":"Danish Mohd","url":"https://supergeek.in"},"url":"https://supergeek.in/multidimensional-data-model/"}</script>
+
+  <link rel="stylesheet" href="/assets/css/post.css">
+</head>
+<body>
+  <div class="post-container">
+
+    <a class="post-back" href="/">&larr; Danish Mohd</a>
+
+    <header class="post-header">
+      <div class="post-date">January 25, 2024</div>
+      <h1 class="post-title">Multidimensional data modeling before the warehouse</h1>
+      <hr class="post-header-rule">
+    </header>
+
+    <article class="post-content">
+      <p>Before analyzing a data, we must first treat it and store it somewhere, however, 
+depending how that data is stored it can become a long-term problem, such as high maintenance and data processing costs, 
+contained therein or even useless data that is just wasting our money on storage and processing.</p>
+
+<p>For this, we must organize our data before passing it on to our Data warehouse, 
+one of the solutions is the multidimensional data model, 
+however, every way, however here are some concepts that you will need to know beforehand.</p>
+
+<h2 id="olap">OLAP</h2>
+
+<p>Or “Online Analytical Processing” is a tool used for the analysis and treatment of data in real time, 
+widely used to treat a massive amount of information in the various dimensions of a data warehouse.</p>
+
+<p><strong>Example</strong>: We are analyzing temporal data and we want to have views by year, 
+day, quarter or semester, this interaction with the user is done by OLAP.</p>
+
+<h2 id="oltp">OLTP</h2>
+
+<p>Or “Online Transaction Platform”, refers to systems that record all the operational actions of a stock, guaranteeing its success.</p>
+
+<blockquote>
+  <p>This type of data is generated massively every day</p>
+</blockquote>
+
+<p><strong>Example</strong>: a bank transaction for example, if it fails the whole action must be reversed, if it is successful, it must be recorded and immutable.</p>
+
+<h2 id="data-warehouse">Data warehouse</h2>
+
+<p>This is a database for analysis only, think of it as a copy of the operational database but optimized (let’s talk about it soon) for business intelligence.</p>
+
+<p><img src="https://miro.medium.com/v2/resize:fit:1334/format:webp/1*1fINE8Su9haewHUFfgF6_A.png" alt="captionless image" /></p>
+
+<h2 id="data-granularity">Data granularity</h2>
+
+<p>We must pay close attention to data granularity as it directly affects the volume in data storage 
+and the speed of search and the level of detail of the information. In a brief explanation, when we have a high granularity 
+of data it means that we have less details of the data, when we have a low granularity, we have more details of the data.</p>
+
+<p><strong>Example</strong>: Imagine that we have a sales table where the name of salespeople appears repeatedly. 
+This table has a low granularity because it has a lot of information, so much information that it can make 
+it difficult for us to select which salesperson had the highest number of sales, note that the more 
+decentralized data we have in a table, the greater the data and therefore we will have longer analysis time. 
+If we have a table of sellers with the total sales of each one, we will have data with less details, more granularity and spending less resources.</p>
+
+<p>We can also understand this condensation and detailing as <strong>Drill Down</strong> and <strong>Drill UP</strong>.</p>
+
+<p><strong>Drill Down</strong> — the granularity is reduced and the level of details is increased.</p>
+
+<p><strong>Drill UP</strong> — the granularity is increased and the level of detail is decreased.</p>
+
+<p>Therefore, it is clear that we must condense some data to avoid redundancy, save processing and space.
+We should think about <strong>Resources X Data = Information</strong>, if our data is poorly modeled we will throw away resources that are precious, 
+so our equation looks like this <strong>Resources X Data = waste of time and money</strong>.</p>
+
+<p><img src="https://miro.medium.com/v2/resize:fit:1400/format:webp/1*6ddUTIXYYGqCFQ-j3FZs7w.jpeg" alt="captionless image" /></p>
+
+<h1 id="multidimensional-data-analysis">Multidimensional data Analysis</h1>
+
+<p>In this analysis we use structured data in the form of a cube (each side of the cube is a dimension), 
+the multidimensional model is the standard in the analysis tools, for example, when we use arithmetic queries with OLAP. 
+This model has a higher performance in queries, besides providing a facility in the creation of complex query’s.</p>
+
+<blockquote>
+  <p>When the scope of the project is reduced, this model allows a more agile implementation.</p>
+</blockquote>
+
+<h2 id="structure">Structure</h2>
+
+<p>To visualize this model we use a cube, where tables are associated, summarized or aggregated to return some metrics 
+(sales per year, for example). Each table is seen as a dimension, together they form a cube that can have low or high granularity, 
+always depending on the requirements of each project.</p>
+
+<blockquote>
+  <p>Data cube is a data structure for storing and analysing large amounts of multidimensional data (Pedersen, 2009b).</p>
+</blockquote>
+
+<p><img src="https://miro.medium.com/v2/resize:fit:800/format:webp/1*wuNOtUomBZz2QZ0hbn0UwA.png" alt="captionless image" /></p>
+
+<h2 id="fact-tables">Fact Tables</h2>
+
+<p>Fact tables are objects to be analyzed, composed of measures, 
+contexts of each dimension and Foreign Keys, used to link the dimensions to that table.</p>
+
+<p><strong>Example</strong>: In our data warehouse we need to create a sales fact table, for this, we have structured it as follows.</p>
+
+<p>The dimensions that will compose our suit are:</p>
+
+<p><strong>Time dimension</strong></p>
+
+<p><strong>Geographic dimension (location)</strong></p>
+
+<p><strong>Product dimension</strong></p>
+
+<p><strong>Product type dimension</strong></p>
+
+<p>The layer will have the Foreign Key for each dimension plus the metrics, such as “total_sales”.</p>
+
+<h1 id="types-of-multidimensional-models">Types of Multidimensional Models</h1>
+
+<h2 id="star-layout">Star layout</h2>
+
+<p>It is the simplest model, where the fact is centralized and composed of dimensions with a large number of data, 
+given that, without redundancy, these dimensions are directly linked to the fact through its Foreign Keys.</p>
+
+<h2 id="snowflake-layout">Snowflake layout</h2>
+
+<p>It is an extension of the star schema, composed of more dimensions reducing redundancy, 
+in the end, we have a greater number of dimensions forming more complex queries and reducing performance.</p>
+
+<p>Models such as the snowflake are arranged so that at each end of the star, it becomes the center of another star (MACHADO, 2013).</p>
+
+<h2 id="constellation-scheme">Constellation scheme</h2>
+
+<p>Or Fact Constellation, is a grouping of dimensions with multiple fact tables,
+its only disadvantage is due to the complexity.</p>
+
+<p>I hope I have briefly explained why we should treat our data, 
+what the consequences of these treatments are and presented all the main concepts successfully, thanks for your attention.</p>
+
+<p>Thanks, bye!</p>
+
+    </article>
+
+    <footer class="post-footer">
+      <a href="/">&larr; Back home</a>
+      <span class="post-footer-copy">&copy; 2026 Danish Mohd</span>
+    </footer>
+
+  </div>
+</body>
+</html>

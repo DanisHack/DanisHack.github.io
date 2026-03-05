@@ -1,0 +1,1457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Scaling Laws That Predict Everything</title>
+<meta name="description" content="From mouse hearts to neural networks — the same power law governs biology, cities, and AI. An interactive explainer with 7 hands-on demos.">
+
+<!-- Open Graph -->
+<meta property="og:title" content="The Scaling Laws That Predict Everything">
+<meta property="og:description" content="From mouse hearts to neural networks — the same power law governs biology, cities, and AI. Interactive explainer with 7 hands-on demos.">
+<meta property="og:url" content="https://supergeek.in/scaling-laws/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Danish Mohd">
+<meta property="og:locale" content="en_US">
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="The Scaling Laws That Predict Everything">
+<meta name="twitter:description" content="From mouse hearts to neural networks — the same power law governs biology, cities, and AI.">
+
+<!-- Canonical -->
+<link rel="canonical" href="https://supergeek.in/scaling-laws/">
+
+<!-- Structured Data -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "The Scaling Laws That Predict Everything",
+  "description": "From mouse hearts to neural networks — the same power law governs biology, cities, and AI. An interactive explainer with 7 hands-on demos.",
+  "author": {
+    "@type": "Person",
+    "name": "Danish Mohd",
+    "url": "https://supergeek.in",
+    "jobTitle": "AI Product Builder",
+    "sameAs": [
+      "https://github.com/DanisHack"
+    ]
+  },
+  "publisher": {
+    "@type": "Person",
+    "name": "Danish Mohd",
+    "url": "https://supergeek.in"
+  },
+  "datePublished": "2025-01-15",
+  "dateModified": "2026-03-04",
+  "mainEntityOfPage": "https://supergeek.in/scaling-laws/",
+  "keywords": ["scaling laws", "power laws", "neural scaling", "Kleiber's law", "Chinchilla", "AI compute", "emergent abilities"]
+}
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,700;1,6..72,400&family=Figtree:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+/* ── Reset ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Newsreader', Georgia, serif;
+  font-size: 21px;
+  line-height: 1.4;
+  color: rgb(45,45,45);
+  background: rgb(250,249,247);
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: #5B4AE8; text-decoration: none; }
+a:hover { color: #7B4AE8; }
+
+/* ── Layout ── */
+.content { max-width: 700px; margin: 0 auto; padding: 0 24px; }
+
+/* ── Hero ── */
+.hero {
+  position: relative;
+  border-radius: 16px;
+  margin: 12px auto;
+  max-width: calc(100% - 24px);
+  min-height: 300px;
+  overflow: hidden;
+  display: flex;
+  align-items: flex-end;
+  padding: 48px 40px;
+}
+.hero-bg {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+}
+.hero .content { position: relative; z-index: 1; max-width: none; padding: 0; }
+.hero h1 {
+  font-family: 'Newsreader', Georgia, serif;
+  font-size: 64px;
+  font-weight: 700;
+  line-height: 1.1;
+  color: #fff;
+  margin-bottom: 12px;
+}
+.post-subtitle {
+  font-family: 'Figtree', system-ui, sans-serif;
+  font-size: 26px;
+  font-weight: 500;
+  line-height: 1.1;
+  color: rgba(255,255,255,0.85);
+}
+
+/* ── Intro ── */
+.intro { margin: 60px auto 40px; }
+.intro-text {
+  font-style: italic;
+  font-size: 23px;
+  line-height: 1.45;
+  color: rgb(80,80,80);
+}
+
+/* ── TOC ── */
+.toc {
+  margin: 0 auto 60px;
+  padding: 24px 28px;
+  background: rgb(242,241,239);
+  border-radius: 12px;
+}
+.toc h4 {
+  font-family: 'Figtree', system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 12px;
+  color: rgb(100,100,100);
+}
+.toc ol { padding-left: 20px; }
+.toc li {
+  font-family: 'Figtree', system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.8;
+  color: rgb(80,80,80);
+}
+.toc a { color: rgb(45,45,45); border-bottom: 1px solid transparent; }
+.toc a:hover { color: #5B4AE8; border-bottom-color: #5B4AE8; }
+
+/* ── Section Headers ── */
+.section-header {
+  display: flex;
+  align-items: baseline;
+  gap: 20px;
+  padding-top: 100px;
+  margin-bottom: 40px;
+  border-top: 1px solid rgb(220,218,214);
+}
+.section-number {
+  font-family: 'Newsreader', Georgia, serif;
+  font-size: 50px;
+  font-weight: 400;
+  color: rgb(180,178,174);
+  flex-shrink: 0;
+}
+.section-header h2 {
+  font-family: 'Figtree', system-ui, sans-serif;
+  font-size: 44px;
+  font-weight: 700;
+  line-height: 1.1;
+  color: rgb(45,45,45);
+}
+h3 {
+  font-family: 'Figtree', system-ui, sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.1;
+  margin-top: 40px;
+  margin-bottom: 16px;
+}
+
+/* ── Prose ── */
+main p {
+  margin-bottom: 20px;
+}
+main p strong {
+  font-weight: 700;
+}
+
+/* ── Demo Containers ── */
+.demo-container {
+  background: rgb(242,241,239);
+  border-radius: 12px;
+  padding: 32px;
+  margin: 32px 0;
+}
+.label {
+  font-family: 'Figtree', system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgb(45,45,45);
+  margin-bottom: 16px;
+}
+figcaption {
+  font-family: 'Newsreader', Georgia, serif;
+  font-style: italic;
+  font-size: 17px;
+  line-height: 1.4;
+  color: rgb(100,100,100);
+  text-align: center;
+  margin-top: 16px;
+}
+
+/* ── Controls ── */
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 16px 0;
+  flex-wrap: wrap;
+}
+.controls label {
+  font-family: 'Figtree', system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: rgb(80,80,80);
+}
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 6px;
+  border-radius: 3px;
+  background: rgb(200,198,194);
+  outline: none;
+  flex: 1;
+  min-width: 120px;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  background: #5B4AE8;
+  cursor: pointer;
+  border: 3px solid #fff;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+}
+.toggle-btn {
+  font-family: 'Figtree', system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: 1px solid rgb(200,198,194);
+  background: #fff;
+  color: rgb(45,45,45);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.toggle-btn:hover { border-color: #5B4AE8; color: #5B4AE8; }
+.toggle-btn.active { background: #5B4AE8; color: #fff; border-color: #5B4AE8; }
+
+/* ── Value Display ── */
+.value-display {
+  font-family: 'Figtree', system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: #5B4AE8;
+  min-width: 60px;
+}
+
+/* ── Stat Cards ── */
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+  margin: 16px 0;
+}
+.stat-card {
+  background: #fff;
+  border-radius: 8px;
+  padding: 16px;
+  text-align: center;
+}
+.stat-value {
+  font-family: 'Figtree', system-ui, sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+.stat-label {
+  font-family: 'Figtree', system-ui, sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: rgb(100,100,100);
+  margin-top: 4px;
+}
+
+/* ── Callout ── */
+.callout {
+  border-left: 4px solid #5B4AE8;
+  padding: 20px 24px;
+  margin: 32px 0;
+  background: rgba(91,74,232,0.04);
+  border-radius: 0 8px 8px 0;
+}
+.callout p { margin-bottom: 8px; }
+.callout p:last-child { margin-bottom: 0; }
+
+/* ── Sidenotes ── */
+.sidenote-trigger {
+  font-family: 'Figtree', system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: #5B4AE8;
+  cursor: pointer;
+  vertical-align: super;
+}
+.sidenote {
+  display: none;
+  background: rgb(242,241,239);
+  padding: 16px 20px;
+  border-radius: 8px;
+  margin: 8px 0 16px;
+}
+.sidenote.open { display: block; }
+.sidenote p {
+  font-family: 'Figtree', system-ui, sans-serif;
+  font-size: 15px;
+  line-height: 1.4;
+  margin-bottom: 8px;
+}
+.sidenote p:last-child { margin-bottom: 0; }
+
+/* ── Fade In ── */
+.fade-in {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+.fade-in.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── Footer ── */
+.site-footer {
+  background: #3A2D7A;
+  color: rgba(255,255,255,0.7);
+  padding: 60px 24px;
+  margin-top: 100px;
+  text-align: center;
+}
+.site-footer p:first-child {
+  font-family: 'Newsreader', Georgia, serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 8px;
+}
+.site-footer .footer-tagline {
+  font-family: 'Newsreader', Georgia, serif;
+  font-style: italic;
+  font-size: 17px;
+  color: rgba(255,255,255,0.5);
+  margin-top: 16px;
+}
+.site-footer a { color: rgba(255,255,255,0.8); }
+.site-footer a:hover { color: #fff; }
+
+/* ── Task Lines Legend ── */
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 20px;
+  margin: 12px 0;
+}
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'Figtree', system-ui, sans-serif;
+  font-size: 13px;
+  color: rgb(80,80,80);
+}
+.legend-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  body { font-size: 19px; }
+  .hero h1 { font-size: 40px; }
+  .post-subtitle { font-size: 20px; }
+  .hero { padding: 32px 24px; min-height: 220px; }
+  .section-header { padding-top: 60px; margin-bottom: 30px; gap: 14px; }
+  .section-number { font-size: 36px; }
+  .section-header h2 { font-size: 32px; }
+  h3 { font-size: 22px; }
+  .intro-text { font-size: 20px; }
+  .demo-container { padding: 20px 16px; }
+  .stat-grid { grid-template-columns: repeat(2, 1fr); }
+  .stat-value { font-size: 22px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
+</style>
+</head>
+<body>
+
+<a href="/" style="display:inline-block;margin:16px 0 0 16px;font-family:'Figtree',system-ui,sans-serif;font-size:15px;font-weight:600;color:rgb(100,100,100);text-decoration:none;" onmouseover="this.style.color='#5B4AE8'" onmouseout="this.style.color='rgb(100,100,100)'">&larr; Danish Khan</a>
+
+<!-- ════════════════════════════════════════════════════ HERO ════════════════════════════════════════════════════ -->
+<div class="hero">
+  <svg class="hero-bg" viewBox="0 0 1200 400" preserveAspectRatio="xMidYMid slice">
+    <defs>
+      <linearGradient id="heroGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#1a1145"/>
+        <stop offset="30%" stop-color="#2d1f6b"/>
+        <stop offset="60%" stop-color="#5B4AE8"/>
+        <stop offset="100%" stop-color="#7B4AE8"/>
+      </linearGradient>
+      <pattern id="gridP" width="40" height="40" patternUnits="userSpaceOnUse">
+        <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+      </pattern>
+    </defs>
+    <rect width="1200" height="400" fill="url(#heroGrad)"/>
+    <rect width="1200" height="400" fill="url(#gridP)"/>
+    <!-- Decorative: a log-log line rising across the hero -->
+    <line x1="100" y1="340" x2="1100" y2="60" stroke="rgba(255,255,255,0.1)" stroke-width="2" stroke-dasharray="8,6"/>
+    <circle cx="200" cy="310" r="4" fill="rgba(255,255,255,0.2)"/>
+    <circle cx="350" cy="270" r="5" fill="rgba(255,255,255,0.2)"/>
+    <circle cx="500" cy="230" r="5" fill="rgba(255,255,255,0.25)"/>
+    <circle cx="650" cy="190" r="6" fill="rgba(255,255,255,0.25)"/>
+    <circle cx="800" cy="140" r="7" fill="rgba(255,255,255,0.3)"/>
+    <circle cx="1000" cy="80" r="8" fill="rgba(255,255,255,0.35)"/>
+  </svg>
+  <div class="content">
+    <h1>The Scaling Laws That Predict Everything</h1>
+    <p class="post-subtitle">From mouse hearts to neural networks — the same math, the same line, the same question.</p>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════ MAIN ════════════════════════════════════════════════════ -->
+<main class="content">
+<article>
+
+<section class="intro">
+  <p class="intro-text">A mouse heart beats 600 times a minute. An elephant's, 30. The mouse lives two years. The elephant, seventy. But here's the thing that should stop you cold: both get about one billion heartbeats total. So does a cat. So does a horse. So does a whale. This isn't a coincidence. It's a law. And the same law — the exact same mathematical pattern — shows up in cities, in companies, and now in artificial intelligence. If you take the pattern seriously, it tells you something specific about where AI is going.</p>
+</section>
+
+<nav class="toc">
+  <h4>Contents</h4>
+  <ol>
+    <li><a href="#section-1">The Mouse and the Elephant</a></li>
+    <li><a href="#section-2">Kleiber's Law</a></li>
+    <li><a href="#section-3">Power Laws Are Everywhere</a></li>
+    <li><a href="#section-4">Enter the Neural Network</a></li>
+    <li><a href="#section-5">The Chinchilla Insight</a></li>
+    <li><a href="#section-6">Emergent Abilities</a></li>
+    <li><a href="#section-7">The Compute Trend</a></li>
+    <li><a href="#section-8">What the Curves Predict</a></li>
+    <li><a href="#section-9">What If Intelligence Is Just Scale?</a></li>
+  </ol>
+</nav>
+
+<!-- ───────────────────── I ───────────────────── -->
+<section id="section-1" class="fade-in">
+  <div class="section-header">
+    <span class="section-number">I.</span>
+    <h2>The Mouse and the Elephant</h2>
+  </div>
+
+  <p>Start with a simple question: why do big animals live longer?</p>
+
+  <p>The naive answer is that bigger bodies are somehow "tougher." But that's not it. A whale doesn't have stronger cells than a mouse. A whale cell and a mouse cell are roughly the same size, made of the same stuff, running the same chemistry.</p>
+
+  <p>The real answer is about <strong>rate</strong>. Small animals burn fast. Their hearts race, their metabolisms run hot, they wear out quickly. Big animals burn slow. Their hearts plod, their cells sip energy, they last.</p>
+
+  <p>But the ratio is eerily precise. When you multiply heart rate by lifespan for any mammal, you get approximately the same number: around one billion beats. It's as if every mammal is issued the same metabolic budget at birth and allowed to spend it at whatever pace it chooses.</p>
+
+  <div class="demo-container" id="heartbeat-demo">
+    <p class="label">The Billion Heartbeats</p>
+    <div class="controls">
+      <label>Animal mass:</label>
+      <input type="range" id="heart-slider" min="-1.4" max="4.8" step="0.01" value="1.5">
+      <span class="value-display" id="heart-animal">Dog</span>
+    </div>
+    <div class="stat-grid" id="heart-stats">
+    </div>
+    <div style="text-align:center;margin-top:12px;">
+      <svg id="heart-svg" width="60" height="60" viewBox="0 0 60 60">
+        <path id="heart-path" d="M30,52 C30,52 6,36 6,20 C6,10 14,4 22,8 C26,10 29,14 30,18 C31,14 34,10 38,8 C46,4 54,10 54,20 C54,36 30,52 30,52Z" fill="#E8634A" transform-origin="30px 30px"/>
+      </svg>
+    </div>
+    <figcaption>Drag the slider from mouse to elephant. Watch the heart rate change but the total beats stay roughly constant.</figcaption>
+    <noscript><p>A mouse heart beats 600 times per minute and lives about 2 years. An elephant's heart beats 30 times per minute and lives about 70 years. Both accumulate approximately 1 billion total heartbeats across their lifespan. This relationship — heart rate proportional to mass^(-0.25) — holds across nearly all mammals, from a 25-gram mouse to a 100-tonne blue whale.</p></noscript>
+  </div>
+
+  <p>This pattern was noticed in the 1930s by a biologist named Max Kleiber. He wasn't looking at heartbeats — he was looking at metabolic rate. How much energy does an animal burn per day? And what he found was one of the most robust quantitative laws in all of biology.</p>
+</section>
+
+<!-- ───────────────────── II ───────────────────── -->
+<section id="section-2" class="fade-in">
+  <div class="section-header">
+    <span class="section-number">II.</span>
+    <h2>Kleiber's Law</h2>
+  </div>
+
+  <p>Here's what Kleiber found. If you plot metabolic rate against body mass for different animals, you get a messy scatter. Big animals burn more energy — obviously. But how much more?</p>
+
+  <p>If metabolism were proportional to mass, you'd expect a straight line with slope 1. A 1000x heavier animal would burn 1000x more energy. But it doesn't. A 1000x heavier animal burns only about 180x more energy.</p>
+
+  <p>The relationship is: <strong>metabolic rate ∝ mass<sup>0.75</sup></strong></p>
+
+  <p>That three-quarter exponent is the key. Not 1. Not 2/3 (which you'd get from surface area). Three-quarters. And the beautiful thing is, when you plot this on a log-log scale — taking the logarithm of both mass and metabolic rate — the messy scatter becomes a perfectly straight line.</p>
+
+  <div class="demo-container" id="kleiber-demo">
+    <p class="label">Kleiber's Law — Metabolic Rate vs Body Mass</p>
+    <div class="controls">
+      <button class="toggle-btn active" id="kleiber-log-btn" onclick="toggleKleiberScale()">Log Scale</button>
+      <button class="toggle-btn" id="kleiber-lin-btn" onclick="toggleKleiberScale()">Linear Scale</button>
+    </div>
+    <svg id="kleiber-svg" viewBox="0 0 636 380" width="100%"></svg>
+    <figcaption>Click "Linear Scale" to see the mess. Click "Log Scale" to see the law. The dashed line has slope 0.75.</figcaption>
+    <noscript><p>Kleiber's Law states that metabolic rate scales with body mass to the power of 0.75. On a linear plot, data from 13 animals (mouse through blue whale) appears as a messy scatter. On a log-log plot, the same data falls on a nearly perfect straight line with slope 0.75 — the signature of a power law discovered by Max Kleiber in the 1930s.</p></noscript>
+  </div>
+
+  <p>That straight line on a log-log plot is the signature of a <strong>power law</strong>. And once you know what to look for, you see it everywhere.</p>
+</section>
+
+<!-- ───────────────────── III ───────────────────── -->
+<section id="section-3" class="fade-in">
+  <div class="section-header">
+    <span class="section-number">III.</span>
+    <h2>Power Laws Are Everywhere</h2>
+  </div>
+
+  <p>Geoffrey West, the physicist who spent decades studying scaling, calls power laws "the most fundamental regularities in nature." They show up in:</p>
+
+  <p><strong>Cities.</strong> When a city doubles in population, its infrastructure — roads, gas stations, power lines — doesn't double. It grows by about 85%. That's a power law with exponent 0.85. But wages, patents, and GDP per capita grow by about 115%. Exponent 1.15. Cities are sublinear in stuff and superlinear in ideas.<span class="sidenote-trigger" onclick="toggleSidenote('sn1')">[1]</span></p>
+  <div class="sidenote" id="sn1"><p>This was shown rigorously by Bettencourt, Lobo, Helbing, Kühnert, and West in a 2007 paper analyzing data from hundreds of cities across multiple countries. The exponents are remarkably consistent across cultures.</p></div>
+
+  <p><strong>Companies.</strong> Revenue scales with employee count, but sublinearly. Companies get less efficient as they grow — the opposite of cities. The typical half-life of a Fortune 500 company is about 10.5 years.<span class="sidenote-trigger" onclick="toggleSidenote('sn2')">[2]</span></p>
+  <div class="sidenote" id="sn2"><p>West and colleagues showed that companies, unlike cities, have bounded growth. They follow sigmoidal curves and eventually die. Cities almost never die.</p></div>
+
+  <p><strong>Languages.</strong> The most common word in English ("the") appears about twice as often as the second most common ("of"), three times as often as the third, and so on. Zipf's law. Power law.</p>
+
+  <p><strong>Earthquakes.</strong> The Gutenberg-Richter law: for every magnitude-5 earthquake, there are about ten magnitude-4 earthquakes. Power law.</p>
+
+  <p>The pattern is the same every time: a straight line on a log-log plot. The only thing that changes is the slope. And that slope — the exponent — tells you something deep about how the system works.</p>
+
+  <div class="callout">
+    <p><strong>The exponent is the story.</strong> An exponent less than 1 (sublinear) means economies of scale — you need less per unit as you grow. Greater than 1 (superlinear) means increasing returns — each unit produces more. Exactly 1 means boring linear growth. The exponent tells you whether the system rewards scale or punishes it.</p>
+  </div>
+</section>
+
+<!-- ───────────────────── IV ───────────────────── -->
+<section id="section-4" class="fade-in">
+  <div class="section-header">
+    <span class="section-number">IV.</span>
+    <h2>Enter the Neural Network</h2>
+  </div>
+
+  <p>In January 2020, a team at OpenAI published a paper titled "Scaling Laws for Neural Language Models." It should have been front-page news. It wasn't.</p>
+
+  <p>What Kaplan, McCandlish, Henighan, and colleagues showed was this: the performance of a language model — measured as the cross-entropy loss on held-out text — follows a power law with respect to three variables:</p>
+
+  <p>1. The number of parameters in the model<br>
+  2. The size of the training dataset<br>
+  3. The amount of compute used for training</p>
+
+  <p>Each of these, plotted on a log-log scale against loss, gives a straight line. Just like Kleiber's animals. The model doesn't care whether you give it more parameters or more data or more compute — as long as you give it <em>more of something</em>, performance improves along a predictable power law.</p>
+
+  <div class="demo-container" id="loss-demo">
+    <p class="label">Neural Scaling — Loss vs Compute</p>
+    <div class="controls">
+      <label>Compute (FLOPs):</label>
+      <input type="range" id="loss-slider" min="17" max="25.5" step="0.01" value="17">
+      <span class="value-display" id="loss-flops">10<sup>17</sup></span>
+    </div>
+    <svg id="loss-svg" viewBox="0 0 636 360" width="100%"></svg>
+    <figcaption>Drag the slider to add more compute. The loss drops along a clean power law. Each labeled point is a real model scale.</figcaption>
+    <noscript><p>Kaplan et al. (2020) showed that language model cross-entropy loss follows a power law with respect to training compute: loss decreases predictably with exponent approximately -0.05. From 10^17 FLOPs (small models) to 10^25 FLOPs (GPT-4 scale), the relationship holds on a log-log plot as a straight line. Each 10x increase in compute yields a consistent decrease in loss.</p></noscript>
+  </div>
+
+  <p>This was a breakthrough not because it was surprising — people had noticed the trend — but because it was <strong>precise</strong>. You could write an equation, plug in a compute budget, and predict the loss before training the model. The curves didn't just fit the data. They <em>predicted</em> the data.</p>
+
+  <p>And the exponent? For compute vs. loss, it's about -0.05. That means every 10x increase in compute gives you a predictable decrease in loss. Not huge, but relentless. And it keeps going.</p>
+</section>
+
+<!-- ───────────────────── V ───────────────────── -->
+<section id="section-5" class="fade-in">
+  <div class="section-header">
+    <span class="section-number">V.</span>
+    <h2>The Chinchilla Insight</h2>
+  </div>
+
+  <p>There was a problem with the Kaplan scaling laws. They told you that more compute = lower loss, but they didn't tell you the best <em>way</em> to spend that compute. Should you make the model bigger? Or train it on more data?</p>
+
+  <p>In 2022, a team at DeepMind answered this question decisively. Their paper, "Training Compute-Optimal Large Language Models," showed that for a given compute budget, there's an optimal allocation between model size and training data. And most models were getting it wrong.</p>
+
+  <p>GPT-3 had 175 billion parameters, trained on 300 billion tokens. The Chinchilla result said: for the same compute budget, a 70 billion parameter model trained on 1.4 trillion tokens would perform better. Smaller model, way more data.</p>
+
+  <div class="demo-container" id="chinchilla-demo">
+    <p class="label">Compute Budget Allocator</p>
+    <div class="controls">
+      <label>Budget split → more params</label>
+      <input type="range" id="chinchilla-slider" min="0.1" max="0.9" step="0.01" value="0.5">
+      <label>more data →</label>
+    </div>
+    <svg id="chinchilla-svg" viewBox="0 0 636 320" width="100%"></svg>
+    <figcaption>Drag the slider to allocate your compute budget. The curve shows predicted loss. The sweet spot isn't in the middle — and GPT-3 missed it.</figcaption>
+    <noscript><p>The Chinchilla paper (Hoffmann et al., 2022) showed that for a fixed compute budget, there is an optimal split between model parameters and training data. GPT-3 used 175B parameters on 300B tokens — too many parameters, too little data. Chinchilla achieved better performance with 70B parameters on 1.4T tokens using the same compute. The optimal allocation favors more data than most labs expected.</p></noscript>
+  </div>
+
+  <p>The lesson: scaling laws aren't just about "throw more compute at it." They have structure. There's an optimal frontier, and knowing where it is lets you train better models for less money. Every major lab now uses some version of this analysis before committing to a training run.</p>
+</section>
+
+<!-- ───────────────────── VI ───────────────────── -->
+<section id="section-6" class="fade-in">
+  <div class="section-header">
+    <span class="section-number">VI.</span>
+    <h2>Emergent Abilities</h2>
+  </div>
+
+  <p>Here's where it gets weird. The scaling laws predict a smooth, continuous improvement in loss. But when you measure actual <em>capabilities</em> — can the model do arithmetic? can it write code? can it reason about analogies? — the improvement isn't smooth at all.</p>
+
+  <p>It's a step function.</p>
+
+  <p>Below a certain scale, the model can't do the task. Performance is essentially random. Then at some threshold — boom. The ability appears, almost fully formed. Wei et al. called these "emergent abilities" in a 2022 paper, and the word "emergent" was chosen carefully. These abilities weren't trained explicitly. They just... showed up, once the model was big enough.</p>
+
+  <div class="demo-container" id="emergent-demo">
+    <p class="label">Emergent Abilities — Accuracy vs Model Scale</p>
+    <div class="controls">
+      <label>Model size:</label>
+      <input type="range" id="emergent-slider" min="0" max="100" step="1" value="0">
+      <span class="value-display" id="emergent-size">100M</span>
+    </div>
+    <svg id="emergent-svg" viewBox="0 0 636 340" width="100%"></svg>
+    <div class="legend" id="emergent-legend"></div>
+    <figcaption>Drag the slider to scale up the model. Watch different abilities "turn on" at different thresholds. Below the threshold: nothing. Above: capability.</figcaption>
+    <noscript><p>Wei et al. (2022) documented emergent abilities in large language models — capabilities that appear abruptly once a model reaches a critical size. Simple Q&A emerges at small scales (~350M parameters), while chain-of-thought reasoning requires ~13B+ parameters, and complex math only appears at 175B+. Below each threshold, performance is near-random; above it, the ability appears almost fully formed.</p></noscript>
+  </div>
+
+  <p>This is both exciting and unsettling. Exciting because it means bigger models aren't just incrementally better — they can do qualitatively new things. Unsettling because you can't always predict <em>which</em> new abilities will emerge, or when.</p>
+
+  <div class="callout">
+    <p><strong>A caveat.</strong> Some researchers argue that emergent abilities are partly an artifact of how we measure. If you use a continuous metric instead of a binary pass/fail, the transition looks smoother. This is a genuine debate. But even the skeptics agree that <em>capabilities do improve with scale</em> — the disagreement is about whether it's a phase transition or a steep sigmoid.</p>
+  </div>
+</section>
+
+<!-- ───────────────────── VII ───────────────────── -->
+<section id="section-7" class="fade-in">
+  <div class="section-header">
+    <span class="section-number">VII.</span>
+    <h2>The Compute Trend</h2>
+  </div>
+
+  <p>So: performance scales with compute according to a power law. Fine. But how fast is compute actually growing?</p>
+
+  <p>The answer is: absurdly fast. Epoch AI, a research group that tracks these things, estimates that training compute for frontier models has grown at roughly <strong>4-5x per year</strong> since 2010. That's faster than Moore's Law. It comes from three sources: better chips (Moore's Law), more chips (bigger clusters), and more money (AI investment).</p>
+
+  <p>To put this in perspective: AlexNet (2012) used about 10<sup>17</sup> FLOPs. GPT-3 (2020) used about 10<sup>23.5</sup>. GPT-4 (2023) reportedly used around 10<sup>25</sup>. That's a hundred-million-fold increase in a decade.</p>
+
+  <div class="demo-container" id="compute-demo">
+    <p class="label">Training Compute Over Time</p>
+    <div class="controls">
+      <label>Projection growth rate:</label>
+      <input type="range" id="compute-slider" min="2" max="8" step="0.1" value="4.2">
+      <span class="value-display" id="compute-rate">4.2x/yr</span>
+    </div>
+    <svg id="compute-svg" viewBox="0 0 636 380" width="100%"></svg>
+    <figcaption>Historical data points in solid circles. Adjust the growth rate to project forward. The dashed line is what hasn't happened yet.</figcaption>
+    <noscript><p>Training compute for frontier AI models has grown at roughly 4-5x per year since 2010, faster than Moore's Law. AlexNet (2012) used approximately 10^17 FLOPs. GPT-3 (2020) used 10^23.5 FLOPs. GPT-4 (2023) reportedly used around 10^25 FLOPs — a hundred-million-fold increase in a decade, driven by better chips, larger clusters, and increased AI investment (Epoch AI).</p></noscript>
+  </div>
+
+  <p>The question everyone wants to answer is: will this trend continue? There are reasons it might slow down (power constraints, chip shortages, diminishing returns on investment). And reasons it might not (nation-state level investment, new architectures, algorithmic improvements that are <em>equivalent</em> to more compute).</p>
+</section>
+
+<!-- ───────────────────── VIII ───────────────────── -->
+<section id="section-8" class="fade-in">
+  <div class="section-header">
+    <span class="section-number">VIII.</span>
+    <h2>What the Curves Predict</h2>
+  </div>
+
+  <p>Now we can chain the two laws together. We have:</p>
+
+  <p>1. <strong>Loss as a function of compute</strong> (the scaling law)<br>
+  2. <strong>Compute as a function of time</strong> (the trend)</p>
+
+  <p>Combine them, and you get: <strong>loss as a function of time</strong>. And if you're willing to map loss to capabilities — which is hand-wavy but useful — you get a rough timeline for when AI systems reach various milestones.</p>
+
+  <p>This is, to be clear, an extrapolation. Extrapolations can break. The curves might bend. New bottlenecks might appear. But the striking thing is: so far, they haven't bent. Every time someone predicted the scaling laws would hit a wall, the next generation of models landed right on the curve.</p>
+
+  <div class="demo-container" id="predict-demo">
+    <p class="label">When Does AI Match...?</p>
+    <div class="controls">
+      <label>Scaling exponent:</label>
+      <input type="range" id="predict-slider" min="-0.08" max="-0.03" step="0.001" value="-0.05">
+      <span class="value-display" id="predict-exp">-0.050</span>
+    </div>
+    <svg id="predict-svg" viewBox="0 0 636 380" width="100%"></svg>
+    <figcaption>Adjust the scaling exponent to see how the timeline shifts. A steeper exponent (more negative) means faster progress. The threshold lines are illustrative, not precise.</figcaption>
+    <noscript><p>Combining the scaling law (loss as a function of compute) with the compute growth trend (compute as a function of time) yields loss as a function of time. With a scaling exponent of -0.05 and a compute growth rate of 4.2x per year, the curves project when AI systems might cross capability thresholds. The exact dates depend sensitively on the assumed exponent, which is why this is an extrapolation — but it is a quantitative one.</p></noscript>
+  </div>
+
+  <p>The honest answer is: nobody knows exactly when these thresholds will be crossed, or if the curves will hold. But the scaling laws give you something you didn't have before — a <strong>quantitative framework</strong> for thinking about the question. Not vibes. Not hype. Math.</p>
+</section>
+
+<!-- ───────────────────── IX ───────────────────── -->
+<section id="section-9" class="fade-in">
+  <div class="section-header">
+    <span class="section-number">IX.</span>
+    <h2>What If Intelligence Is Just Scale?</h2>
+  </div>
+
+  <p>Here's the thing that should keep you up at night.</p>
+
+  <p>No fundamental architectural breakthrough was needed to go from GPT-2 to GPT-4. Same basic architecture — a transformer. Same training objective — predict the next token. The difference? More compute. More data. More parameters. Scale.</p>
+
+  <p>GPT-2 couldn't reliably do arithmetic. GPT-4 can pass the bar exam. The same architecture. Just bigger.</p>
+
+  <p>If the scaling laws hold — if intelligence really is, in some meaningful sense, a function of scale — then the trajectory is set. We know how fast compute is growing. We know the exponents. The rest is arithmetic.</p>
+
+  <p>But "if" is doing a lot of work in that sentence. There are serious reasons the scaling laws might <em>not</em> hold indefinitely:</p>
+
+  <p><strong>Data.</strong> We may be running out of high-quality training data. The internet is large but finite, and the best data has already been scraped. Synthetic data might help, but nobody knows if it's a full substitute.</p>
+
+  <p><strong>Diminishing returns on loss.</strong> Lower loss doesn't always mean proportionally better capabilities. There might be a region where loss improvements stop translating into useful new abilities.</p>
+
+  <p><strong>The wrong metric.</strong> Cross-entropy loss on next-token prediction might not capture what we actually care about. A model can have excellent loss and still be unreliable, inconsistent, or unable to do genuinely novel reasoning.</p>
+
+  <p><strong>Energy and economics.</strong> Training frontier models already costs hundreds of millions of dollars. At 4x/year growth, costs hit national-GDP levels within a decade. Something has to give — either the economics or the trend.</p>
+
+  <p>These are real constraints. But here's what's remarkable: people have been pointing out these constraints for years, and the curves <em>keep going</em>. Every predicted wall has been a speed bump so far. Maybe the next one is real. Maybe not.</p>
+
+  <div class="callout">
+    <p><strong>The remarkable thing about scaling laws is they give you a prediction you can check.</strong> They don't ask you to take anything on faith. They say: if you spend X compute, you'll get Y loss. You can verify this. And so far, it checks out. Whether it keeps checking out is the most important empirical question in AI.</p>
+  </div>
+
+  <p>The mouse and the elephant are governed by the same law. The question is whether the neural network is too.</p>
+
+  <p style="text-align:center;margin-top:48px;color:rgb(180,178,174);font-size:32px;">◆</p>
+</section>
+
+<p style="font-style:italic;text-align:center;color:rgb(120,120,120);font-size:18px;margin-top:60px;line-height:1.5;">
+  Written by <a href="https://supergeek.in">Danish Mohd</a>.<br>
+  AI product builder. Previously VP Engineering at Pixis AI.<br>
+  <time datetime="2026-03-04" style="font-size:14px;color:rgb(160,160,160);">Last updated March 2026</time>
+</p>
+
+</article>
+</main>
+
+<!-- ════════════════════════════════════════════════════ FOOTER ════════════════════════════════════════════════════ -->
+<footer class="site-footer">
+  <div class="content">
+    <p>Compounding Intelligence</p>
+    <p><a href="https://supergeek.in">supergeek.in</a></p>
+    <p class="footer-tagline">Because you don't understand something until you can play with it.</p>
+  </div>
+</footer>
+
+<!-- ════════════════════════════════════════════════════ SCRIPTS ════════════════════════════════════════════════════ -->
+<script>
+// ── Utility ──
+function toggleSidenote(id) {
+  document.getElementById(id).classList.toggle('open');
+}
+
+// ════════════════════════════════════════════════════
+// WIDGET 1: Heartbeat Explorer
+// ════════════════════════════════════════════════════
+(function() {
+  var slider = document.getElementById('heart-slider');
+  var animalLabel = document.getElementById('heart-animal');
+  var statsEl = document.getElementById('heart-stats');
+  var heartPath = document.getElementById('heart-path');
+  if (!slider) return;
+
+  var animals = [
+    { name: 'Mouse', logMass: -1.3 },
+    { name: 'Rat', logMass: -0.6 },
+    { name: 'Rabbit', logMass: 0.2 },
+    { name: 'Cat', logMass: 0.6 },
+    { name: 'Dog', logMass: 1.1 },
+    { name: 'Human', logMass: 1.85 },
+    { name: 'Cow', logMass: 2.7 },
+    { name: 'Horse', logMass: 2.85 },
+    { name: 'Elephant', logMass: 3.6 },
+    { name: 'Blue Whale', logMass: 4.7 }
+  ];
+
+  var beatInterval = null;
+
+  function render() {
+    var logMass = parseFloat(slider.value);
+    var mass = Math.pow(10, logMass);
+
+    // Find closest animal
+    var closest = animals[0];
+    var minDist = 999;
+    for (var i = 0; i < animals.length; i++) {
+      var d = Math.abs(logMass - animals[i].logMass);
+      if (d < minDist) { minDist = d; closest = animals[i]; }
+    }
+    animalLabel.textContent = closest.name;
+
+    // Scaling law formulas
+    var heartRate = 241 * Math.pow(mass, -0.25);
+    var lifespanYears = 11.8 * Math.pow(mass, 0.20);
+    var lifespanMin = lifespanYears * 365.25 * 24 * 60;
+    var totalBeats = heartRate * lifespanMin;
+
+    statsEl.innerHTML =
+      '<div class="stat-card"><div class="stat-value" style="color:#E8634A">' + Math.round(heartRate) + '</div><div class="stat-label">beats/min</div></div>' +
+      '<div class="stat-card"><div class="stat-value" style="color:#4A7DE8">' + lifespanYears.toFixed(1) + '</div><div class="stat-label">years</div></div>' +
+      '<div class="stat-card"><div class="stat-value" style="color:#5B4AE8">' + (totalBeats / 1e9).toFixed(2) + 'B</div><div class="stat-label">total beats</div></div>' +
+      '<div class="stat-card"><div class="stat-value" style="color:#E8B44A">' + formatMass(mass) + '</div><div class="stat-label">body mass</div></div>';
+
+    // Animate heart
+    if (beatInterval) clearInterval(beatInterval);
+    var beatMs = (60 / heartRate) * 1000;
+    function beat() {
+      heartPath.style.transition = 'transform 0.08s ease-out';
+      heartPath.style.transform = 'scale(1.25)';
+      setTimeout(function() {
+        heartPath.style.transition = 'transform 0.12s ease-in';
+        heartPath.style.transform = 'scale(1)';
+      }, Math.min(80, beatMs * 0.25));
+    }
+    beatInterval = setInterval(beat, Math.max(beatMs, 50));
+    beat();
+  }
+
+  function formatMass(kg) {
+    if (kg < 0.1) return (kg * 1000).toFixed(0) + 'g';
+    if (kg < 100) return kg.toFixed(1) + 'kg';
+    if (kg < 10000) return (kg / 1000).toFixed(1) + 't';
+    return (kg / 1000).toFixed(0) + 't';
+  }
+
+  slider.addEventListener('input', render);
+  render();
+})();
+
+// ════════════════════════════════════════════════════
+// WIDGET 2: Kleiber's Law Log-Log Plot
+// ════════════════════════════════════════════════════
+(function() {
+  var svg = document.getElementById('kleiber-svg');
+  if (!svg) return;
+
+  var data = [
+    { name: 'Mouse',        mass: 0.025,  rate: 0.3, labelDy: -10 },
+    { name: 'Rat',          mass: 0.3,    rate: 1.5, labelDy: -10 },
+    { name: 'Pigeon',       mass: 0.35,   rate: 1.7, labelDy: 18 },
+    { name: 'Rabbit',       mass: 2,      rate: 6.5, labelDy: -10 },
+    { name: 'Cat',          mass: 4,      rate: 10, labelDy: 18 },
+    { name: 'Dog',          mass: 15,     rate: 30, labelDy: -10 },
+    { name: 'Sheep',        mass: 50,     rate: 70, labelDy: -10 },
+    { name: 'Human',        mass: 70,     rate: 90, labelDy: 18 },
+    { name: 'Pig',          mass: 120,    rate: 130, labelDy: -10 },
+    { name: 'Cow',          mass: 500,    rate: 400, labelDy: -10 },
+    { name: 'Horse',        mass: 700,    rate: 510, labelDy: 18 },
+    { name: 'Elephant',     mass: 4000,   rate: 1800, labelDy: -10 },
+    { name: 'Blue Whale',   mass: 100000, rate: 20000, labelDy: -10 }
+  ];
+
+  var colors = {
+    'Mouse':'#E8634A','Rat':'#E87A4A','Pigeon':'#E8964A','Rabbit':'#E8B44A',
+    'Cat':'#7BC8A4','Dog':'#5BAE8A','Sheep':'#4A9ECA','Human':'#5B4AE8',
+    'Pig':'#7B4AE8','Cow':'#9A4AD8','Horse':'#C84A9A','Elephant':'#D45B5B',
+    'Blue Whale':'#4A7DE8'
+  };
+
+  var isLog = true;
+  var pad = { top: 30, right: 20, bottom: 60, left: 70 };
+  var w = 636 - pad.left - pad.right;
+  var h = 380 - pad.top - pad.bottom;
+
+  window.toggleKleiberScale = function() {
+    isLog = !isLog;
+    document.getElementById('kleiber-log-btn').className = isLog ? 'toggle-btn active' : 'toggle-btn';
+    document.getElementById('kleiber-lin-btn').className = isLog ? 'toggle-btn' : 'toggle-btn active';
+    render();
+  };
+
+  function render() {
+    var xMin, xMax, yMin, yMax;
+    if (isLog) {
+      xMin = -2; xMax = 5.5; yMin = -1; yMax = 4.5;
+    } else {
+      xMin = 0; xMax = 105000; yMin = 0; yMax = 22000;
+    }
+
+    function xScale(v) {
+      var val = isLog ? Math.log10(v) : v;
+      var mn = isLog ? xMin : xMin;
+      var mx = isLog ? xMax : xMax;
+      return pad.left + ((val - mn) / (mx - mn)) * w;
+    }
+    function yScale(v) {
+      var val = isLog ? Math.log10(v) : v;
+      var mn = isLog ? yMin : yMin;
+      var mx = isLog ? yMax : yMax;
+      return pad.top + h - ((val - mn) / (mx - mn)) * h;
+    }
+
+    var html = '<rect width="636" height="380" fill="rgb(242,241,239)" rx="4"/>';
+    html += '<rect x="' + pad.left + '" y="' + pad.top + '" width="' + w + '" height="' + h + '" fill="#fff" rx="2"/>';
+
+    // Grid lines
+    if (isLog) {
+      for (var gx = -1; gx <= 5; gx++) {
+        var x = xScale(Math.pow(10, gx));
+        html += '<line x1="' + x + '" y1="' + pad.top + '" x2="' + x + '" y2="' + (pad.top + h) + '" stroke="rgb(240,240,240)" stroke-width="1"/>';
+        html += '<text x="' + x + '" y="' + (pad.top + h + 20) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="11" fill="rgb(120,120,120)">10<tspan font-size="8" dy="-5">' + gx + '</tspan><tspan dy="5"></tspan></text>';
+      }
+      for (var gy = 0; gy <= 4; gy++) {
+        var y = yScale(Math.pow(10, gy));
+        html += '<line x1="' + pad.left + '" y1="' + y + '" x2="' + (pad.left + w) + '" y2="' + y + '" stroke="rgb(240,240,240)" stroke-width="1"/>';
+        html += '<text x="' + (pad.left - 8) + '" y="' + (y + 4) + '" text-anchor="end" font-family="Figtree,sans-serif" font-size="11" fill="rgb(120,120,120)">10<tspan font-size="8" dy="-5">' + gy + '</tspan><tspan dy="5"></tspan></text>';
+      }
+    }
+
+    // Power law line (slope 0.75)
+    if (isLog) {
+      var lx1 = Math.pow(10, xMin);
+      var ly1 = 10 * Math.pow(lx1, 0.75);
+      var lx2 = Math.pow(10, xMax);
+      var ly2 = 10 * Math.pow(lx2, 0.75);
+      html += '<line x1="' + xScale(lx1) + '" y1="' + yScale(ly1) + '" x2="' + xScale(lx2) + '" y2="' + yScale(ly2) + '" stroke="#5B4AE8" stroke-width="2" stroke-dasharray="8,5" opacity="0.6"/>';
+    }
+
+    // Data points
+    for (var i = 0; i < data.length; i++) {
+      var d = data[i];
+      var cx = xScale(d.mass);
+      var cy = yScale(d.rate);
+      if (cx < pad.left || cx > pad.left + w || cy < pad.top || cy > pad.top + h) continue;
+      html += '<circle cx="' + cx + '" cy="' + cy + '" r="0" fill="' + (colors[d.name] || '#5B4AE8') + '" opacity="0.85">';
+      html += '<animate attributeName="r" from="0" to="6" dur="0.4s" begin="' + (i * 0.08) + 's" fill="freeze"/>';
+      html += '</circle>';
+      // Label
+      var lbl = d.name;
+      var anchor = 'start';
+      var dx = 10;
+      var labelY = cy + (d.labelDy || -10);
+      if (d.name === 'Blue Whale' || d.name === 'Elephant') { anchor = 'end'; dx = -10; }
+      html += '<text x="' + (cx + dx) + '" y="' + labelY + '" text-anchor="' + anchor + '" font-family="Figtree,sans-serif" font-size="11" font-weight="600" fill="' + (colors[d.name] || '#333') + '">' + lbl + '</text>';
+    }
+
+    // Axis labels
+    html += '<text x="' + (pad.left + w / 2) + '" y="' + (380 - 8) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="13" font-weight="600" fill="rgb(100,100,100)">Body Mass (kg)</text>';
+    html += '<text x="16" y="' + (pad.top + h / 2) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="13" font-weight="600" fill="rgb(100,100,100)" transform="rotate(-90,16,' + (pad.top + h / 2) + ')">Metabolic Rate (W)</text>';
+
+    svg.innerHTML = html;
+  }
+  render();
+})();
+
+// ════════════════════════════════════════════════════
+// WIDGET 3: Loss vs Compute
+// ════════════════════════════════════════════════════
+(function() {
+  var svg = document.getElementById('loss-svg');
+  var slider = document.getElementById('loss-slider');
+  var flopsLabel = document.getElementById('loss-flops');
+  if (!svg) return;
+
+  // Approximate real data points (log10 FLOPs, loss)
+  var models = [
+    { name: 'Small', flops: 17, loss: 3.4 },
+    { name: '124M', flops: 18.3, loss: 3.1 },
+    { name: '350M', flops: 19.2, loss: 2.85 },
+    { name: 'GPT-2', flops: 19.8, loss: 2.7 },
+    { name: '1.5B', flops: 20.5, loss: 2.5 },
+    { name: '6B', flops: 21.3, loss: 2.3 },
+    { name: 'GPT-3', flops: 23.5, loss: 1.85 },
+    { name: 'Chinchilla', flops: 23.8, loss: 1.75 },
+    { name: 'GPT-4*', flops: 25, loss: 1.45 }
+  ];
+
+  var pad = { top: 30, right: 30, bottom: 55, left: 65 };
+  var w = 636 - pad.left - pad.right;
+  var h = 360 - pad.top - pad.bottom;
+  var xMin = 16.5, xMax = 26, yMin = 1.2, yMax = 3.6;
+
+  function xScale(v) { return pad.left + ((v - xMin) / (xMax - xMin)) * w; }
+  function yScale(v) { return pad.top + h - ((v - yMin) / (yMax - yMin)) * h; }
+  // Power law: loss = A * C^alpha, in log: log(loss) = log(A) + alpha * log(C)
+  function lossAt(logFlops) { return 5.3 - 0.15 * logFlops; } // simplified fit
+
+  function render() {
+    var currentFlops = parseFloat(slider.value);
+    flopsLabel.innerHTML = '10<sup>' + currentFlops.toFixed(1) + '</sup>';
+
+    var html = '<rect width="636" height="360" fill="rgb(242,241,239)" rx="4"/>';
+    html += '<rect x="' + pad.left + '" y="' + pad.top + '" width="' + w + '" height="' + h + '" fill="#fff" rx="2"/>';
+
+    // Grid
+    for (var gx = 17; gx <= 25; gx += 1) {
+      var x = xScale(gx);
+      html += '<line x1="' + x + '" y1="' + pad.top + '" x2="' + x + '" y2="' + (pad.top + h) + '" stroke="rgb(243,243,243)" stroke-width="1"/>';
+      html += '<text x="' + x + '" y="' + (pad.top + h + 18) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="10" fill="rgb(140,140,140)">10<tspan font-size="7" dy="-4">' + gx + '</tspan><tspan dy="4"></tspan></text>';
+    }
+    for (var gy = 1.5; gy <= 3.5; gy += 0.5) {
+      var y = yScale(gy);
+      html += '<line x1="' + pad.left + '" y1="' + y + '" x2="' + (pad.left + w) + '" y2="' + y + '" stroke="rgb(243,243,243)" stroke-width="1"/>';
+      html += '<text x="' + (pad.left - 8) + '" y="' + (y + 4) + '" text-anchor="end" font-family="Figtree,sans-serif" font-size="10" fill="rgb(140,140,140)">' + gy.toFixed(1) + '</text>';
+    }
+
+    // Power law line
+    var pts = '';
+    for (var lf = xMin; lf <= xMax; lf += 0.1) {
+      var loss = lossAt(lf);
+      if (loss < yMin || loss > yMax) continue;
+      pts += (pts ? ' ' : '') + xScale(lf).toFixed(1) + ',' + yScale(loss).toFixed(1);
+    }
+    html += '<polyline points="' + pts + '" fill="none" stroke="#5B4AE8" stroke-width="2.5" stroke-dasharray="6,4" opacity="0.5"/>';
+
+    // Revealed curve up to slider
+    var revPts = '';
+    for (var lf2 = xMin; lf2 <= currentFlops; lf2 += 0.1) {
+      var loss2 = lossAt(lf2);
+      if (loss2 < yMin || loss2 > yMax) continue;
+      revPts += (revPts ? ' ' : '') + xScale(lf2).toFixed(1) + ',' + yScale(loss2).toFixed(1);
+    }
+    if (revPts) html += '<polyline points="' + revPts + '" fill="none" stroke="#5B4AE8" stroke-width="2.5"/>';
+
+    // Current point
+    var curLoss = lossAt(currentFlops);
+    if (curLoss >= yMin && curLoss <= yMax) {
+      html += '<circle cx="' + xScale(currentFlops) + '" cy="' + yScale(curLoss) + '" r="8" fill="#5B4AE8" opacity="0.2"/>';
+      html += '<circle cx="' + xScale(currentFlops) + '" cy="' + yScale(curLoss) + '" r="4" fill="#5B4AE8"/>';
+    }
+
+    // Model labels
+    for (var i = 0; i < models.length; i++) {
+      var m = models[i];
+      if (m.flops > currentFlops) continue;
+      var cx = xScale(m.flops), cy = yScale(m.loss);
+      html += '<circle cx="' + cx + '" cy="' + cy + '" r="5" fill="#E8634A" opacity="0.85"/>';
+      var dy = -12;
+      var anchor = 'middle';
+      if (m.name === 'GPT-3') { anchor = 'end'; dy = 4; }
+      if (m.name === 'Chinchilla') { anchor = 'start'; dy = 14; }
+      html += '<text x="' + cx + '" y="' + (cy + dy) + '" text-anchor="' + anchor + '" font-family="Figtree,sans-serif" font-size="11" font-weight="600" fill="#E8634A">' + m.name + '</text>';
+    }
+
+    // Axes
+    html += '<text x="' + (pad.left + w / 2) + '" y="' + (360 - 6) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="12" font-weight="600" fill="rgb(100,100,100)">Training Compute (FLOPs)</text>';
+    html += '<text x="14" y="' + (pad.top + h / 2) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="12" font-weight="600" fill="rgb(100,100,100)" transform="rotate(-90,14,' + (pad.top + h / 2) + ')">Cross-Entropy Loss</text>';
+
+    svg.innerHTML = html;
+  }
+
+  slider.addEventListener('input', render);
+  render();
+})();
+
+// ════════════════════════════════════════════════════
+// WIDGET 4: Chinchilla Budget Allocator
+// ════════════════════════════════════════════════════
+(function() {
+  var svg = document.getElementById('chinchilla-svg');
+  var slider = document.getElementById('chinchilla-slider');
+  if (!svg) return;
+
+  var pad = { top: 30, right: 30, bottom: 55, left: 65 };
+  var w = 636 - pad.left - pad.right;
+  var h = 320 - pad.top - pad.bottom;
+
+  function render() {
+    var split = parseFloat(slider.value); // 0..1, higher = more data
+    var html = '<rect width="636" height="320" fill="rgb(242,241,239)" rx="4"/>';
+    html += '<rect x="' + pad.left + '" y="' + pad.top + '" width="' + w + '" height="' + h + '" fill="#fff" rx="2"/>';
+
+    // Simulate: loss as a function of budget split
+    // Simplified Chinchilla-style: L = A/N^a + B/D^b + E
+    // where N = params (proportional to split toward params), D = data (proportional to 1-split)
+    var points = [];
+    var minLoss = 999, minSplit = 0.5;
+    for (var s = 0.05; s <= 0.95; s += 0.01) {
+      // Simplified U-shaped Chinchilla loss curve
+      var simpleLoss = 2.0 + 0.8 * Math.pow(Math.abs(s - 0.38), 0.7) + 0.1 * Math.pow(Math.abs(s - 0.38), 1.5);
+      points.push({ s: s, loss: simpleLoss });
+      if (simpleLoss < minLoss) { minLoss = simpleLoss; minSplit = s; }
+    }
+
+    var yMin = 1.8, yMax = 3.0;
+    function xScale(v) { return pad.left + ((v - 0.05) / 0.9) * w; }
+    function yScale(v) { return pad.top + h - ((v - yMin) / (yMax - yMin)) * h; }
+
+    // Grid
+    for (var gy = 2.0; gy <= 2.8; gy += 0.2) {
+      var y = yScale(gy);
+      html += '<line x1="' + pad.left + '" y1="' + y + '" x2="' + (pad.left + w) + '" y2="' + y + '" stroke="rgb(243,243,243)" stroke-width="1"/>';
+      html += '<text x="' + (pad.left - 8) + '" y="' + (y + 4) + '" text-anchor="end" font-family="Figtree,sans-serif" font-size="10" fill="rgb(140,140,140)">' + gy.toFixed(1) + '</text>';
+    }
+
+    // Curve
+    var pts = '';
+    for (var j = 0; j < points.length; j++) {
+      var p = points[j];
+      if (p.loss < yMin || p.loss > yMax) continue;
+      pts += (pts ? ' ' : '') + xScale(p.s).toFixed(1) + ',' + yScale(p.loss).toFixed(1);
+    }
+    html += '<polyline points="' + pts + '" fill="none" stroke="#5B4AE8" stroke-width="2.5"/>';
+
+    // Fill under curve
+    if (pts) {
+      var firstX = xScale(points[0].s);
+      var lastX = xScale(points[points.length - 1].s);
+      var bottom = pad.top + h;
+      html += '<polyline points="' + firstX + ',' + bottom + ' ' + pts + ' ' + lastX + ',' + bottom + '" fill="#5B4AE8" opacity="0.06"/>';
+    }
+
+    // Optimal point
+    html += '<circle cx="' + xScale(minSplit) + '" cy="' + yScale(minLoss) + '" r="6" fill="#5B4AE8" opacity="0.3"/>';
+    html += '<circle cx="' + xScale(minSplit) + '" cy="' + yScale(minLoss) + '" r="3" fill="#5B4AE8"/>';
+    html += '<text x="' + xScale(minSplit) + '" y="' + (yScale(minLoss) - 14) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="11" font-weight="600" fill="#5B4AE8">Optimal</text>';
+
+    // GPT-3 marker (too many params, too little data)
+    var gpt3Split = 0.72;
+    var gpt3Loss = 2.0 + 0.8 * Math.pow(Math.abs(gpt3Split - 0.38), 0.7) + 0.1 * Math.pow(Math.abs(gpt3Split - 0.38), 1.5);
+    html += '<circle cx="' + xScale(gpt3Split) + '" cy="' + yScale(gpt3Loss) + '" r="5" fill="#E8634A"/>';
+    html += '<text x="' + (xScale(gpt3Split) + 10) + '" y="' + (yScale(gpt3Loss) + 4) + '" text-anchor="start" font-family="Figtree,sans-serif" font-size="11" font-weight="600" fill="#E8634A">GPT-3</text>';
+
+    // Chinchilla marker
+    var chinSplit = 0.35;
+    var chinLoss = 2.0 + 0.8 * Math.pow(Math.abs(chinSplit - 0.38), 0.7) + 0.1 * Math.pow(Math.abs(chinSplit - 0.38), 1.5);
+    html += '<circle cx="' + xScale(chinSplit) + '" cy="' + yScale(chinLoss) + '" r="5" fill="#4A7DE8"/>';
+    html += '<text x="' + (xScale(chinSplit) - 10) + '" y="' + (yScale(chinLoss) - 10) + '" text-anchor="end" font-family="Figtree,sans-serif" font-size="11" font-weight="600" fill="#4A7DE8">Chinchilla</text>';
+
+    // Current selection
+    var curLoss = 2.0 + 0.8 * Math.pow(Math.abs(split - 0.38), 0.7) + 0.1 * Math.pow(Math.abs(split - 0.38), 1.5);
+    if (curLoss >= yMin && curLoss <= yMax) {
+      html += '<line x1="' + xScale(split) + '" y1="' + pad.top + '" x2="' + xScale(split) + '" y2="' + (pad.top + h) + '" stroke="#E8B44A" stroke-width="1.5" stroke-dasharray="4,3"/>';
+      html += '<circle cx="' + xScale(split) + '" cy="' + yScale(curLoss) + '" r="6" fill="#E8B44A"/>';
+    }
+
+    // Axes
+    html += '<text x="' + (pad.left + w * 0.15) + '" y="' + (320 - 8) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="12" font-weight="600" fill="rgb(100,100,100)">← More Data</text>';
+    html += '<text x="' + (pad.left + w * 0.85) + '" y="' + (320 - 8) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="12" font-weight="600" fill="rgb(100,100,100)">More Params →</text>';
+    html += '<text x="14" y="' + (pad.top + h / 2) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="12" font-weight="600" fill="rgb(100,100,100)" transform="rotate(-90,14,' + (pad.top + h / 2) + ')">Loss</text>';
+
+    svg.innerHTML = html;
+  }
+
+  slider.addEventListener('input', render);
+  render();
+})();
+
+// ════════════════════════════════════════════════════
+// WIDGET 5: Emergent Abilities
+// ════════════════════════════════════════════════════
+(function() {
+  var svg = document.getElementById('emergent-svg');
+  var slider = document.getElementById('emergent-slider');
+  var sizeLabel = document.getElementById('emergent-size');
+  var legendEl = document.getElementById('emergent-legend');
+  if (!svg) return;
+
+  var tasks = [
+    { name: 'Simple Q&A', threshold: 15, color: '#4A7DE8' },
+    { name: 'Translation', threshold: 25, color: '#5BAE8A' },
+    { name: 'Arithmetic (2-digit)', threshold: 35, color: '#E8B44A' },
+    { name: 'Code Generation', threshold: 50, color: '#E8634A' },
+    { name: 'Chain-of-Thought', threshold: 60, color: '#7B4AE8' },
+    { name: 'Analogical Reasoning', threshold: 75, color: '#D45B5B' },
+    { name: 'Complex Math', threshold: 90, color: '#C84A9A' }
+  ];
+
+  // Build legend
+  var legHtml = '';
+  for (var t = 0; t < tasks.length; t++) {
+    legHtml += '<div class="legend-item"><div class="legend-dot" style="background:' + tasks[t].color + '"></div>' + tasks[t].name + '</div>';
+  }
+  legendEl.innerHTML = legHtml;
+
+  var pad = { top: 30, right: 20, bottom: 55, left: 55 };
+  var w = 636 - pad.left - pad.right;
+  var h = 340 - pad.top - pad.bottom;
+
+  function sigmoid(x, threshold, steepness) {
+    return 1 / (1 + Math.exp(-steepness * (x - threshold)));
+  }
+
+  function sizeText(val) {
+    // Map 0-100 to model sizes
+    if (val < 10) return '100M';
+    if (val < 20) return '350M';
+    if (val < 30) return '1B';
+    if (val < 40) return '3B';
+    if (val < 50) return '7B';
+    if (val < 60) return '13B';
+    if (val < 70) return '30B';
+    if (val < 80) return '65B';
+    if (val < 90) return '175B';
+    return '500B+';
+  }
+
+  function render() {
+    var current = parseFloat(slider.value);
+    sizeLabel.textContent = sizeText(current);
+
+    var html = '<rect width="636" height="340" fill="rgb(242,241,239)" rx="4"/>';
+    html += '<rect x="' + pad.left + '" y="' + pad.top + '" width="' + w + '" height="' + h + '" fill="#fff" rx="2"/>';
+
+    function xScale(v) { return pad.left + (v / 100) * w; }
+    function yScale(v) { return pad.top + h - v * h; }
+
+    // Grid
+    for (var gy = 0; gy <= 1; gy += 0.25) {
+      var y = yScale(gy);
+      html += '<line x1="' + pad.left + '" y1="' + y + '" x2="' + (pad.left + w) + '" y2="' + y + '" stroke="rgb(243,243,243)" stroke-width="1"/>';
+      html += '<text x="' + (pad.left - 8) + '" y="' + (y + 4) + '" text-anchor="end" font-family="Figtree,sans-serif" font-size="10" fill="rgb(140,140,140)">' + (gy * 100).toFixed(0) + '%</text>';
+    }
+
+    // Current position line
+    html += '<line x1="' + xScale(current) + '" y1="' + pad.top + '" x2="' + xScale(current) + '" y2="' + (pad.top + h) + '" stroke="rgb(200,200,200)" stroke-width="1" stroke-dasharray="4,3"/>';
+
+    // Task curves
+    for (var i = 0; i < tasks.length; i++) {
+      var task = tasks[i];
+      var pts = '';
+      for (var x = 0; x <= 100; x += 1) {
+        if (x > current) break;
+        var accuracy = sigmoid(x, task.threshold, 0.2);
+        pts += (pts ? ' ' : '') + xScale(x).toFixed(1) + ',' + yScale(accuracy).toFixed(1);
+      }
+      if (pts) {
+        html += '<polyline points="' + pts + '" fill="none" stroke="' + task.color + '" stroke-width="2.5" opacity="0.85"/>';
+        // End dot
+        var endAccuracy = sigmoid(Math.min(current, 100), task.threshold, 0.2);
+        html += '<circle cx="' + xScale(Math.min(current, 100)) + '" cy="' + yScale(endAccuracy) + '" r="4" fill="' + task.color + '"/>';
+      }
+    }
+
+    // Axes
+    html += '<text x="' + (pad.left + w / 2) + '" y="' + (340 - 8) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="12" font-weight="600" fill="rgb(100,100,100)">Model Scale →</text>';
+    html += '<text x="14" y="' + (pad.top + h / 2) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="12" font-weight="600" fill="rgb(100,100,100)" transform="rotate(-90,14,' + (pad.top + h / 2) + ')">Task Accuracy</text>';
+
+    svg.innerHTML = html;
+  }
+
+  slider.addEventListener('input', render);
+  render();
+})();
+
+// ════════════════════════════════════════════════════
+// WIDGET 6: Compute Trend
+// ════════════════════════════════════════════════════
+(function() {
+  var svg = document.getElementById('compute-svg');
+  var slider = document.getElementById('compute-slider');
+  var rateLabel = document.getElementById('compute-rate');
+  if (!svg) return;
+
+  var models = [
+    { name: 'AlexNet', year: 2012, flops: 17, labelDy: -12 },
+    { name: 'VGG', year: 2014, flops: 18.5, labelDy: 16 },
+    { name: 'ResNet', year: 2015, flops: 18.8, labelDy: -12 },
+    { name: 'Transformer', year: 2017, flops: 19, labelDy: 16 },
+    { name: 'BERT', year: 2018, flops: 19.5, labelDy: -12 },
+    { name: 'GPT-2', year: 2019, flops: 19.8, labelDy: 16 },
+    { name: 'GPT-3', year: 2020, flops: 23.5, labelDy: -12 },
+    { name: 'PaLM', year: 2022, flops: 24.2, labelDy: 16 },
+    { name: 'GPT-4', year: 2023, flops: 25, labelDy: -12 },
+    { name: 'Llama 3', year: 2024, flops: 25.3, labelDy: 16 }
+  ];
+
+  var pad = { top: 30, right: 40, bottom: 55, left: 65 };
+  var w = 636 - pad.left - pad.right;
+  var h = 380 - pad.top - pad.bottom;
+  var xMin = 2011, xMax = 2031, yMin = 16, yMax = 30;
+
+  function xScale(v) { return pad.left + ((v - xMin) / (xMax - xMin)) * w; }
+  function yScale(v) { return pad.top + h - ((v - yMin) / (yMax - yMin)) * h; }
+
+  function render() {
+    var rate = parseFloat(slider.value);
+    rateLabel.textContent = rate.toFixed(1) + 'x/yr';
+
+    var html = '<rect width="636" height="380" fill="rgb(242,241,239)" rx="4"/>';
+    html += '<rect x="' + pad.left + '" y="' + pad.top + '" width="' + w + '" height="' + h + '" fill="#fff" rx="2"/>';
+
+    // Grid
+    for (var yr = 2012; yr <= 2030; yr += 2) {
+      var x = xScale(yr);
+      html += '<line x1="' + x + '" y1="' + pad.top + '" x2="' + x + '" y2="' + (pad.top + h) + '" stroke="rgb(243,243,243)" stroke-width="1"/>';
+      html += '<text x="' + x + '" y="' + (pad.top + h + 18) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="10" fill="rgb(140,140,140)">' + yr + '</text>';
+    }
+    for (var fy = 17; fy <= 29; fy += 2) {
+      var y = yScale(fy);
+      html += '<line x1="' + pad.left + '" y1="' + y + '" x2="' + (pad.left + w) + '" y2="' + y + '" stroke="rgb(243,243,243)" stroke-width="1"/>';
+      html += '<text x="' + (pad.left - 8) + '" y="' + (y + 4) + '" text-anchor="end" font-family="Figtree,sans-serif" font-size="10" fill="rgb(140,140,140)">10<tspan font-size="7" dy="-4">' + fy + '</tspan><tspan dy="4"></tspan></text>';
+    }
+
+    // Future zone
+    html += '<rect x="' + xScale(2025) + '" y="' + pad.top + '" width="' + (xScale(2031) - xScale(2025)) + '" height="' + h + '" fill="#5B4AE8" opacity="0.03"/>';
+    html += '<text x="' + xScale(2028) + '" y="' + (pad.top + 18) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="11" font-weight="600" fill="#5B4AE8" opacity="0.4">Projection</text>';
+
+    // Trend line (from 2012 using growth rate)
+    var baseFlops = 17; // 2012
+    var baseYear = 2012;
+    var logRate = Math.log10(rate);
+    var trendPts = '';
+    var projPts = '';
+    for (var ty = 2012; ty <= 2030; ty += 0.2) {
+      var f = baseFlops + logRate * (ty - baseYear);
+      if (f < yMin || f > yMax) continue;
+      var pt = xScale(ty).toFixed(1) + ',' + yScale(f).toFixed(1);
+      if (ty <= 2025) trendPts += (trendPts ? ' ' : '') + pt;
+      projPts += (projPts ? ' ' : '') + pt;
+    }
+    // Projection (dashed)
+    if (projPts) html += '<polyline points="' + projPts + '" fill="none" stroke="#5B4AE8" stroke-width="2" stroke-dasharray="6,4" opacity="0.4"/>';
+    // Historical (solid)
+    if (trendPts) html += '<polyline points="' + trendPts + '" fill="none" stroke="#5B4AE8" stroke-width="2" opacity="0.6"/>';
+
+    // Model dots
+    for (var i = 0; i < models.length; i++) {
+      var m = models[i];
+      var cx = xScale(m.year), cy = yScale(m.flops);
+      html += '<circle cx="' + cx + '" cy="' + cy + '" r="5" fill="#E8634A"/>';
+      html += '<text x="' + cx + '" y="' + (cy + m.labelDy) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="10" font-weight="600" fill="#E8634A">' + m.name + '</text>';
+    }
+
+    // Axes
+    html += '<text x="' + (pad.left + w / 2) + '" y="' + (380 - 6) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="12" font-weight="600" fill="rgb(100,100,100)">Year</text>';
+    html += '<text x="14" y="' + (pad.top + h / 2) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="12" font-weight="600" fill="rgb(100,100,100)" transform="rotate(-90,14,' + (pad.top + h / 2) + ')">Training Compute (FLOPs)</text>';
+
+    svg.innerHTML = html;
+  }
+
+  slider.addEventListener('input', render);
+  render();
+})();
+
+// ════════════════════════════════════════════════════
+// WIDGET 7: Prediction Explorer
+// ════════════════════════════════════════════════════
+(function() {
+  var svg = document.getElementById('predict-svg');
+  var slider = document.getElementById('predict-slider');
+  var expLabel = document.getElementById('predict-exp');
+  if (!svg) return;
+
+  var thresholds = [
+    { name: 'College student', loss: 2.1, color: '#4A7DE8' },
+    { name: 'Expert programmer', loss: 1.7, color: '#E8B44A' },
+    { name: 'PhD researcher', loss: 1.3, color: '#E8634A' }
+  ];
+
+  var pad = { top: 30, right: 30, bottom: 55, left: 65 };
+  var w = 636 - pad.left - pad.right;
+  var h = 380 - pad.top - pad.bottom;
+  var xMin = 2020, xMax = 2035, yMin = 0.8, yMax = 2.5;
+
+  function xScale(v) { return pad.left + ((v - xMin) / (xMax - xMin)) * w; }
+  function yScale(v) { return pad.top + h - ((v - yMin) / (yMax - yMin)) * h; }
+
+  function render() {
+    var exponent = parseFloat(slider.value);
+    expLabel.textContent = exponent.toFixed(3);
+
+    var html = '<rect width="636" height="380" fill="rgb(242,241,239)" rx="4"/>';
+    html += '<rect x="' + pad.left + '" y="' + pad.top + '" width="' + w + '" height="' + h + '" fill="#fff" rx="2"/>';
+
+    // Grid
+    for (var yr = 2020; yr <= 2034; yr += 2) {
+      var x = xScale(yr);
+      html += '<line x1="' + x + '" y1="' + pad.top + '" x2="' + x + '" y2="' + (pad.top + h) + '" stroke="rgb(243,243,243)" stroke-width="1"/>';
+      html += '<text x="' + x + '" y="' + (pad.top + h + 18) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="10" fill="rgb(140,140,140)">' + yr + '</text>';
+    }
+    for (var ly = 1.0; ly <= 2.4; ly += 0.2) {
+      var y = yScale(ly);
+      html += '<line x1="' + pad.left + '" y1="' + y + '" x2="' + (pad.left + w) + '" y2="' + y + '" stroke="rgb(243,243,243)" stroke-width="1"/>';
+      html += '<text x="' + (pad.left - 8) + '" y="' + (y + 4) + '" text-anchor="end" font-family="Figtree,sans-serif" font-size="10" fill="rgb(140,140,140)">' + ly.toFixed(1) + '</text>';
+    }
+
+    // Loss curve over time
+    // Assume: compute grows 4.2x/yr from 2020 baseline of 10^23.5
+    // Loss = A * C^exponent, so log(loss) = logA + exponent * logC
+    // logC(year) = 23.5 + log10(4.2) * (year - 2020)
+    var logRate = Math.log10(4.2);
+    var A = 5.3; // calibration constant for loss
+
+    var pts = '';
+    for (var ty = 2020; ty <= 2035; ty += 0.1) {
+      var logC = 23.5 + logRate * (ty - 2020);
+      var loss = A + exponent * logC;
+      if (loss < yMin) loss = yMin;
+      if (loss > yMax) continue;
+      pts += (pts ? ' ' : '') + xScale(ty).toFixed(1) + ',' + yScale(loss).toFixed(1);
+    }
+
+    // Fill under curve
+    if (pts) {
+      html += '<polyline points="' + xScale(2020) + ',' + (pad.top + h) + ' ' + pts + ' ' + xScale(2035) + ',' + (pad.top + h) + '" fill="#5B4AE8" opacity="0.05"/>';
+      html += '<polyline points="' + pts + '" fill="none" stroke="#5B4AE8" stroke-width="2.5"/>';
+    }
+
+    // Threshold lines
+    for (var t = 0; t < thresholds.length; t++) {
+      var th = thresholds[t];
+      var ty2 = yScale(th.loss);
+      if (ty2 < pad.top || ty2 > pad.top + h) continue;
+      html += '<line x1="' + pad.left + '" y1="' + ty2 + '" x2="' + (pad.left + w) + '" y2="' + ty2 + '" stroke="' + th.color + '" stroke-width="1.5" stroke-dasharray="6,4" opacity="0.6"/>';
+      html += '<text x="' + (pad.left + w - 4) + '" y="' + (ty2 - 6) + '" text-anchor="end" font-family="Figtree,sans-serif" font-size="11" font-weight="600" fill="' + th.color + '">' + th.name + '</text>';
+
+      // Find intersection year
+      for (var iy = 2020; iy <= 2035; iy += 0.05) {
+        var logC2 = 23.5 + logRate * (iy - 2020);
+        var loss2 = A + exponent * logC2;
+        if (loss2 <= th.loss) {
+          var ix = xScale(iy);
+          html += '<circle cx="' + ix + '" cy="' + ty2 + '" r="5" fill="' + th.color + '"/>';
+          html += '<text x="' + ix + '" y="' + (ty2 + 18) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="11" font-weight="700" fill="' + th.color + '">' + iy.toFixed(0) + '</text>';
+          break;
+        }
+      }
+    }
+
+    // Axes
+    html += '<text x="' + (pad.left + w / 2) + '" y="' + (380 - 6) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="12" font-weight="600" fill="rgb(100,100,100)">Year</text>';
+    html += '<text x="14" y="' + (pad.top + h / 2) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="12" font-weight="600" fill="rgb(100,100,100)" transform="rotate(-90,14,' + (pad.top + h / 2) + ')">Effective Loss</text>';
+
+    svg.innerHTML = html;
+  }
+
+  slider.addEventListener('input', render);
+  render();
+})();
+
+// ════════════════════════════════════════════════════
+// Scroll Reveal
+// ════════════════════════════════════════════════════
+(function() {
+  var observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+  document.querySelectorAll('.fade-in').forEach(function(el) { observer.observe(el); });
+})();
+</script>
+</body>
+</html>

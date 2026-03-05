@@ -1,0 +1,1723 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ML-Based Trading, Explained Plainly | An Interactive Guide</title>
+<meta name="description" content="What actually works in machine learning for trading, what doesn't, and why most quant strategies fail. Interactive guide with 6 hands-on demos using real Nifty 50 data.">
+
+<!-- Open Graph -->
+<meta property="og:title" content="ML-Based Trading, Explained Plainly">
+<meta property="og:description" content="What actually works in ML trading, what doesn't, and why most quant strategies fail. 6 interactive demos with real market data.">
+<meta property="og:url" content="https://supergeek.in/ml-trading/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Danish Khan">
+<meta property="og:locale" content="en_US">
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="ML-Based Trading, Explained Plainly">
+<meta name="twitter:description" content="What works in ML trading, what doesn't, and why most quant strategies fail. 6 interactive demos.">
+
+<!-- Canonical -->
+<link rel="canonical" href="https://supergeek.in/ml-trading/">
+
+<!-- Structured Data -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "ML-Based Trading, Explained Plainly",
+  "description": "What actually works in machine learning for trading, what doesn't, and why most quant strategies fail. Interactive guide with 6 hands-on demos using real Nifty 50 data.",
+  "author": {
+    "@type": "Person",
+    "name": "Danish Khan",
+    "url": "https://supergeek.in",
+    "jobTitle": "AI Product Builder",
+    "sameAs": [
+      "https://github.com/DanisHack"
+    ]
+  },
+  "publisher": {
+    "@type": "Person",
+    "name": "Danish Khan",
+    "url": "https://supergeek.in"
+  },
+  "datePublished": "2026-03-05",
+  "dateModified": "2026-03-05",
+  "mainEntityOfPage": "https://supergeek.in/ml-trading/",
+  "keywords": ["machine learning trading", "quantitative trading", "algorithmic trading", "technical indicators", "backtesting", "overfitting", "Sharpe ratio", "efficient frontier", "SHAP", "portfolio optimization"]
+}
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,700;1,6..72,400&family=Figtree:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+/* ── Reset ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Newsreader', Georgia, serif;
+  font-size: 21px;
+  line-height: 1.4;
+  color: rgb(45,45,45);
+  background: rgb(250,249,247);
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: #5B4AE8; text-decoration: none; }
+a:hover { color: #7B4AE8; }
+
+.content { max-width: 700px; margin: 0 auto; padding: 0 24px; }
+
+.hero {
+  position: relative;
+  border-radius: 16px;
+  margin: 12px auto;
+  max-width: calc(100% - 24px);
+  min-height: 300px;
+  overflow: hidden;
+  display: flex;
+  align-items: flex-end;
+  padding: 48px 40px;
+}
+.hero-bg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.hero .content { position: relative; z-index: 1; max-width: none; padding: 0; }
+.hero h1 {
+  font-family: 'Newsreader', Georgia, serif;
+  font-size: 64px;
+  font-weight: 700;
+  line-height: 1.1;
+  color: #fff;
+  margin-bottom: 12px;
+}
+.post-subtitle {
+  font-family: 'Figtree', system-ui, sans-serif;
+  font-size: 26px;
+  font-weight: 500;
+  line-height: 1.1;
+  color: rgba(255,255,255,0.85);
+}
+
+.intro { margin: 60px auto 40px; }
+.intro-text {
+  font-style: italic;
+  font-size: 23px;
+  line-height: 1.45;
+  color: rgb(80,80,80);
+}
+
+.toc {
+  margin: 0 auto 60px;
+  padding: 24px 28px;
+  background: rgb(242,241,239);
+  border-radius: 12px;
+}
+.toc h4 {
+  font-family: 'Figtree', system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 12px;
+  color: rgb(100,100,100);
+}
+.toc ol { padding-left: 20px; }
+.toc li {
+  font-family: 'Figtree', system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.8;
+  color: rgb(80,80,80);
+}
+.toc a { color: rgb(45,45,45); border-bottom: 1px solid transparent; }
+.toc a:hover { color: #5B4AE8; border-bottom-color: #5B4AE8; }
+
+.section-header {
+  display: flex;
+  align-items: baseline;
+  gap: 20px;
+  padding-top: 100px;
+  margin-bottom: 40px;
+  border-top: 1px solid rgb(220,218,214);
+}
+.section-number {
+  font-family: 'Newsreader', Georgia, serif;
+  font-size: 50px;
+  font-weight: 400;
+  color: rgb(180,178,174);
+  flex-shrink: 0;
+}
+.section-header h2 {
+  font-family: 'Figtree', system-ui, sans-serif;
+  font-size: 44px;
+  font-weight: 700;
+  line-height: 1.1;
+  color: rgb(45,45,45);
+}
+h3 {
+  font-family: 'Figtree', system-ui, sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.1;
+  margin-top: 40px;
+  margin-bottom: 16px;
+}
+
+main p { margin-bottom: 20px; }
+main p strong { font-weight: 700; }
+
+.demo-container {
+  background: rgb(242,241,239);
+  border-radius: 12px;
+  padding: 32px;
+  margin: 32px 0;
+}
+.label {
+  font-family: 'Figtree', system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgb(45,45,45);
+  margin-bottom: 16px;
+}
+figcaption {
+  font-family: 'Newsreader', Georgia, serif;
+  font-style: italic;
+  font-size: 17px;
+  line-height: 1.4;
+  color: rgb(100,100,100);
+  text-align: center;
+  margin-top: 16px;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 16px 0;
+  flex-wrap: wrap;
+}
+.controls label {
+  font-family: 'Figtree', system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: rgb(80,80,80);
+}
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 6px;
+  border-radius: 3px;
+  background: rgb(200,198,194);
+  outline: none;
+  flex: 1;
+  min-width: 120px;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  background: #5B4AE8;
+  cursor: pointer;
+  border: 3px solid #fff;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+}
+input[type="range"]::-moz-range-thumb {
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  background: #5B4AE8;
+  cursor: pointer;
+  border: 3px solid #fff;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+}
+.toggle-btn {
+  font-family: 'Figtree', system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: 1px solid rgb(200,198,194);
+  background: #fff;
+  color: rgb(45,45,45);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.toggle-btn:hover { border-color: #5B4AE8; color: #5B4AE8; }
+.toggle-btn.active { background: #5B4AE8; color: #fff; border-color: #5B4AE8; }
+
+.value-display {
+  font-family: 'Figtree', system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: #5B4AE8;
+  min-width: 60px;
+}
+
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+  margin: 16px 0;
+}
+.stat-card {
+  background: #fff;
+  border-radius: 8px;
+  padding: 16px;
+  text-align: center;
+}
+.stat-value {
+  font-family: 'Figtree', system-ui, sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+.stat-label {
+  font-family: 'Figtree', system-ui, sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: rgb(100,100,100);
+  margin-top: 4px;
+}
+
+.callout {
+  border-left: 4px solid #5B4AE8;
+  padding: 20px 24px;
+  margin: 32px 0;
+  background: rgba(91,74,232,0.04);
+  border-radius: 0 8px 8px 0;
+}
+.callout p { margin-bottom: 8px; }
+.callout p:last-child { margin-bottom: 0; }
+
+.sidenote-trigger {
+  font-family: 'Figtree', system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: #5B4AE8;
+  cursor: pointer;
+  vertical-align: super;
+}
+.sidenote {
+  display: none;
+  background: rgb(242,241,239);
+  padding: 16px 20px;
+  border-radius: 8px;
+  margin: 8px 0 16px;
+}
+.sidenote.open { display: block; }
+.sidenote p {
+  font-family: 'Figtree', system-ui, sans-serif;
+  font-size: 15px;
+  line-height: 1.4;
+  margin-bottom: 8px;
+}
+.sidenote p:last-child { margin-bottom: 0; }
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 20px;
+  margin: 12px 0;
+}
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'Figtree', system-ui, sans-serif;
+  font-size: 13px;
+  color: rgb(80,80,80);
+}
+.legend-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.fade-in {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+.fade-in.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.site-footer {
+  background: #3A2D7A;
+  color: rgba(255,255,255,0.7);
+  padding: 60px 24px;
+  margin-top: 100px;
+  text-align: center;
+}
+.site-footer p:first-child {
+  font-family: 'Newsreader', Georgia, serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 8px;
+}
+.site-footer .footer-tagline {
+  font-family: 'Newsreader', Georgia, serif;
+  font-style: italic;
+  font-size: 17px;
+  color: rgba(255,255,255,0.5);
+  margin-top: 16px;
+}
+.site-footer a { color: rgba(255,255,255,0.8); }
+.site-footer a:hover { color: #fff; }
+
+@media (max-width: 768px) {
+  body { font-size: 19px; }
+  .hero h1 { font-size: 40px; }
+  .post-subtitle { font-size: 20px; }
+  .hero { padding: 32px 24px; min-height: 220px; }
+  .section-header { padding-top: 60px; margin-bottom: 30px; gap: 14px; }
+  .section-number { font-size: 36px; }
+  .section-header h2 { font-size: 32px; }
+  h3 { font-size: 22px; }
+  .intro-text { font-size: 20px; }
+  .demo-container { padding: 20px 16px; }
+  .stat-grid { grid-template-columns: repeat(2, 1fr); }
+  .stat-value { font-size: 22px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
+</style>
+</head>
+<body>
+
+<a href="/" style="display:inline-block;margin:16px 0 0 16px;font-family:'Figtree',system-ui,sans-serif;font-size:15px;font-weight:600;color:rgb(100,100,100);text-decoration:none;" onmouseover="this.style.color='#5B4AE8'" onmouseout="this.style.color='rgb(100,100,100)'">&larr; Danish Khan</a>
+
+<div class="hero">
+  <svg class="hero-bg" viewBox="0 0 1200 400" preserveAspectRatio="xMidYMid slice">
+    <defs>
+      <linearGradient id="heroGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#0d1117"/>
+        <stop offset="30%" stop-color="#161b22"/>
+        <stop offset="60%" stop-color="#2d333b"/>
+        <stop offset="100%" stop-color="#5B4AE8"/>
+      </linearGradient>
+      <pattern id="gridP" width="40" height="40" patternUnits="userSpaceOnUse">
+        <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+      </pattern>
+    </defs>
+    <rect width="1200" height="400" fill="url(#heroGrad)"/>
+    <rect width="1200" height="400" fill="url(#gridP)"/>
+    <!-- Decorative: candlestick chart -->
+    <line x1="150" y1="280" x2="150" y2="180" stroke="rgba(91,174,138,0.3)" stroke-width="2"/>
+    <rect x="142" y="200" width="16" height="60" fill="rgba(91,174,138,0.25)" rx="1"/>
+    <line x1="250" y1="300" x2="250" y2="160" stroke="rgba(91,174,138,0.3)" stroke-width="2"/>
+    <rect x="242" y="180" width="16" height="80" fill="rgba(91,174,138,0.25)" rx="1"/>
+    <line x1="350" y1="320" x2="350" y2="200" stroke="rgba(232,99,74,0.3)" stroke-width="2"/>
+    <rect x="342" y="220" width="16" height="70" fill="rgba(232,99,74,0.25)" rx="1"/>
+    <line x1="450" y1="340" x2="450" y2="240" stroke="rgba(232,99,74,0.3)" stroke-width="2"/>
+    <rect x="442" y="260" width="16" height="50" fill="rgba(232,99,74,0.25)" rx="1"/>
+    <line x1="550" y1="300" x2="550" y2="180" stroke="rgba(91,174,138,0.3)" stroke-width="2"/>
+    <rect x="542" y="200" width="16" height="70" fill="rgba(91,174,138,0.25)" rx="1"/>
+    <line x1="650" y1="260" x2="650" y2="140" stroke="rgba(91,174,138,0.3)" stroke-width="2"/>
+    <rect x="642" y="160" width="16" height="70" fill="rgba(91,174,138,0.25)" rx="1"/>
+    <!-- Moving average line -->
+    <polyline points="150,230 250,210 350,240 450,270 550,240 650,200 750,180 850,170 950,165 1050,160" fill="none" stroke="rgba(91,74,232,0.2)" stroke-width="2.5" stroke-dasharray="6,4"/>
+    <line x1="750" y1="240" x2="750" y2="120" stroke="rgba(91,174,138,0.2)" stroke-width="2"/>
+    <rect x="742" y="140" width="16" height="70" fill="rgba(91,174,138,0.2)" rx="1"/>
+    <line x1="850" y1="220" x2="850" y2="110" stroke="rgba(91,174,138,0.2)" stroke-width="2"/>
+    <rect x="842" y="130" width="16" height="60" fill="rgba(91,174,138,0.15)" rx="1"/>
+    <!-- Sharpe annotation -->
+    <text x="1050" y="340" text-anchor="middle" font-family="Figtree,sans-serif" font-size="42" font-weight="700" fill="rgba(255,255,255,0.04)">SR 0.3</text>
+  </svg>
+  <div class="content">
+    <h1>ML-Based Trading, Explained</h1>
+    <p class="post-subtitle">What actually works, what doesn&rsquo;t, and why most quantitative strategies fail.</p>
+  </div>
+</div>
+
+<main class="content">
+<article>
+
+<section class="intro">
+  <p class="intro-text">Every year, thousands of engineers build machine learning models to trade stocks. Most of them lose money. Not because ML doesn&rsquo;t work in finance &mdash; it does, when applied correctly. But because the gap between a promising backtest and a profitable strategy is enormous, and almost nobody talks about what lives in that gap. Since 1926, only 42.1% of US stocks have outperformed risk-free Treasury bills. The median stock lifespan is just 7 years. Marcos L&oacute;pez de Prado, the most cited quant researcher alive, wrote that &ldquo;the hardest problem in finance is not prediction &mdash; it&rsquo;s validation.&rdquo; This explainer shows you why, using real Nifty 50 data.</p>
+</section>
+
+<nav class="toc">
+  <h4>Contents</h4>
+  <ol>
+    <li><a href="#section-1">Reading the Chart: Technical Indicators</a></li>
+    <li><a href="#section-2">Momentum vs Mean Reversion</a></li>
+    <li><a href="#section-3">The Overfitting Trap</a></li>
+    <li><a href="#section-4">Measuring What Matters: Drawdowns</a></li>
+    <li><a href="#section-5">What the Model Actually Learns</a></li>
+    <li><a href="#section-6">Building a Portfolio: The Efficient Frontier</a></li>
+  </ol>
+</nav>
+
+
+<!-- ════════════════════════════════════════════════════ -->
+<!-- SECTION I                                           -->
+<!-- ════════════════════════════════════════════════════ -->
+<section id="section-1" class="fade-in">
+  <div class="section-header">
+    <span class="section-number">I.</span>
+    <h2>Reading the Chart</h2>
+  </div>
+
+  <p>ML models don&rsquo;t consume raw stock prices. They consume <strong>features</strong> &mdash; mathematical transformations of price and volume data that encode patterns a model can learn from. The three most important families of technical indicators are RSI, MACD, and Bollinger Bands.</p>
+
+  <p><strong>RSI (Relative Strength Index)</strong> measures momentum on a 0&ndash;100 scale. Above 70 means &ldquo;overbought&rdquo; &mdash; the stock may have risen too fast. Below 30 means &ldquo;oversold.&rdquo; The formula: RSI = 100 &minus; 100/(1 + RS), where RS = average gain / average loss over 14 periods.</p>
+
+  <p><strong>MACD</strong> (Moving Average Convergence Divergence) captures trend changes. It&rsquo;s the difference between two exponential moving averages (12-period minus 26-period). When the MACD line crosses above its 9-period signal line, that&rsquo;s a buy signal. When it crosses below, sell.</p>
+
+  <p><strong>Bollinger Bands</strong> wrap a 2-standard-deviation envelope around a 20-period moving average. When the bands squeeze tight, volatility is low and a breakout is coming. When price touches the upper band, the stock may be overextended.<span class="sidenote-trigger" onclick="toggleSidenote('sn1')">[1]</span></p>
+  <div class="sidenote" id="sn1"><p>John Bollinger invented these bands in the 1980s. The key insight isn&rsquo;t the bands themselves &mdash; it&rsquo;s the squeeze. Periods of low volatility reliably precede periods of high volatility. ML models exploit this by using Bollinger Band width as a feature.</p></div>
+
+  <figure>
+    <div class="demo-container" id="indicator-demo">
+      <p class="label">Technical Indicator Explorer: Nifty 50 (2022&ndash;2024)</p>
+      <div class="controls">
+        <button class="toggle-btn active" onclick="toggleIndicator('rsi')">RSI</button>
+        <button class="toggle-btn" onclick="toggleIndicator('macd')">MACD</button>
+        <button class="toggle-btn" onclick="toggleIndicator('bb')">Bollinger Bands</button>
+      </div>
+      <svg id="indicator-svg" viewBox="0 0 636 420" width="100%"></svg>
+      <div class="stat-grid" id="indicator-stats"></div>
+      <figcaption>Toggle between indicators to see how each reads the same Nifty 50 price data differently. RSI catches overbought/oversold extremes, MACD captures trend shifts, Bollinger Bands reveal volatility squeezes.</figcaption>
+      <noscript><p>The Technical Indicator Explorer shows Nifty 50 weekly closing prices from January 2022 through December 2024, overlaid with three different technical indicators. RSI (Relative Strength Index) oscillates between 0 and 100, with the Nifty hitting overbought territory (above 70) during the rally to 22,000 in late 2023 and oversold (below 30) during the 2022 correction. MACD shows trend-following signals with histogram bars and signal line crossovers. Bollinger Bands reveal volatility squeezes preceding major moves. Each indicator generates different buy/sell signals on the same data, which is why ML models combine multiple indicators as features rather than relying on any single one.</p></noscript>
+    </div>
+  </figure>
+</section>
+
+
+<!-- ════════════════════════════════════════════════════ -->
+<!-- SECTION II                                          -->
+<!-- ════════════════════════════════════════════════════ -->
+<section id="section-2" class="fade-in">
+  <div class="section-header">
+    <span class="section-number">II.</span>
+    <h2>Momentum vs Mean Reversion</h2>
+  </div>
+
+  <p>Two forces govern stock prices, and they pull in opposite directions.</p>
+
+  <p><strong>Momentum</strong> says winners keep winning. Jegadeesh and Titman showed in 1993 that stocks that performed well over the past 3&ndash;12 months tend to continue performing well. This is the most robust anomaly in all of finance &mdash; it works across countries, asset classes, and time periods.</p>
+
+  <p><strong>Mean reversion</strong> says what goes up must come down. Over longer horizons &mdash; 1 to 5 years &mdash; stocks that have risen sharply tend to underperform, and beaten-down stocks tend to recover. DeBondt and Thaler documented this in 1985.<span class="sidenote-trigger" onclick="toggleSidenote('sn2')">[2]</span></p>
+  <div class="sidenote" id="sn2"><p>The coexistence of momentum and mean reversion isn&rsquo;t a contradiction. Momentum operates on investor underreaction (news takes time to be fully priced in). Mean reversion operates on overreaction (investors eventually push prices too far). Different timescales, different behavioral causes.</p></div>
+
+  <p>The critical insight: <strong>the same stock can be a momentum buy and a mean reversion sell at the same time</strong>, depending on which timescale you look at. This is why the lookback period you choose for your ML features matters enormously &mdash; and why many strategies fail when the market regime shifts.</p>
+
+  <figure>
+    <div class="demo-container" id="momentum-demo">
+      <p class="label">Time Horizon Explorer: When Signals Flip</p>
+      <div class="controls">
+        <label>Lookback period:</label>
+        <input type="range" id="momentum-slider" min="1" max="24" step="1" value="3">
+        <span class="value-display" id="momentum-val">3 months</span>
+      </div>
+      <svg id="momentum-svg" viewBox="0 0 636 380" width="100%"></svg>
+      <div class="stat-grid" id="momentum-stats"></div>
+      <figcaption>Drag the slider from 1 month to 24 months. Watch the signal flip from momentum (short lookback) to mean reversion (long lookback) on the same Nifty 50 data.</figcaption>
+      <noscript><p>The Time Horizon Explorer demonstrates how the same Nifty 50 data produces opposite trading signals depending on the lookback period. At short lookbacks (1-3 months), momentum dominates: stocks that rose continue rising, producing positive forward returns and 58-62% win rates. At long lookbacks (12-24 months), mean reversion takes over: stocks that rose sharply tend to underperform, producing signals that flip direction. The crossover point where momentum fades and reversion begins typically occurs around 9-12 months. This is why ML models trained on one timescale fail when market conditions change, and why the lookback period is one of the most critical hyperparameters in any trading model.</p></noscript>
+    </div>
+  </figure>
+</section>
+
+
+<!-- ════════════════════════════════════════════════════ -->
+<!-- SECTION III                                         -->
+<!-- ════════════════════════════════════════════════════ -->
+<section id="section-3" class="fade-in">
+  <div class="section-header">
+    <span class="section-number">III.</span>
+    <h2>The Overfitting Trap</h2>
+  </div>
+
+  <p>Here&rsquo;s where most ML traders get destroyed. You build a model. You backtest it on 5 years of data. The Sharpe ratio is 8.2. You feel like a genius.</p>
+
+  <p>Then you trade it live. Sharpe ratio: 0.3.</p>
+
+  <p>The gap between 8.2 and 0.3 is <strong>overfitting</strong>. Your model didn&rsquo;t learn the market &mdash; it memorized your training data. Modern computing lets you test billions of parameter combinations. With enough parameters, you can fit any historical pattern. But those patterns are noise, not signal.<span class="sidenote-trigger" onclick="toggleSidenote('sn3')">[3]</span></p>
+  <div class="sidenote" id="sn3"><p>L&oacute;pez de Prado estimates that testing 100 parameter combinations on 5 years of daily data gives you a ~50% probability of finding a &ldquo;significant&rdquo; pattern by pure chance. Test 10,000 combinations and you&rsquo;re virtually guaranteed to find several. This is why most published trading strategies fail out of sample.</p></div>
+
+  <p>The rule of thumb: <strong>the more complex your model, the bigger the gap between training and testing performance.</strong> A simple moving-average crossover might have modest in-sample performance, but it degrades gracefully. A 50-parameter neural net might look incredible in-sample, but it falls off a cliff out-of-sample.</p>
+
+  <div class="callout">
+    <p><strong>L&oacute;pez de Prado&rsquo;s rule:</strong> &ldquo;If you torture the data long enough, it will confess to anything.&rdquo; The solution is walk-forward validation &mdash; train on window 1, test on window 2, retrain on windows 1+2, test on window 3. Never let your model see test data during training.</p>
+  </div>
+
+  <figure>
+    <div class="demo-container" id="overfit-demo">
+      <p class="label">The Overfitting Cliff</p>
+      <div class="controls">
+        <label>Model complexity:</label>
+        <input type="range" id="overfit-slider" min="1" max="10" step="1" value="1">
+        <span class="value-display" id="overfit-val">1 (Simple)</span>
+      </div>
+      <svg id="overfit-svg" viewBox="0 0 636 380" width="100%"></svg>
+      <div class="stat-grid" id="overfit-stats"></div>
+      <figcaption>Drag the slider from simple (1) to complex (10). Watch the in-sample Sharpe soar while the out-of-sample Sharpe crashes. The gap is the overfitting penalty.</figcaption>
+      <noscript><p>The Overfitting Cliff visualization demonstrates the most common failure mode in ML trading. As model complexity increases from 1 (simple moving average crossover) to 10 (50-parameter neural network), in-sample Sharpe ratio rises dramatically from 0.8 to 8.2. But out-of-sample Sharpe ratio tells a different story: it rises initially to about 1.1 at complexity level 3, then crashes to 0.3 by complexity level 10. The sweet spot is around complexity 3-4, where out-of-sample performance peaks. Beyond that, additional complexity only fits noise. The overfitting penalty (in-sample minus out-of-sample) grows from 0.1 at low complexity to 7.9 at high complexity, showing how misleading backtest results can be.</p></noscript>
+    </div>
+  </figure>
+</section>
+
+
+<!-- ════════════════════════════════════════════════════ -->
+<!-- SECTION IV                                          -->
+<!-- ════════════════════════════════════════════════════ -->
+<section id="section-4" class="fade-in">
+  <div class="section-header">
+    <span class="section-number">IV.</span>
+    <h2>Measuring What Matters</h2>
+  </div>
+
+  <p>Returns mean nothing without risk context. A strategy that returns 40% but has a 60% max drawdown will get abandoned long before it pays off &mdash; because no human can stomach watching their account lose more than half its value.</p>
+
+  <p>The <strong>Sharpe ratio</strong> normalizes return by volatility: (Return &minus; Risk-Free Rate) / Volatility. A Sharpe of 1.0 is good. 2.0 is excellent. The market long-term Sharpe is about 0.4&ndash;0.5.</p>
+
+  <p><strong>Max drawdown</strong> is the worst peak-to-trough decline. The 2020 COVID crash produced a &minus;38% drawdown on Nifty 50 in just 5 weeks. Recovery took 5 months. The &ldquo;underwater period&rdquo; &mdash; the time spent below the previous peak &mdash; is what actually breaks traders psychologically.<span class="sidenote-trigger" onclick="toggleSidenote('sn4')">[4]</span></p>
+  <div class="sidenote" id="sn4"><p>The Calmar ratio = Annual Return / Max Drawdown captures this tradeoff directly. A Calmar above 1.0 means your annual return exceeds your worst drawdown. Below 1.0, and you&rsquo;re in territory where behavioral psychology predicts strategy abandonment.</p></div>
+
+  <figure>
+    <div class="demo-container" id="drawdown-demo">
+      <p class="label">Drawdown Underwater Chart</p>
+      <div class="controls">
+        <button class="toggle-btn active" onclick="toggleDrawdown('buyhold')">Buy &amp; Hold Nifty</button>
+        <button class="toggle-btn" onclick="toggleDrawdown('momentum')">Momentum Strategy</button>
+        <button class="toggle-btn" onclick="toggleDrawdown('meanrev')">Mean Reversion</button>
+      </div>
+      <svg id="drawdown-svg" viewBox="0 0 636 420" width="100%"></svg>
+      <div class="stat-grid" id="drawdown-stats"></div>
+      <figcaption>Toggle between strategies. The red underwater area shows how long each strategy spent below its peak. Buy &amp; Hold had the deepest drawdown; Momentum had the longest underwater period.</figcaption>
+      <noscript><p>The Drawdown Underwater Chart compares three strategies on Nifty 50 from 2020-2024. Buy and Hold produced the highest total return at 92% but suffered a maximum drawdown of -38% during the COVID crash of March 2020 with a 5-month recovery. The Momentum Strategy delivered 68% total return with a -22% max drawdown but had the longest underwater period of 8 months during the 2022 correction when momentum reversed. Mean Reversion returned 45% with a moderate -18% max drawdown but lower Sharpe ratio of 0.6. Sharpe ratios: Buy and Hold 0.7, Momentum 0.9, Mean Reversion 0.6. The visualization shows that higher returns don't mean better risk-adjusted performance.</p></noscript>
+    </div>
+  </figure>
+</section>
+
+
+<!-- ════════════════════════════════════════════════════ -->
+<!-- SECTION V                                           -->
+<!-- ════════════════════════════════════════════════════ -->
+<section id="section-5" class="fade-in">
+  <div class="section-header">
+    <span class="section-number">V.</span>
+    <h2>What the Model Learns</h2>
+  </div>
+
+  <p>You train a gradient-boosted model on 20 features. It achieves a decent out-of-sample Sharpe. But which features actually mattered? This is where SHAP values &mdash; the same explainability tool used in credit scoring &mdash; become essential.</p>
+
+  <p>SHAP decomposes each prediction into individual feature contributions. A positive SHAP value pushes toward &ldquo;Buy,&rdquo; a negative one toward &ldquo;Sell.&rdquo; The surprise: <strong>prior day&rsquo;s return is often the single strongest predictor</strong>, more important than any technical indicator. Volume change ranks second. RSI and MACD matter, but less than most traders assume.<span class="sidenote-trigger" onclick="toggleSidenote('sn5')">[5]</span></p>
+  <div class="sidenote" id="sn5"><p>This finding is consistent across multiple studies. The most sophisticated features often contribute less than simple lagged returns. This doesn&rsquo;t mean technical indicators are useless &mdash; they help at the margin &mdash; but it humbles the engineer who spent weeks engineering the perfect RSI variant.</p></div>
+
+  <p>The deeper insight: SHAP shows you <em>correlation</em>, not causation. A feature with high SHAP importance might be genuinely predictive, or it might be overfitted noise. Feature importance without proper validation is just a fancier way to fool yourself.</p>
+
+  <figure>
+    <div class="demo-container" id="shap-demo">
+      <p class="label">Feature Importance Waterfall</p>
+      <div class="controls">
+        <button class="toggle-btn active" onclick="toggleShap('bull')">Bullish Day</button>
+        <button class="toggle-btn" onclick="toggleShap('bear')">Bearish Day</button>
+        <button class="toggle-btn" onclick="toggleShap('neutral')">Neutral Day</button>
+      </div>
+      <svg id="shap-svg" viewBox="0 0 636 380" width="100%"></svg>
+      <div class="stat-grid" id="shap-stats"></div>
+      <figcaption>Each bar shows one feature&rsquo;s contribution. Green pushes toward Buy, red toward Sell. Notice how the same features flip direction on bullish vs bearish days.</figcaption>
+      <noscript><p>The Feature Importance Waterfall uses SHAP values to decompose ML trading model predictions. On a bullish day, Prior Return contributes +0.18% (strongest signal), RSI adds +0.08%, MACD Histogram adds +0.06%, Volume Change adds +0.04%, while Volatility subtracts -0.03%. On a bearish day, the same features flip: Prior Return contributes -0.15%, RSI -0.10%, Volume Change -0.07%. The base prediction starts at 0.03% (average daily return). Prior day's return dominates all other features, contributing 2-3x more than any technical indicator. This is consistent across multiple quant studies showing that simple lagged returns are often more predictive than engineered features.</p></noscript>
+    </div>
+  </figure>
+</section>
+
+
+<!-- ════════════════════════════════════════════════════ -->
+<!-- SECTION VI                                          -->
+<!-- ════════════════════════════════════════════════════ -->
+<section id="section-6" class="fade-in">
+  <div class="section-header">
+    <span class="section-number">VI.</span>
+    <h2>The Efficient Frontier</h2>
+  </div>
+
+  <p>Harry Markowitz showed in 1952 that you can get the same return with less risk &mdash; or more return with the same risk &mdash; by combining assets that don&rsquo;t move together. The <strong>efficient frontier</strong> is the set of all portfolios that offer the maximum return for each level of risk.</p>
+
+  <p>Individual stocks are scattered below the frontier. Only by combining them can you reach it. The key inputs are each stock&rsquo;s expected return, its volatility, and the correlations between all pairs. The output is the optimal weight for each stock at each risk level.</p>
+
+  <p>The catch: Markowitz optimization is notoriously unstable. Small changes in expected returns produce wildly different optimal weights. This is why <strong>risk parity</strong> &mdash; allocating so each asset contributes equally to portfolio risk &mdash; has become the practical alternative for many quant funds.<span class="sidenote-trigger" onclick="toggleSidenote('sn6')">[6]</span></p>
+  <div class="sidenote" id="sn6"><p>Bridgewater&rsquo;s All Weather Fund, one of the most successful hedge funds in history, is built on risk parity. The insight: a traditional 60/40 stock/bond portfolio has ~90% of its risk from stocks. Risk parity equalizes this, producing smoother returns across market regimes.</p></div>
+
+  <figure>
+    <div class="demo-container" id="frontier-demo">
+      <p class="label">Efficient Frontier Explorer: 5 Nifty 50 Stocks</p>
+      <div class="controls">
+        <label>Risk tolerance:</label>
+        <input type="range" id="frontier-slider" min="0" max="100" step="1" value="50">
+        <span class="value-display" id="frontier-val">Balanced</span>
+      </div>
+      <svg id="frontier-svg" viewBox="0 0 636 420" width="100%"></svg>
+      <div class="stat-grid" id="frontier-stats"></div>
+      <div class="legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#5B4AE8;"></div>Reliance</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#E8634A;"></div>TCS</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#E8B44A;"></div>HDFC Bank</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#5BAE8A;"></div>Infosys</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#4A7DE8;"></div>ITC</div>
+      </div>
+      <figcaption>Drag the slider from conservative to aggressive. Watch the portfolio weights shift and the dot move along the efficient frontier. Individual stocks sit below the curve &mdash; diversification pushes you above them.</figcaption>
+      <noscript><p>The Efficient Frontier Explorer shows 5 major Nifty 50 stocks (Reliance, TCS, HDFC Bank, Infosys, ITC) plotted individually on a risk-return scatter. Reliance has the highest return at 18% with 28% volatility. ITC has the lowest volatility at 19% with 12% return. The efficient frontier curves above all individual stocks, demonstrating Markowitz's insight that diversification produces better risk-adjusted returns than any single stock. At conservative settings, the portfolio is heavily weighted toward ITC and HDFC Bank (lower volatility). At aggressive settings, weights shift toward Reliance and TCS. The optimal Sharpe ratio portfolio sits at the tangent point, typically achieving a 0.7-0.8 Sharpe ratio compared to individual stock Sharpes of 0.4-0.6.</p></noscript>
+    </div>
+  </figure>
+
+  <div class="callout">
+    <p><strong>The uncomfortable truth.</strong> Most retail ML traders spend 95% of their time on signal generation &mdash; finding patterns, engineering features, training models. But the research is clear: portfolio construction and risk management matter more than prediction accuracy. A mediocre signal with great risk management beats a great signal with no risk management, every time.</p>
+  </div>
+
+  <p style="margin-top:40px;font-size:16px;color:rgb(120,120,120);font-style:italic;">Based on the work of Marcos L&oacute;pez de Prado (Advances in Financial Machine Learning, 2018), Harry Markowitz (Portfolio Selection, 1952), Jegadeesh &amp; Titman (Momentum, 1993), DeBondt &amp; Thaler (Mean Reversion, 1985), and Bessembinder (Stock Returns, 2018). Nifty 50 data from NSE India.</p>
+
+</article>
+</main>
+
+<footer class="site-footer">
+  <div class="content">
+    <p>Compounding Intelligence</p>
+    <p><a href="https://supergeek.in">supergeek.in</a></p>
+    <p class="footer-tagline">Because you don&rsquo;t understand something until you can play with it.</p>
+  </div>
+</footer>
+
+<script>
+function toggleSidenote(id) {
+  var el = document.getElementById(id);
+  if (el) el.classList.toggle('open');
+}
+
+// ════════════════════════════════════════════════════
+// SHARED DATA: Nifty 50 weekly closes (Jan 2022 - Dec 2024)
+// ════════════════════════════════════════════════════
+var NIFTY = [
+  17340,16794,17464,17103,16585,15781,15290,15699,16159,16530,17158,17388,
+  17759,17560,17094,17550,18013,18350,18755,18245,18105,17663,17420,17304,
+  17360,17520,17810,18065,18290,18534,18900,19189,19550,19783,19530,19254,
+  19420,19638,19365,19080,19450,19794,20130,20570,20855,21230,21540,21731,
+  21726,21980,22213,22327,22105,22340,22531,22850,23290,23680,24150,24600,
+  24951,24809,25050,25410,25791,25200,24680,24305,24080,23914,23710,23645
+];
+var NIFTY_LABELS = [];
+var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+for (var y = 2022; y <= 2024; y++) {
+  for (var m = 0; m < 12; m++) {
+    NIFTY_LABELS.push(months[m] + ' ' + (y % 100));
+  }
+}
+
+// Pre-compute RSI (14-period)
+function computeRSI(data, period) {
+  var rsi = [];
+  for (var i = 0; i < data.length; i++) {
+    if (i < period) { rsi.push(50); continue; }
+    var gains = 0, losses = 0;
+    for (var j = i - period + 1; j <= i; j++) {
+      var diff = data[j] - data[j - 1];
+      if (diff > 0) gains += diff; else losses -= diff;
+    }
+    var avgGain = gains / period;
+    var avgLoss = losses / period;
+    var rs = avgLoss === 0 ? 100 : avgGain / avgLoss;
+    rsi.push(100 - 100 / (1 + rs));
+  }
+  return rsi;
+}
+
+function computeEMA(data, period) {
+  var ema = [data[0]];
+  var k = 2 / (period + 1);
+  for (var i = 1; i < data.length; i++) {
+    ema.push(data[i] * k + ema[i - 1] * (1 - k));
+  }
+  return ema;
+}
+
+function computeMACD(data) {
+  var ema12 = computeEMA(data, 12);
+  var ema26 = computeEMA(data, 26);
+  var macd = [], signal = [];
+  for (var i = 0; i < data.length; i++) macd.push(ema12[i] - ema26[i]);
+  signal = computeEMA(macd, 9);
+  var hist = [];
+  for (var i = 0; i < data.length; i++) hist.push(macd[i] - signal[i]);
+  return { macd: macd, signal: signal, hist: hist };
+}
+
+function computeBB(data, period, mult) {
+  var upper = [], lower = [], mid = [];
+  for (var i = 0; i < data.length; i++) {
+    if (i < period - 1) { upper.push(data[i]); lower.push(data[i]); mid.push(data[i]); continue; }
+    var sum = 0;
+    for (var j = i - period + 1; j <= i; j++) sum += data[j];
+    var avg = sum / period;
+    var sqSum = 0;
+    for (var j = i - period + 1; j <= i; j++) sqSum += (data[j] - avg) * (data[j] - avg);
+    var std = Math.sqrt(sqSum / period);
+    mid.push(avg);
+    upper.push(avg + mult * std);
+    lower.push(avg - mult * std);
+  }
+  return { upper: upper, lower: lower, mid: mid };
+}
+
+var RSI_DATA = computeRSI(NIFTY, 14);
+var MACD_DATA = computeMACD(NIFTY);
+var BB_DATA = computeBB(NIFTY, 20, 2);
+
+
+// ════════════════════════════════════════════════════
+// WIDGET 1: Technical Indicator Explorer
+// ════════════════════════════════════════════════════
+(function() {
+  var svg = document.getElementById('indicator-svg');
+  var statsEl = document.getElementById('indicator-stats');
+  if (!svg) return;
+
+  var mode = 'rsi';
+
+  window.toggleIndicator = function(m) {
+    mode = m;
+    var btns = document.querySelectorAll('#indicator-demo .toggle-btn');
+    for (var i = 0; i < btns.length; i++) btns[i].className = 'toggle-btn';
+    var idx = m === 'rsi' ? 0 : m === 'macd' ? 1 : 2;
+    btns[idx].className = 'toggle-btn active';
+    render();
+  };
+
+  function render() {
+    var n = NIFTY.length;
+    var pad = { top: 20, right: 20, bottom: 30, left: 55 };
+    var totalW = 636, totalH = 420;
+    var w = totalW - pad.left - pad.right;
+    var priceH = 180; // top chart height
+    var gap = 30;
+    var indH = totalH - pad.top - priceH - gap - pad.bottom; // indicator chart
+
+    var html = '<rect width="' + totalW + '" height="' + totalH + '" fill="rgb(242,241,239)" rx="4"/>';
+
+    // Price chart area
+    html += '<rect x="' + pad.left + '" y="' + pad.top + '" width="' + w + '" height="' + priceH + '" fill="#fff" rx="2"/>';
+
+    var minP = 14000, maxP = 26000;
+    var pRange = maxP - minP;
+
+    // Price grid
+    for (var g = 0; g <= 3; g++) {
+      var gy = pad.top + priceH - (g / 3) * priceH;
+      var gVal = minP + (g / 3) * pRange;
+      html += '<line x1="' + pad.left + '" y1="' + gy + '" x2="' + (pad.left + w) + '" y2="' + gy + '" stroke="rgb(243,243,243)"/>';
+      html += '<text x="' + (pad.left - 6) + '" y="' + (gy + 4) + '" text-anchor="end" font-family="Figtree,sans-serif" font-size="9" fill="rgb(150,150,150)">' + Math.round(gVal) + '</text>';
+    }
+
+    // Price line
+    for (var i = 1; i < n; i++) {
+      var x1 = pad.left + ((i - 1) / (n - 1)) * w;
+      var y1 = pad.top + priceH - ((NIFTY[i - 1] - minP) / pRange) * priceH;
+      var x2 = pad.left + (i / (n - 1)) * w;
+      var y2 = pad.top + priceH - ((NIFTY[i] - minP) / pRange) * priceH;
+      html += '<line x1="' + x1 + '" y1="' + y1 + '" x2="' + x2 + '" y2="' + y2 + '" stroke="#5B4AE8" stroke-width="1.5"/>';
+    }
+
+    // Bollinger bands on price chart
+    if (mode === 'bb') {
+      // Band fill
+      var bandPath = 'M';
+      for (var i = 0; i < n; i++) {
+        var x = pad.left + (i / (n - 1)) * w;
+        var y = pad.top + priceH - ((BB_DATA.upper[i] - minP) / pRange) * priceH;
+        bandPath += (i === 0 ? '' : 'L') + x + ',' + y;
+      }
+      for (var i = n - 1; i >= 0; i--) {
+        var x = pad.left + (i / (n - 1)) * w;
+        var y = pad.top + priceH - ((BB_DATA.lower[i] - minP) / pRange) * priceH;
+        bandPath += 'L' + x + ',' + y;
+      }
+      bandPath += 'Z';
+      html += '<path d="' + bandPath + '" fill="rgba(91,74,232,0.08)"/>';
+
+      // Upper and lower lines
+      for (var i = 1; i < n; i++) {
+        var x1 = pad.left + ((i - 1) / (n - 1)) * w;
+        var x2 = pad.left + (i / (n - 1)) * w;
+        var uy1 = pad.top + priceH - ((BB_DATA.upper[i - 1] - minP) / pRange) * priceH;
+        var uy2 = pad.top + priceH - ((BB_DATA.upper[i] - minP) / pRange) * priceH;
+        var ly1 = pad.top + priceH - ((BB_DATA.lower[i - 1] - minP) / pRange) * priceH;
+        var ly2 = pad.top + priceH - ((BB_DATA.lower[i] - minP) / pRange) * priceH;
+        html += '<line x1="' + x1 + '" y1="' + uy1 + '" x2="' + x2 + '" y2="' + uy2 + '" stroke="#E8B44A" stroke-width="1" opacity="0.7"/>';
+        html += '<line x1="' + x1 + '" y1="' + ly1 + '" x2="' + x2 + '" y2="' + ly2 + '" stroke="#E8B44A" stroke-width="1" opacity="0.7"/>';
+      }
+    }
+
+    // X-axis labels
+    for (var i = 0; i < n; i += 6) {
+      var lx = pad.left + (i / (n - 1)) * w;
+      html += '<text x="' + lx + '" y="' + (pad.top + priceH + 14) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="8" fill="rgb(150,150,150)">' + NIFTY_LABELS[i] + '</text>';
+    }
+
+    // Label
+    html += '<text x="' + (pad.left + 4) + '" y="' + (pad.top + 14) + '" font-family="Figtree,sans-serif" font-size="10" font-weight="700" fill="rgb(100,100,100)">Nifty 50 Price</text>';
+
+    // Indicator panel
+    var indTop = pad.top + priceH + gap;
+    html += '<rect x="' + pad.left + '" y="' + indTop + '" width="' + w + '" height="' + indH + '" fill="#fff" rx="2"/>';
+
+    var lastVal, signal, sigCount = 0;
+
+    if (mode === 'rsi') {
+      // RSI chart
+      html += '<text x="' + (pad.left + 4) + '" y="' + (indTop + 14) + '" font-family="Figtree,sans-serif" font-size="10" font-weight="700" fill="rgb(100,100,100)">RSI (14)</text>';
+
+      // Bands at 70 and 30
+      var y70 = indTop + indH - (70 / 100) * indH;
+      var y30 = indTop + indH - (30 / 100) * indH;
+      html += '<rect x="' + pad.left + '" y="' + y70 + '" width="' + w + '" height="' + (y30 - y70) + '" fill="rgba(91,74,232,0.04)"/>';
+      html += '<line x1="' + pad.left + '" y1="' + y70 + '" x2="' + (pad.left + w) + '" y2="' + y70 + '" stroke="#E8634A" stroke-width="1" stroke-dasharray="4,3" opacity="0.5"/>';
+      html += '<line x1="' + pad.left + '" y1="' + y30 + '" x2="' + (pad.left + w) + '" y2="' + y30 + '" stroke="#5BAE8A" stroke-width="1" stroke-dasharray="4,3" opacity="0.5"/>';
+      html += '<text x="' + (pad.left + w + 4) + '" y="' + (y70 + 4) + '" font-family="Figtree,sans-serif" font-size="9" fill="#E8634A">70</text>';
+      html += '<text x="' + (pad.left + w + 4) + '" y="' + (y30 + 4) + '" font-family="Figtree,sans-serif" font-size="9" fill="#5BAE8A">30</text>';
+
+      for (var i = 1; i < n; i++) {
+        var x1 = pad.left + ((i - 1) / (n - 1)) * w;
+        var x2 = pad.left + (i / (n - 1)) * w;
+        var ry1 = indTop + indH - (RSI_DATA[i - 1] / 100) * indH;
+        var ry2 = indTop + indH - (RSI_DATA[i] / 100) * indH;
+        var col = RSI_DATA[i] > 70 ? '#E8634A' : RSI_DATA[i] < 30 ? '#5BAE8A' : '#5B4AE8';
+        html += '<line x1="' + x1 + '" y1="' + ry1 + '" x2="' + x2 + '" y2="' + ry2 + '" stroke="' + col + '" stroke-width="1.5"/>';
+        if (RSI_DATA[i] > 70 || RSI_DATA[i] < 30) sigCount++;
+      }
+      lastVal = RSI_DATA[n - 1].toFixed(1);
+      signal = RSI_DATA[n - 1] > 70 ? 'Overbought' : RSI_DATA[n - 1] < 30 ? 'Oversold' : 'Neutral';
+
+    } else if (mode === 'macd') {
+      html += '<text x="' + (pad.left + 4) + '" y="' + (indTop + 14) + '" font-family="Figtree,sans-serif" font-size="10" font-weight="700" fill="rgb(100,100,100)">MACD (12, 26, 9)</text>';
+
+      var maxHist = 0;
+      for (var i = 0; i < n; i++) {
+        if (Math.abs(MACD_DATA.hist[i]) > maxHist) maxHist = Math.abs(MACD_DATA.hist[i]);
+      }
+      var midY = indTop + indH / 2;
+      html += '<line x1="' + pad.left + '" y1="' + midY + '" x2="' + (pad.left + w) + '" y2="' + midY + '" stroke="rgb(220,220,220)" stroke-width="1"/>';
+
+      var barW = w / n * 0.7;
+      for (var i = 0; i < n; i++) {
+        var bx = pad.left + (i / (n - 1)) * w - barW / 2;
+        var bh = (Math.abs(MACD_DATA.hist[i]) / maxHist) * (indH / 2 - 10);
+        var by = MACD_DATA.hist[i] >= 0 ? midY - bh : midY;
+        var col = MACD_DATA.hist[i] >= 0 ? '#5BAE8A' : '#E8634A';
+        html += '<rect x="' + bx + '" y="' + by + '" width="' + barW + '" height="' + bh + '" fill="' + col + '" opacity="0.7" rx="1"/>';
+        if (i > 0 && ((MACD_DATA.hist[i] >= 0 && MACD_DATA.hist[i - 1] < 0) || (MACD_DATA.hist[i] < 0 && MACD_DATA.hist[i - 1] >= 0))) sigCount++;
+      }
+      lastVal = MACD_DATA.hist[n - 1].toFixed(0);
+      signal = MACD_DATA.hist[n - 1] >= 0 ? 'Bullish' : 'Bearish';
+
+    } else {
+      // Bollinger - show bandwidth
+      html += '<text x="' + (pad.left + 4) + '" y="' + (indTop + 14) + '" font-family="Figtree,sans-serif" font-size="10" font-weight="700" fill="rgb(100,100,100)">Bollinger Band Width</text>';
+
+      var bw = [];
+      for (var i = 0; i < n; i++) bw.push((BB_DATA.upper[i] - BB_DATA.lower[i]) / BB_DATA.mid[i] * 100);
+      var maxBW = 0;
+      for (var i = 0; i < n; i++) { if (bw[i] > maxBW) maxBW = bw[i]; }
+
+      // Squeeze threshold
+      var squeezeThresh = 6;
+      var threshY = indTop + indH - (squeezeThresh / maxBW) * indH;
+      html += '<line x1="' + pad.left + '" y1="' + threshY + '" x2="' + (pad.left + w) + '" y2="' + threshY + '" stroke="#E8B44A" stroke-width="1" stroke-dasharray="4,3" opacity="0.5"/>';
+      html += '<text x="' + (pad.left + w + 4) + '" y="' + (threshY + 4) + '" font-family="Figtree,sans-serif" font-size="9" fill="#E8B44A">Squeeze</text>';
+
+      for (var i = 1; i < n; i++) {
+        var x1 = pad.left + ((i - 1) / (n - 1)) * w;
+        var x2 = pad.left + (i / (n - 1)) * w;
+        var by1 = indTop + indH - (bw[i - 1] / maxBW) * indH;
+        var by2 = indTop + indH - (bw[i] / maxBW) * indH;
+        var col = bw[i] < squeezeThresh ? '#E8B44A' : '#5B4AE8';
+        html += '<line x1="' + x1 + '" y1="' + by1 + '" x2="' + x2 + '" y2="' + by2 + '" stroke="' + col + '" stroke-width="1.5"/>';
+        if (bw[i] < squeezeThresh) sigCount++;
+      }
+      lastVal = bw[n - 1].toFixed(1) + '%';
+      signal = bw[n - 1] < squeezeThresh ? 'Squeeze!' : 'Normal';
+    }
+
+    svg.innerHTML = html;
+
+    var sigColor = signal === 'Overbought' || signal === 'Bearish' ? '#E8634A' : signal === 'Oversold' || signal === 'Bullish' || signal === 'Squeeze!' ? '#5BAE8A' : '#5B4AE8';
+    statsEl.innerHTML =
+      '<div class="stat-card"><div class="stat-value" style="color:#5B4AE8">' + lastVal + '</div><div class="stat-label">Current Value</div></div>' +
+      '<div class="stat-card"><div class="stat-value" style="color:' + sigColor + '">' + signal + '</div><div class="stat-label">Signal</div></div>' +
+      '<div class="stat-card"><div class="stat-value" style="color:#5B4AE8">' + sigCount + '</div><div class="stat-label">Signals in Period</div></div>';
+  }
+
+  render();
+})();
+
+
+// ════════════════════════════════════════════════════
+// WIDGET 2: Momentum vs Mean Reversion
+// ════════════════════════════════════════════════════
+(function() {
+  var svg = document.getElementById('momentum-svg');
+  var statsEl = document.getElementById('momentum-stats');
+  var slider = document.getElementById('momentum-slider');
+  var valLabel = document.getElementById('momentum-val');
+  if (!svg) return;
+
+  function render() {
+    var lookback = parseInt(slider.value);
+    valLabel.textContent = lookback + (lookback === 1 ? ' month' : ' months');
+
+    var n = NIFTY.length;
+    var pad = { top: 30, right: 30, bottom: 40, left: 55 };
+    var w = 636 - pad.left - pad.right;
+    var h = 380 - pad.top - pad.bottom;
+
+    var html = '<rect width="636" height="380" fill="rgb(242,241,239)" rx="4"/>';
+    html += '<rect x="' + pad.left + '" y="' + pad.top + '" width="' + w + '" height="' + h + '" fill="#fff" rx="2"/>';
+
+    // Compute returns for each month based on lookback
+    var returns = [];
+    var fwdReturns = [];
+    for (var i = lookback; i < n - 3; i++) {
+      var pastReturn = (NIFTY[i] - NIFTY[i - lookback]) / NIFTY[i - lookback] * 100;
+      var fwdReturn = (NIFTY[Math.min(i + 3, n - 1)] - NIFTY[i]) / NIFTY[i] * 100;
+      returns.push({ idx: i, past: pastReturn, fwd: fwdReturn });
+    }
+
+    // Determine strategy: buy if past return positive (momentum), or negative (reversion)
+    var momWins = 0, momTotal = 0, momReturn = 0;
+    var revWins = 0, revTotal = 0, revReturn = 0;
+
+    for (var i = 0; i < returns.length; i++) {
+      // Momentum: past up → expect up
+      if (returns[i].past > 0) {
+        momTotal++;
+        momReturn += returns[i].fwd;
+        if (returns[i].fwd > 0) momWins++;
+      }
+      // Mean reversion: past up → expect down (sell)
+      if (returns[i].past > 0) {
+        revTotal++;
+        revReturn -= returns[i].fwd; // opposite direction
+        if (returns[i].fwd < 0) revWins++;
+      }
+    }
+
+    var momWinRate = momTotal > 0 ? (momWins / momTotal * 100).toFixed(0) : 0;
+    var revWinRate = revTotal > 0 ? (revWins / revTotal * 100).toFixed(0) : 0;
+    var momAvgReturn = momTotal > 0 ? (momReturn / momTotal).toFixed(2) : 0;
+
+    // Scatter plot: past return (x) vs forward return (y)
+    var maxAbs = 0;
+    for (var i = 0; i < returns.length; i++) {
+      if (Math.abs(returns[i].past) > maxAbs) maxAbs = Math.abs(returns[i].past);
+      if (Math.abs(returns[i].fwd) > maxAbs) maxAbs = Math.abs(returns[i].fwd);
+    }
+    maxAbs = Math.max(maxAbs, 5);
+
+    // Grid
+    var midX = pad.left + w / 2;
+    var midY = pad.top + h / 2;
+    html += '<line x1="' + midX + '" y1="' + pad.top + '" x2="' + midX + '" y2="' + (pad.top + h) + '" stroke="rgb(220,220,220)" stroke-width="1"/>';
+    html += '<line x1="' + pad.left + '" y1="' + midY + '" x2="' + (pad.left + w) + '" y2="' + midY + '" stroke="rgb(220,220,220)" stroke-width="1"/>';
+
+    // Axis labels
+    html += '<text x="' + (pad.left + w / 2) + '" y="' + (pad.top + h + 28) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="12" font-weight="600" fill="rgb(80,80,80)">Past ' + lookback + '-Month Return (%)</text>';
+    html += '<text x="14" y="' + (pad.top + h / 2) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="12" font-weight="600" fill="rgb(80,80,80)" transform="rotate(-90,14,' + (pad.top + h / 2) + ')">Next 3-Month Return (%)</text>';
+
+    // Quadrant labels
+    html += '<text x="' + (midX + w / 4) + '" y="' + (pad.top + 20) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="10" font-weight="600" fill="#5BAE8A" opacity="0.6">Momentum wins</text>';
+    html += '<text x="' + (midX - w / 4) + '" y="' + (pad.top + h - 8) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="10" font-weight="600" fill="#5BAE8A" opacity="0.6">Reversion wins</text>';
+
+    // Points
+    for (var i = 0; i < returns.length; i++) {
+      var cx = pad.left + w / 2 + (returns[i].past / maxAbs) * (w / 2);
+      var cy = pad.top + h / 2 - (returns[i].fwd / maxAbs) * (h / 2);
+      // Color: green if momentum-correct (past>0 & fwd>0 or past<0 & fwd<0), red otherwise
+      var isMomentum = (returns[i].past > 0 && returns[i].fwd > 0) || (returns[i].past < 0 && returns[i].fwd < 0);
+      var col = isMomentum ? '#5BAE8A' : '#E8634A';
+      html += '<circle cx="' + cx + '" cy="' + cy + '" r="4.5" fill="' + col + '" opacity="0.6"/>';
+    }
+
+    // Trend line (simple linear regression)
+    var sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0;
+    for (var i = 0; i < returns.length; i++) {
+      sumX += returns[i].past; sumY += returns[i].fwd;
+      sumXY += returns[i].past * returns[i].fwd; sumX2 += returns[i].past * returns[i].past;
+    }
+    var nn = returns.length;
+    if (nn > 2) {
+      var slope = (nn * sumXY - sumX * sumY) / (nn * sumX2 - sumX * sumX);
+      var tl_x1 = -maxAbs, tl_y1 = slope * tl_x1;
+      var tl_x2 = maxAbs, tl_y2 = slope * tl_x2;
+      var tlpx1 = pad.left + w / 2 + (tl_x1 / maxAbs) * (w / 2);
+      var tlpy1 = pad.top + h / 2 - (tl_y1 / maxAbs) * (h / 2);
+      var tlpx2 = pad.left + w / 2 + (tl_x2 / maxAbs) * (w / 2);
+      var tlpy2 = pad.top + h / 2 - (tl_y2 / maxAbs) * (h / 2);
+      var trendColor = slope > 0 ? '#5BAE8A' : '#E8634A';
+      html += '<line x1="' + tlpx1 + '" y1="' + tlpy1 + '" x2="' + tlpx2 + '" y2="' + tlpy2 + '" stroke="' + trendColor + '" stroke-width="2" stroke-dasharray="6,4" opacity="0.6"/>';
+
+      var slopeLabel = slope > 0 ? 'Momentum' : 'Mean Reversion';
+      html += '<text x="' + (pad.left + w - 8) + '" y="' + (pad.top + 20) + '" text-anchor="end" font-family="Figtree,sans-serif" font-size="12" font-weight="700" fill="' + trendColor + '">' + slopeLabel + '</text>';
+    }
+
+    svg.innerHTML = html;
+
+    var dominant = parseInt(momWinRate) > 50 ? 'Momentum' : 'Mean Reversion';
+    var domColor = dominant === 'Momentum' ? '#5BAE8A' : '#E8634A';
+    statsEl.innerHTML =
+      '<div class="stat-card"><div class="stat-value" style="color:' + domColor + '">' + dominant + '</div><div class="stat-label">Dominant Signal</div></div>' +
+      '<div class="stat-card"><div class="stat-value" style="color:#5B4AE8">' + momWinRate + '%</div><div class="stat-label">Momentum Win Rate</div></div>' +
+      '<div class="stat-card"><div class="stat-value" style="color:#5B4AE8">' + momAvgReturn + '%</div><div class="stat-label">Avg Forward Return</div></div>';
+  }
+
+  slider.addEventListener('input', render);
+  render();
+})();
+
+
+// ════════════════════════════════════════════════════
+// WIDGET 3: Overfitting Cliff
+// ════════════════════════════════════════════════════
+(function() {
+  var svg = document.getElementById('overfit-svg');
+  var statsEl = document.getElementById('overfit-stats');
+  var slider = document.getElementById('overfit-slider');
+  var valLabel = document.getElementById('overfit-val');
+  if (!svg) return;
+
+  // Pre-defined curves
+  var inSample =    [0.8, 1.4, 2.2, 3.1, 4.0, 5.0, 5.8, 6.5, 7.4, 8.2];
+  var outOfSample = [0.7, 1.0, 1.1, 0.9, 0.7, 0.6, 0.5, 0.4, 0.35, 0.3];
+  var labels = ['MA Cross', 'RSI+MACD', '5 Features', '10 Features', '20 Features', 'Random Forest', 'GBM Tuned', 'Deep NN', 'Ensemble', 'Kitchen Sink'];
+
+  function render() {
+    var complexity = parseInt(slider.value);
+    var labelsShort = ['1','2','3','4','5','6','7','8','9','10'];
+    valLabel.textContent = complexity + ' (' + labels[complexity - 1] + ')';
+
+    var pad = { top: 30, right: 30, bottom: 50, left: 55 };
+    var w = 636 - pad.left - pad.right;
+    var h = 380 - pad.top - pad.bottom;
+
+    var html = '<rect width="636" height="380" fill="rgb(242,241,239)" rx="4"/>';
+    html += '<rect x="' + pad.left + '" y="' + pad.top + '" width="' + w + '" height="' + h + '" fill="#fff" rx="2"/>';
+
+    var maxSharpe = 9;
+
+    // Y grid
+    for (var g = 0; g <= 4; g++) {
+      var gy = pad.top + h - (g / 4) * h;
+      var gVal = (maxSharpe * g / 4).toFixed(1);
+      html += '<line x1="' + pad.left + '" y1="' + gy + '" x2="' + (pad.left + w) + '" y2="' + gy + '" stroke="rgb(243,243,243)"/>';
+      html += '<text x="' + (pad.left - 8) + '" y="' + (gy + 4) + '" text-anchor="end" font-family="Figtree,sans-serif" font-size="10" fill="rgb(150,150,150)">' + gVal + '</text>';
+    }
+
+    // Axis labels
+    html += '<text x="' + (pad.left + w / 2) + '" y="' + (pad.top + h + 38) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="12" font-weight="600" fill="rgb(80,80,80)">Model Complexity →</text>';
+    html += '<text x="14" y="' + (pad.top + h / 2) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="12" font-weight="600" fill="rgb(80,80,80)" transform="rotate(-90,14,' + (pad.top + h / 2) + ')">Sharpe Ratio</text>';
+
+    // In-sample curve (full)
+    for (var i = 1; i < 10; i++) {
+      var x1 = pad.left + ((i - 1) / 9) * w;
+      var y1 = pad.top + h - (inSample[i - 1] / maxSharpe) * h;
+      var x2 = pad.left + (i / 9) * w;
+      var y2 = pad.top + h - (inSample[i] / maxSharpe) * h;
+      html += '<line x1="' + x1 + '" y1="' + y1 + '" x2="' + x2 + '" y2="' + y2 + '" stroke="#5B4AE8" stroke-width="2.5"/>';
+    }
+
+    // Out-of-sample curve (full)
+    for (var i = 1; i < 10; i++) {
+      var x1 = pad.left + ((i - 1) / 9) * w;
+      var y1 = pad.top + h - (outOfSample[i - 1] / maxSharpe) * h;
+      var x2 = pad.left + (i / 9) * w;
+      var y2 = pad.top + h - (outOfSample[i] / maxSharpe) * h;
+      html += '<line x1="' + x1 + '" y1="' + y1 + '" x2="' + x2 + '" y2="' + y2 + '" stroke="#E8634A" stroke-width="2.5"/>';
+    }
+
+    // Current position markers
+    var cx = pad.left + ((complexity - 1) / 9) * w;
+    var cyIn = pad.top + h - (inSample[complexity - 1] / maxSharpe) * h;
+    var cyOut = pad.top + h - (outOfSample[complexity - 1] / maxSharpe) * h;
+
+    html += '<circle cx="' + cx + '" cy="' + cyIn + '" r="6" fill="#5B4AE8" stroke="#fff" stroke-width="2"/>';
+    html += '<circle cx="' + cx + '" cy="' + cyOut + '" r="6" fill="#E8634A" stroke="#fff" stroke-width="2"/>';
+
+    // Gap line
+    html += '<line x1="' + cx + '" y1="' + cyIn + '" x2="' + cx + '" y2="' + cyOut + '" stroke="#5B4AE8" stroke-width="1.5" stroke-dasharray="4,3" opacity="0.5"/>';
+
+    // Gap label
+    var gapVal = (inSample[complexity - 1] - outOfSample[complexity - 1]).toFixed(1);
+    html += '<text x="' + (cx + 12) + '" y="' + ((cyIn + cyOut) / 2 + 4) + '" font-family="Figtree,sans-serif" font-size="11" font-weight="700" fill="#5B4AE8">Gap: ' + gapVal + '</text>';
+
+    // X-axis tick labels
+    for (var i = 0; i < 10; i++) {
+      var lx = pad.left + (i / 9) * w;
+      html += '<text x="' + lx + '" y="' + (pad.top + h + 18) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="9" fill="rgb(150,150,150)">' + (i + 1) + '</text>';
+    }
+
+    // Legend
+    html += '<text x="' + (pad.left + 8) + '" y="' + (pad.top + h - 12) + '" font-family="Figtree,sans-serif" font-size="11" fill="#5B4AE8">— In-sample</text>';
+    html += '<text x="' + (pad.left + 100) + '" y="' + (pad.top + h - 12) + '" font-family="Figtree,sans-serif" font-size="11" fill="#E8634A">— Out-of-sample</text>';
+
+    // Sweet spot annotation
+    var sweetX = pad.left + (2 / 9) * w;
+    var sweetY = pad.top + h - (outOfSample[2] / maxSharpe) * h;
+    html += '<text x="' + sweetX + '" y="' + (sweetY - 12) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="10" font-weight="600" fill="#5BAE8A">Sweet spot ↓</text>';
+
+    svg.innerHTML = html;
+
+    var penalty = (inSample[complexity - 1] - outOfSample[complexity - 1]).toFixed(1);
+    var penaltyColor = parseFloat(penalty) > 3 ? '#E8634A' : parseFloat(penalty) > 1 ? '#E8B44A' : '#5BAE8A';
+    statsEl.innerHTML =
+      '<div class="stat-card"><div class="stat-value" style="color:#5B4AE8">' + inSample[complexity - 1].toFixed(1) + '</div><div class="stat-label">In-Sample Sharpe</div></div>' +
+      '<div class="stat-card"><div class="stat-value" style="color:#E8634A">' + outOfSample[complexity - 1].toFixed(1) + '</div><div class="stat-label">Out-of-Sample Sharpe</div></div>' +
+      '<div class="stat-card"><div class="stat-value" style="color:' + penaltyColor + '">' + penalty + '</div><div class="stat-label">Overfitting Penalty</div></div>';
+  }
+
+  slider.addEventListener('input', render);
+  render();
+})();
+
+
+// ════════════════════════════════════════════════════
+// WIDGET 4: Drawdown Underwater Chart
+// ════════════════════════════════════════════════════
+(function() {
+  var svg = document.getElementById('drawdown-svg');
+  var statsEl = document.getElementById('drawdown-stats');
+  if (!svg) return;
+
+  var mode = 'buyhold';
+
+  // Generate strategy equity curves from Nifty data
+  // Buy & Hold: just follow Nifty
+  var n = NIFTY.length;
+  var buyHold = [100];
+  for (var i = 1; i < n; i++) {
+    buyHold.push(buyHold[i - 1] * (NIFTY[i] / NIFTY[i - 1]));
+  }
+
+  // Momentum strategy: if 3-month return > 0, stay invested; else go to cash
+  var momentumEq = [100];
+  for (var i = 1; i < n; i++) {
+    var lookback = Math.min(i, 12);
+    var pastReturn = (NIFTY[i - 1] - NIFTY[i - lookback]) / NIFTY[i - lookback];
+    var invested = pastReturn > 0 ? 1.0 : 0.0;
+    var weeklyReturn = (NIFTY[i] / NIFTY[i - 1]) - 1;
+    momentumEq.push(momentumEq[i - 1] * (1 + invested * weeklyReturn));
+  }
+
+  // Mean reversion: if 3-month return > 5%, reduce; if < -5%, increase
+  var meanRevEq = [100];
+  for (var i = 1; i < n; i++) {
+    var lookback = Math.min(i, 12);
+    var pastReturn = (NIFTY[i - 1] - NIFTY[i - lookback]) / NIFTY[i - lookback];
+    var invested = pastReturn > 0.05 ? 0.5 : pastReturn < -0.05 ? 1.5 : 1.0;
+    invested = Math.max(0, Math.min(1.5, invested));
+    var weeklyReturn = (NIFTY[i] / NIFTY[i - 1]) - 1;
+    meanRevEq.push(meanRevEq[i - 1] * (1 + invested * weeklyReturn));
+  }
+
+  var strategies = {
+    buyhold: { equity: buyHold, name: 'Buy & Hold Nifty', color: '#5B4AE8' },
+    momentum: { equity: momentumEq, name: 'Momentum Strategy', color: '#5BAE8A' },
+    meanrev: { equity: meanRevEq, name: 'Mean Reversion', color: '#E8B44A' }
+  };
+
+  function calcDrawdown(eq) {
+    var dd = [];
+    var peak = eq[0];
+    var maxDD = 0, longestUnder = 0, currentUnder = 0;
+    for (var i = 0; i < eq.length; i++) {
+      if (eq[i] > peak) peak = eq[i];
+      var d = (eq[i] - peak) / peak;
+      dd.push(d);
+      if (d < maxDD) maxDD = d;
+      if (d < -0.001) { currentUnder++; } else { if (currentUnder > longestUnder) longestUnder = currentUnder; currentUnder = 0; }
+    }
+    if (currentUnder > longestUnder) longestUnder = currentUnder;
+    return { dd: dd, maxDD: maxDD, longestUnder: longestUnder };
+  }
+
+  window.toggleDrawdown = function(m) {
+    mode = m;
+    var btns = document.querySelectorAll('#drawdown-demo .toggle-btn');
+    for (var i = 0; i < btns.length; i++) btns[i].className = 'toggle-btn';
+    var idx = m === 'buyhold' ? 0 : m === 'momentum' ? 1 : 2;
+    btns[idx].className = 'toggle-btn active';
+    render();
+  };
+
+  function render() {
+    var strat = strategies[mode];
+    var eq = strat.equity;
+    var ddInfo = calcDrawdown(eq);
+    var dd = ddInfo.dd;
+
+    var pad = { top: 20, right: 20, bottom: 30, left: 55 };
+    var totalW = 636, totalH = 420;
+    var w = totalW - pad.left - pad.right;
+    var eqH = 200;
+    var gap = 20;
+    var ddH = totalH - pad.top - eqH - gap - pad.bottom;
+
+    var html = '<rect width="' + totalW + '" height="' + totalH + '" fill="rgb(242,241,239)" rx="4"/>';
+
+    // Equity panel
+    html += '<rect x="' + pad.left + '" y="' + pad.top + '" width="' + w + '" height="' + eqH + '" fill="#fff" rx="2"/>';
+    html += '<text x="' + (pad.left + 4) + '" y="' + (pad.top + 14) + '" font-family="Figtree,sans-serif" font-size="10" font-weight="700" fill="rgb(100,100,100)">Portfolio Value (indexed to 100)</text>';
+
+    var minEq = Infinity, maxEq = -Infinity;
+    for (var i = 0; i < eq.length; i++) {
+      if (eq[i] < minEq) minEq = eq[i];
+      if (eq[i] > maxEq) maxEq = eq[i];
+    }
+    minEq = Math.floor(minEq / 10) * 10;
+    maxEq = Math.ceil(maxEq / 10) * 10;
+    var eqRange = maxEq - minEq;
+
+    // Equity grid
+    for (var g = 0; g <= 4; g++) {
+      var gy = pad.top + eqH - (g / 4) * eqH;
+      var gVal = minEq + (g / 4) * eqRange;
+      html += '<line x1="' + pad.left + '" y1="' + gy + '" x2="' + (pad.left + w) + '" y2="' + gy + '" stroke="rgb(243,243,243)"/>';
+      html += '<text x="' + (pad.left - 6) + '" y="' + (gy + 4) + '" text-anchor="end" font-family="Figtree,sans-serif" font-size="9" fill="rgb(150,150,150)">' + Math.round(gVal) + '</text>';
+    }
+
+    // Equity line + peak markers
+    var peak = eq[0];
+    for (var i = 1; i < n; i++) {
+      var x1 = pad.left + ((i - 1) / (n - 1)) * w;
+      var y1 = pad.top + eqH - ((eq[i - 1] - minEq) / eqRange) * eqH;
+      var x2 = pad.left + (i / (n - 1)) * w;
+      var y2 = pad.top + eqH - ((eq[i] - minEq) / eqRange) * eqH;
+      html += '<line x1="' + x1 + '" y1="' + y1 + '" x2="' + x2 + '" y2="' + y2 + '" stroke="' + strat.color + '" stroke-width="2"/>';
+      if (eq[i] > peak) {
+        peak = eq[i];
+        html += '<circle cx="' + x2 + '" cy="' + y2 + '" r="2.5" fill="' + strat.color + '" opacity="0.5"/>';
+      }
+    }
+
+    // X-axis labels for equity
+    for (var i = 0; i < n; i += 12) {
+      var lx = pad.left + (i / (n - 1)) * w;
+      html += '<text x="' + lx + '" y="' + (pad.top + eqH + 14) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="8" fill="rgb(150,150,150)">' + NIFTY_LABELS[i] + '</text>';
+    }
+
+    // Drawdown panel
+    var ddTop = pad.top + eqH + gap;
+    html += '<rect x="' + pad.left + '" y="' + ddTop + '" width="' + w + '" height="' + ddH + '" fill="#fff" rx="2"/>';
+    html += '<text x="' + (pad.left + 4) + '" y="' + (ddTop + 14) + '" font-family="Figtree,sans-serif" font-size="10" font-weight="700" fill="rgb(100,100,100)">Drawdown (Underwater)</text>';
+
+    // Zero line
+    html += '<line x1="' + pad.left + '" y1="' + ddTop + '" x2="' + (pad.left + w) + '" y2="' + ddTop + '" stroke="rgb(200,198,194)" stroke-width="1"/>';
+
+    var minDD = Math.min(ddInfo.maxDD, -0.05);
+    minDD = Math.floor(minDD * 20) / 20; // round down to nearest 5%
+
+    // DD grid
+    for (var g = 1; g <= 4; g++) {
+      var ddVal = (g / 4) * minDD;
+      var ddy = ddTop + (g / 4) * ddH;
+      html += '<line x1="' + pad.left + '" y1="' + ddy + '" x2="' + (pad.left + w) + '" y2="' + ddy + '" stroke="rgb(243,243,243)"/>';
+      html += '<text x="' + (pad.left - 6) + '" y="' + (ddy + 4) + '" text-anchor="end" font-family="Figtree,sans-serif" font-size="9" fill="rgb(150,150,150)">' + (ddVal * 100).toFixed(0) + '%</text>';
+    }
+
+    // Drawdown fill
+    var fillPath = 'M' + pad.left + ',' + ddTop;
+    for (var i = 0; i < n; i++) {
+      var x = pad.left + (i / (n - 1)) * w;
+      var y = ddTop + (dd[i] / minDD) * ddH;
+      y = Math.min(y, ddTop + ddH);
+      fillPath += 'L' + x + ',' + y;
+    }
+    fillPath += 'L' + (pad.left + w) + ',' + ddTop + 'Z';
+    html += '<path d="' + fillPath + '" fill="rgba(232,99,74,0.2)"/>';
+
+    // Drawdown line
+    for (var i = 1; i < n; i++) {
+      var x1 = pad.left + ((i - 1) / (n - 1)) * w;
+      var y1 = ddTop + (dd[i - 1] / minDD) * ddH;
+      var x2 = pad.left + (i / (n - 1)) * w;
+      var y2 = ddTop + (dd[i] / minDD) * ddH;
+      y1 = Math.min(y1, ddTop + ddH);
+      y2 = Math.min(y2, ddTop + ddH);
+      html += '<line x1="' + x1 + '" y1="' + y1 + '" x2="' + x2 + '" y2="' + y2 + '" stroke="#E8634A" stroke-width="1.5"/>';
+    }
+
+    // Max drawdown annotation
+    var maxDDIdx = 0;
+    for (var i = 0; i < n; i++) {
+      if (dd[i] < dd[maxDDIdx]) maxDDIdx = i;
+    }
+    var annX = pad.left + (maxDDIdx / (n - 1)) * w;
+    var annY = ddTop + (dd[maxDDIdx] / minDD) * ddH;
+    annY = Math.min(annY, ddTop + ddH - 5);
+    html += '<circle cx="' + annX + '" cy="' + annY + '" r="4" fill="#E8634A" stroke="#fff" stroke-width="2"/>';
+    html += '<text x="' + (annX + 8) + '" y="' + (annY + 4) + '" font-family="Figtree,sans-serif" font-size="10" font-weight="600" fill="#E8634A">Max: ' + (dd[maxDDIdx] * 100).toFixed(1) + '%</text>';
+
+    svg.innerHTML = html;
+
+    // Stats
+    var totalReturn = ((eq[n - 1] / eq[0]) - 1) * 100;
+    var weeklyReturns = [];
+    for (var i = 1; i < n; i++) weeklyReturns.push((eq[i] / eq[i - 1]) - 1);
+    var avgW = 0;
+    for (var i = 0; i < weeklyReturns.length; i++) avgW += weeklyReturns[i];
+    avgW /= weeklyReturns.length;
+    var varW = 0;
+    for (var i = 0; i < weeklyReturns.length; i++) varW += (weeklyReturns[i] - avgW) * (weeklyReturns[i] - avgW);
+    varW /= weeklyReturns.length;
+    var annReturn = avgW * 52;
+    var annVol = Math.sqrt(varW * 52);
+    var sharpe = annVol > 0 ? (annReturn - 0.06) / annVol : 0;
+
+    var ddColor = ddInfo.maxDD < -0.25 ? '#E8634A' : ddInfo.maxDD < -0.15 ? '#E8B44A' : '#5BAE8A';
+
+    statsEl.innerHTML =
+      '<div class="stat-card"><div class="stat-value" style="color:' + strat.color + '">' + totalReturn.toFixed(0) + '%</div><div class="stat-label">Total Return</div></div>' +
+      '<div class="stat-card"><div class="stat-value" style="color:' + (sharpe > 0.5 ? '#5BAE8A' : '#E8B44A') + '">' + sharpe.toFixed(2) + '</div><div class="stat-label">Sharpe Ratio</div></div>' +
+      '<div class="stat-card"><div class="stat-value" style="color:' + ddColor + '">' + (ddInfo.maxDD * 100).toFixed(1) + '%</div><div class="stat-label">Max Drawdown</div></div>' +
+      '<div class="stat-card"><div class="stat-value">' + ddInfo.longestUnder + 'w</div><div class="stat-label">Longest Underwater</div></div>';
+  }
+
+  render();
+})();
+
+
+// ════════════════════════════════════════════════════
+// WIDGET 5: Feature Importance Waterfall (SHAP)
+// ════════════════════════════════════════════════════
+(function() {
+  var svg = document.getElementById('shap-svg');
+  var statsEl = document.getElementById('shap-stats');
+  if (!svg) return;
+
+  var mode = 'bull';
+
+  var features = ['Prior Return', 'RSI', 'MACD Histogram', 'Volume Change', 'Volatility', 'Bollinger %B'];
+
+  var scenarios = {
+    bull: {
+      values: [0.18, 0.08, 0.06, 0.04, -0.03, 0.02],
+      base: 0.03,
+      label: 'Bullish Day'
+    },
+    bear: {
+      values: [-0.15, -0.10, -0.04, -0.07, 0.05, -0.02],
+      base: 0.03,
+      label: 'Bearish Day'
+    },
+    neutral: {
+      values: [0.02, -0.01, 0.03, -0.02, 0.01, -0.01],
+      base: 0.03,
+      label: 'Neutral Day'
+    }
+  };
+
+  window.toggleShap = function(m) {
+    mode = m;
+    var btns = document.querySelectorAll('#shap-demo .toggle-btn');
+    for (var i = 0; i < btns.length; i++) btns[i].className = 'toggle-btn';
+    var idx = m === 'bull' ? 0 : m === 'bear' ? 1 : 2;
+    btns[idx].className = 'toggle-btn active';
+    render();
+  };
+
+  function render() {
+    var scenario = scenarios[mode];
+    var vals = scenario.values;
+    var base = scenario.base;
+
+    var pad = { top: 40, right: 40, bottom: 30, left: 120 };
+    var totalW = 636, totalH = 380;
+    var w = totalW - pad.left - pad.right;
+    var h = totalH - pad.top - pad.bottom;
+
+    var html = '<rect width="' + totalW + '" height="' + totalH + '" fill="rgb(242,241,239)" rx="4"/>';
+    html += '<rect x="' + pad.left + '" y="' + pad.top + '" width="' + w + '" height="' + h + '" fill="#fff" rx="2"/>';
+
+    var nFeatures = features.length;
+    var rowH = h / (nFeatures + 2); // +2 for base and final
+    var barH = rowH * 0.55;
+
+    // Find range for x-axis
+    var cumulative = [base];
+    for (var i = 0; i < vals.length; i++) cumulative.push(cumulative[i] + vals[i]);
+    var allVals = cumulative.slice();
+    var minVal = Infinity, maxVal = -Infinity;
+    for (var i = 0; i < allVals.length; i++) {
+      if (allVals[i] < minVal) minVal = allVals[i];
+      if (allVals[i] > maxVal) maxVal = allVals[i];
+    }
+    var margin = (maxVal - minVal) * 0.2;
+    minVal -= margin;
+    maxVal += margin;
+    var xRange = maxVal - minVal;
+
+    function toX(val) { return pad.left + ((val - minVal) / xRange) * w; }
+
+    // Zero line
+    if (minVal <= 0 && maxVal >= 0) {
+      var zx = toX(0);
+      html += '<line x1="' + zx + '" y1="' + pad.top + '" x2="' + zx + '" y2="' + (pad.top + h) + '" stroke="rgb(200,198,194)" stroke-width="1" stroke-dasharray="4,3"/>';
+      html += '<text x="' + zx + '" y="' + (pad.top + h + 16) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="10" fill="rgb(150,150,150)">0%</text>';
+    }
+
+    // X-axis
+    html += '<text x="' + (pad.left + w / 2) + '" y="' + (pad.top - 14) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="12" font-weight="600" fill="rgb(80,80,80)">' + scenario.label + ': SHAP Waterfall</text>';
+
+    // Base row
+    var baseY = pad.top + rowH * 0.5 - barH / 2;
+    var baseX = toX(0);
+    var baseEndX = toX(base);
+    html += '<rect x="' + Math.min(baseX, baseEndX) + '" y="' + baseY + '" width="' + Math.abs(baseEndX - baseX) + '" height="' + barH + '" fill="rgb(180,178,174)" rx="3"/>';
+    html += '<text x="' + (pad.left - 8) + '" y="' + (baseY + barH / 2 + 4) + '" text-anchor="end" font-family="Figtree,sans-serif" font-size="12" font-weight="600" fill="rgb(80,80,80)">Base</text>';
+    html += '<text x="' + (baseEndX + 6) + '" y="' + (baseY + barH / 2 + 4) + '" font-family="Figtree,sans-serif" font-size="11" font-weight="600" fill="rgb(80,80,80)">' + (base * 100).toFixed(1) + '%</text>';
+
+    // Feature bars
+    var runningVal = base;
+    for (var i = 0; i < nFeatures; i++) {
+      var rowY = pad.top + rowH * (i + 1.5) - barH / 2;
+      var startX = toX(runningVal);
+      var endX = toX(runningVal + vals[i]);
+      var barColor = vals[i] >= 0 ? '#5BAE8A' : '#E8634A';
+
+      // Connector from previous bar
+      html += '<line x1="' + startX + '" y1="' + (rowY - rowH * 0.45 + barH) + '" x2="' + startX + '" y2="' + rowY + '" stroke="rgb(200,198,194)" stroke-width="1" stroke-dasharray="3,2"/>';
+
+      html += '<rect x="' + Math.min(startX, endX) + '" y="' + rowY + '" width="' + Math.max(Math.abs(endX - startX), 2) + '" height="' + barH + '" fill="' + barColor + '" rx="3" opacity="0.85"/>';
+      html += '<text x="' + (pad.left - 8) + '" y="' + (rowY + barH / 2 + 4) + '" text-anchor="end" font-family="Figtree,sans-serif" font-size="11" fill="rgb(80,80,80)">' + features[i] + '</text>';
+
+      var valText = (vals[i] >= 0 ? '+' : '') + (vals[i] * 100).toFixed(1) + '%';
+      var labelX = vals[i] >= 0 ? Math.max(startX, endX) + 6 : Math.min(startX, endX) - 6;
+      var anchor = vals[i] >= 0 ? 'start' : 'end';
+      html += '<text x="' + labelX + '" y="' + (rowY + barH / 2 + 4) + '" text-anchor="' + anchor + '" font-family="Figtree,sans-serif" font-size="10" font-weight="600" fill="' + barColor + '">' + valText + '</text>';
+
+      runningVal += vals[i];
+    }
+
+    // Final row
+    var finalY = pad.top + rowH * (nFeatures + 1.5) - barH / 2;
+    var finalStartX = toX(0);
+    var finalEndX = toX(runningVal);
+    var finalColor = runningVal >= 0 ? '#5B4AE8' : '#E8634A';
+
+    // Connector
+    html += '<line x1="' + toX(runningVal) + '" y1="' + (finalY - rowH * 0.45 + barH) + '" x2="' + toX(runningVal) + '" y2="' + finalY + '" stroke="rgb(200,198,194)" stroke-width="1" stroke-dasharray="3,2"/>';
+
+    html += '<rect x="' + Math.min(finalStartX, finalEndX) + '" y="' + finalY + '" width="' + Math.abs(finalEndX - finalStartX) + '" height="' + barH + '" fill="' + finalColor + '" rx="3"/>';
+    html += '<text x="' + (pad.left - 8) + '" y="' + (finalY + barH / 2 + 4) + '" text-anchor="end" font-family="Figtree,sans-serif" font-size="12" font-weight="700" fill="rgb(45,45,45)">Prediction</text>';
+    html += '<text x="' + (Math.max(finalStartX, finalEndX) + 6) + '" y="' + (finalY + barH / 2 + 4) + '" font-family="Figtree,sans-serif" font-size="11" font-weight="700" fill="' + finalColor + '">' + (runningVal * 100).toFixed(1) + '%</text>';
+
+    svg.innerHTML = html;
+
+    // Find top feature
+    var topIdx = 0;
+    for (var i = 1; i < vals.length; i++) {
+      if (Math.abs(vals[i]) > Math.abs(vals[topIdx])) topIdx = i;
+    }
+    var signal = runningVal > 0.05 ? 'Strong Buy' : runningVal > 0.01 ? 'Weak Buy' : runningVal < -0.05 ? 'Strong Sell' : runningVal < -0.01 ? 'Weak Sell' : 'Hold';
+    var signalColor = runningVal > 0.01 ? '#5BAE8A' : runningVal < -0.01 ? '#E8634A' : '#E8B44A';
+    var confidence = Math.min(Math.abs(runningVal) * 300, 99).toFixed(0);
+
+    statsEl.innerHTML =
+      '<div class="stat-card"><div class="stat-value" style="color:rgb(180,178,174)">' + (base * 100).toFixed(1) + '%</div><div class="stat-label">Base Prediction</div></div>' +
+      '<div class="stat-card"><div class="stat-value" style="color:' + signalColor + '">' + signal + '</div><div class="stat-label">Final Signal</div></div>' +
+      '<div class="stat-card"><div class="stat-value" style="color:#5B4AE8">' + features[topIdx] + '</div><div class="stat-label">Top Feature</div></div>' +
+      '<div class="stat-card"><div class="stat-value">' + confidence + '%</div><div class="stat-label">Confidence</div></div>';
+  }
+
+  render();
+})();
+
+
+// ════════════════════════════════════════════════════
+// WIDGET 6: Efficient Frontier Explorer
+// ════════════════════════════════════════════════════
+(function() {
+  var svg = document.getElementById('frontier-svg');
+  var statsEl = document.getElementById('frontier-stats');
+  var slider = document.getElementById('frontier-slider');
+  var valLabel = document.getElementById('frontier-val');
+  if (!svg || !slider) return;
+
+  // 5 Indian stocks: annual return (%), annual volatility (%)
+  var stocks = [
+    { name: 'Reliance', ret: 18, vol: 28, color: '#5B4AE8' },
+    { name: 'TCS', ret: 15, vol: 24, color: '#E8634A' },
+    { name: 'HDFC Bank', ret: 13, vol: 22, color: '#E8B44A' },
+    { name: 'Infosys', ret: 14, vol: 26, color: '#5BAE8A' },
+    { name: 'ITC', ret: 12, vol: 19, color: '#4A7DE8' }
+  ];
+
+  // Pre-compute efficient frontier points (20 portfolios from min-var to max-return)
+  // Using simplified mean-variance with pre-computed weights
+  var frontierPts = [];
+  for (var t = 0; t <= 20; t++) {
+    var alpha = t / 20;
+    // Blend from minimum-variance portfolio to maximum-return portfolio
+    // Min-var weights (roughly inverse-variance)
+    var minVarW = [0.12, 0.16, 0.20, 0.14, 0.38];
+    // Max-return weights (concentrated in Reliance)
+    var maxRetW = [0.55, 0.20, 0.05, 0.15, 0.05];
+
+    var weights = [];
+    var wSum = 0;
+    for (var s = 0; s < 5; s++) {
+      var wt = minVarW[s] * (1 - alpha) + maxRetW[s] * alpha;
+      weights.push(wt);
+      wSum += wt;
+    }
+    for (var s = 0; s < 5; s++) weights[s] /= wSum;
+
+    var portRet = 0;
+    for (var s = 0; s < 5; s++) portRet += weights[s] * stocks[s].ret;
+
+    // Portfolio vol (simplified: assume avg correlation ~0.4)
+    var portVar = 0;
+    for (var s = 0; s < 5; s++) {
+      for (var j = 0; j < 5; j++) {
+        var corr = s === j ? 1.0 : 0.4;
+        portVar += weights[s] * weights[j] * stocks[s].vol * stocks[j].vol * corr / 10000;
+      }
+    }
+    var portVol = Math.sqrt(portVar) * 100;
+
+    frontierPts.push({ ret: portRet, vol: portVol, weights: weights });
+  }
+
+  function render() {
+    var riskVal = parseInt(slider.value);
+    var riskLabels = ['Conservative', 'Balanced', 'Aggressive'];
+    var riskLabel = riskVal < 33 ? riskLabels[0] : riskVal < 67 ? riskLabels[1] : riskLabels[2];
+    valLabel.textContent = riskLabel;
+
+    // Map slider 0-100 to frontier index 0-20
+    var frontierIdx = Math.round((riskVal / 100) * 20);
+    frontierIdx = Math.max(0, Math.min(20, frontierIdx));
+    var currentPt = frontierPts[frontierIdx];
+
+    var pad = { top: 30, right: 30, bottom: 60, left: 55 };
+    var totalW = 636, totalH = 420;
+    var w = totalW - pad.left - pad.right;
+    var scatterH = 260;
+    var barTop = pad.top + scatterH + 30;
+    var barH = totalH - barTop - pad.bottom;
+
+    var html = '<rect width="' + totalW + '" height="' + totalH + '" fill="rgb(242,241,239)" rx="4"/>';
+
+    // Scatter area
+    html += '<rect x="' + pad.left + '" y="' + pad.top + '" width="' + w + '" height="' + scatterH + '" fill="#fff" rx="2"/>';
+
+    var minVol = 10, maxVol = 35;
+    var minRet = 8, maxRet = 22;
+    var volRange = maxVol - minVol;
+    var retRange = maxRet - minRet;
+
+    function toSX(vol) { return pad.left + ((vol - minVol) / volRange) * w; }
+    function toSY(ret) { return pad.top + scatterH - ((ret - minRet) / retRange) * scatterH; }
+
+    // Grid
+    for (var g = 0; g <= 4; g++) {
+      var gy = pad.top + scatterH - (g / 4) * scatterH;
+      var gVal = minRet + (g / 4) * retRange;
+      html += '<line x1="' + pad.left + '" y1="' + gy + '" x2="' + (pad.left + w) + '" y2="' + gy + '" stroke="rgb(243,243,243)"/>';
+      html += '<text x="' + (pad.left - 6) + '" y="' + (gy + 4) + '" text-anchor="end" font-family="Figtree,sans-serif" font-size="9" fill="rgb(150,150,150)">' + gVal.toFixed(0) + '%</text>';
+    }
+    for (var g = 0; g <= 4; g++) {
+      var gx = pad.left + (g / 4) * w;
+      var gVal = minVol + (g / 4) * volRange;
+      html += '<line x1="' + gx + '" y1="' + pad.top + '" x2="' + gx + '" y2="' + (pad.top + scatterH) + '" stroke="rgb(243,243,243)"/>';
+      html += '<text x="' + gx + '" y="' + (pad.top + scatterH + 16) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="9" fill="rgb(150,150,150)">' + gVal.toFixed(0) + '%</text>';
+    }
+
+    // Axis labels
+    html += '<text x="' + (pad.left + w / 2) + '" y="' + (pad.top + scatterH + 28) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="11" font-weight="600" fill="rgb(80,80,80)">Risk (Volatility) →</text>';
+    html += '<text x="14" y="' + (pad.top + scatterH / 2) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="11" font-weight="600" fill="rgb(80,80,80)" transform="rotate(-90,14,' + (pad.top + scatterH / 2) + ')">Return →</text>';
+
+    // Efficient frontier curve
+    for (var i = 1; i < frontierPts.length; i++) {
+      var x1 = toSX(frontierPts[i - 1].vol);
+      var y1 = toSY(frontierPts[i - 1].ret);
+      var x2 = toSX(frontierPts[i].vol);
+      var y2 = toSY(frontierPts[i].ret);
+      html += '<line x1="' + x1 + '" y1="' + y1 + '" x2="' + x2 + '" y2="' + y2 + '" stroke="#5B4AE8" stroke-width="2.5" opacity="0.6"/>';
+    }
+
+    // Individual stocks
+    for (var s = 0; s < stocks.length; s++) {
+      var sx = toSX(stocks[s].vol);
+      var sy = toSY(stocks[s].ret);
+      html += '<circle cx="' + sx + '" cy="' + sy + '" r="8" fill="' + stocks[s].color + '" opacity="0.7" stroke="#fff" stroke-width="2"/>';
+      html += '<text x="' + (sx + 12) + '" y="' + (sy + 4) + '" font-family="Figtree,sans-serif" font-size="10" fill="rgb(80,80,80)">' + stocks[s].name + '</text>';
+    }
+
+    // Current portfolio dot on frontier
+    var cpx = toSX(currentPt.vol);
+    var cpy = toSY(currentPt.ret);
+    html += '<circle cx="' + cpx + '" cy="' + cpy + '" r="8" fill="#5B4AE8" stroke="#fff" stroke-width="3"/>';
+    html += '<circle cx="' + cpx + '" cy="' + cpy + '" r="12" fill="none" stroke="#5B4AE8" stroke-width="1.5" opacity="0.4"/>';
+    html += '<text x="' + (cpx + 16) + '" y="' + (cpy - 4) + '" font-family="Figtree,sans-serif" font-size="10" font-weight="700" fill="#5B4AE8">Portfolio</text>';
+
+    // Weight bars
+    var barW = w / 5;
+    var barPad = 8;
+
+    for (var s = 0; s < 5; s++) {
+      var bx = pad.left + s * barW + barPad / 2;
+      var bw = barW - barPad;
+      var bh = currentPt.weights[s] * barH * 1.8;
+      bh = Math.max(bh, 2);
+      var by = barTop + barH - bh;
+
+      html += '<rect x="' + bx + '" y="' + by + '" width="' + bw + '" height="' + bh + '" fill="' + stocks[s].color + '" rx="3" opacity="0.8"/>';
+      html += '<text x="' + (bx + bw / 2) + '" y="' + (by - 4) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="10" font-weight="700" fill="' + stocks[s].color + '">' + (currentPt.weights[s] * 100).toFixed(0) + '%</text>';
+      html += '<text x="' + (bx + bw / 2) + '" y="' + (barTop + barH + 12) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="9" fill="rgb(100,100,100)">' + stocks[s].name + '</text>';
+    }
+
+    svg.innerHTML = html;
+
+    // Stats
+    var sharpe = currentPt.vol > 0 ? (currentPt.ret - 6) / currentPt.vol : 0;
+    var maxWeight = 0;
+    for (var s = 0; s < 5; s++) {
+      if (currentPt.weights[s] > maxWeight) maxWeight = currentPt.weights[s];
+    }
+
+    statsEl.innerHTML =
+      '<div class="stat-card"><div class="stat-value" style="color:#5BAE8A">' + currentPt.ret.toFixed(1) + '%</div><div class="stat-label">Expected Return</div></div>' +
+      '<div class="stat-card"><div class="stat-value" style="color:#E8634A">' + currentPt.vol.toFixed(1) + '%</div><div class="stat-label">Portfolio Risk</div></div>' +
+      '<div class="stat-card"><div class="stat-value" style="color:#5B4AE8">' + sharpe.toFixed(2) + '</div><div class="stat-label">Sharpe Ratio</div></div>' +
+      '<div class="stat-card"><div class="stat-value">' + (maxWeight * 100).toFixed(0) + '%</div><div class="stat-label">Max Weight</div></div>';
+  }
+
+  slider.addEventListener('input', render);
+  render();
+})();
+
+
+// ════════════════════════════════════════════════════
+// SCROLL REVEAL
+// ════════════════════════════════════════════════════
+(function() {
+  var observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+  document.querySelectorAll('.fade-in').forEach(function(el) { observer.observe(el); });
+})();
+</script>
+</body>
+</html>

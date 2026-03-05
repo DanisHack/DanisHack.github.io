@@ -1,0 +1,35 @@
+# Danish Mohd
+
+> AI product builder. Writes about AI scaling, RAG pipelines, LLM evaluation, and applied machine learning. Previously VP Engineering at Pixis AI. Built and sold SegmentOne (e-commerce personalization). Currently building Pluto Money (AI financial advisor) and an AI-native hedge fund.
+
+## Interactive Explainers
+
+These are in-depth, interactive articles with hands-on visualizations. They are the highest-quality content on this site.
+
+- [The Scaling Laws That Predict Everything](https://supergeek.in/scaling-laws/): How the same power law (y = ax^b) governs biology (Kleiber's law), cities, and neural network performance. Covers Kaplan scaling laws, Chinchilla compute-optimal training, emergent abilities, and what the curves predict for AI timelines. 7 interactive demos.
+- [You're Doing RAG Retrieval Wrong](https://supergeek.in/rag-retrieval/): Why RAG pipelines retrieve wrong chunks — semantic dissonance between questions and documents in embedding space. Covers question-to-question matching, domain-specific embeddings, reranking beyond cosine similarity, and empirical threshold setting. 5 interactive demos.
+- [Credit Scoring, Explained Plainly](https://supergeek.in/credit-scoring/): How banks decide who gets a loan in 30 seconds. Covers FICO components, Weight of Evidence binning, logistic regression scorecards, XGBoost vs LightGBM comparison, SHAP explainability for regulatory compliance, and PSI drift monitoring. 6 interactive demos.
+- [Causal AI in Wealth, Explained](https://supergeek.in/causal-ai/): Why every wealth app confuses correlation with causation. Covers confounders vs colliders, Pearl's causal ladder, causal graphs for SIP cancellation, the engagement trap (collider bias in fintech), and counterfactual reasoning for investor behavior. 6 interactive demos.
+- [ML-Based Trading, Explained Plainly](https://supergeek.in/ml-trading/): What actually works in ML trading, what doesn't, and why most quant strategies fail. Covers technical indicators (RSI, MACD, Bollinger), momentum vs mean reversion, overfitting detection, drawdown analysis, SHAP feature importance, and efficient frontier portfolio optimization using real Nifty 50 data. 6 interactive demos.
+
+## Writing
+
+- [Learn AI from zero — a roadmap](https://supergeek.in/self-study-guide-for-learning-ai/): Step-by-step curriculum from Python to deep learning to NLP, with specific free course recommendations.
+- [You're doing RAG retrieval wrong](https://supergeek.in/biggest-misconception-in-rag/): The core argument for matching questions to questions instead of documents. Shorter version of the interactive explainer.
+- [Using agents to make RAG work on time series](https://supergeek.in/agentic-rag-pipeline-for-time-series-analysis/): Agentic RAG architecture for temporal data with tool-calling LLMs.
+- [Why LLMs forget your instructions (and a fix)](https://supergeek.in/reduce-forgetfulness-in-llm-instructions/): Techniques to reduce instruction drift in long conversations with LLMs.
+- [The AI Scientist: when AI does its own research](https://supergeek.in/the-ai-scientist/): Analysis of the AI Scientist framework that automates research ideation, experimentation, paper writing, and peer review for under $15 per paper.
+- [LLMs can't write long. AgentWrite can.](https://supergeek.in/ai-output-limit-solution-agentwrite/): Breaking the output length ceiling with agent-based sequential writing.
+- [Measuring whether your RAG actually works](https://supergeek.in/evaluate-rag-pipelines/): RAG evaluation metrics — context precision, context recall, faithfulness, and answer relevance.
+- [Datasets worth using for LLM training](https://supergeek.in/datasets-for-llm-training/): Curated list of datasets for pretraining, fine-tuning, and instruction tuning LLMs.
+- [Tools for evaluating, training, and deploying LLMs](https://supergeek.in/llm-evaluation-training-deployment/): Practical tools and frameworks across the LLM lifecycle.
+- [The papers that shaped generative AI](https://supergeek.in/llm-milestone-papers/): Annotated list of milestone papers from Transformer to GPT-4, with key contributions of each.
+- [Everything I read to understand LLMs](https://supergeek.in/llm-learning-resources/): Curated learning resources for understanding large language models.
+- [A list of open-source LLMs worth knowing](https://supergeek.in/opem-llms/): Comparison of open-source language models with architecture details and use cases.
+
+## Optional
+
+- [Multidimensional data modeling before the warehouse](https://supergeek.in/multidimensional-data-model/): Data warehouse dimensional modeling concepts.
+- [Credit scoring, explained plainly](https://supergeek.in/whats-credit-scoring/): How credit scoring models work in lending.
+- [What I learned building a credit risk model](https://supergeek.in/credit-risk-modelling/): Practical lessons from building credit underwriting for a small finance bank.
+- [Resources for ML-based trading](https://supergeek.in/quant-machine-learning-trading/): Books, courses, and tools for quantitative trading with machine learning.

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Why LLMs forget your instructions (and a fix) | Danish Mohd</title>
+<meta property="og:title" content="Why LLMs forget your instructions (and a fix)" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="LLMs lose track of instructions in long conversations. Practical techniques to reduce instruction drift and maintain compliance." />
+<meta property="og:description" content="LLMs lose track of instructions in long conversations. Practical techniques to reduce instruction drift and maintain compliance." />
+<link rel="canonical" href="https://supergeek.in/reduce-forgetfulness-in-llm-instructions/" />
+<meta property="og:url" content="https://supergeek.in/reduce-forgetfulness-in-llm-instructions/" />
+<meta property="og:site_name" content="Danish Mohd" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2024-08-31T00:00:00+05:30" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:title" content="Why LLMs forget your instructions (and a fix)" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2024-08-31T00:00:00+05:30","datePublished":"2024-08-31T00:00:00+05:30","description":"LLMs lose track of instructions in long conversations. Practical techniques to reduce instruction drift and maintain compliance.","headline":"Why LLMs forget your instructions (and a fix)","mainEntityOfPage":{"@type":"WebPage","@id":"https://supergeek.in/reduce-forgetfulness-in-llm-instructions/"},"author":{"@type":"Person","name":"Danish Mohd","url":"https://supergeek.in"},"url":"https://supergeek.in/reduce-forgetfulness-in-llm-instructions/"}</script>
+
+  <link rel="stylesheet" href="/assets/css/post.css">
+</head>
+<body>
+  <div class="post-container">
+
+    <a class="post-back" href="/">&larr; Danish Mohd</a>
+
+    <header class="post-header">
+      <div class="post-date">August 31, 2024</div>
+      <h1 class="post-title">Why LLMs forget your instructions (and a fix)</h1>
+      <hr class="post-header-rule">
+    </header>
+
+    <article class="post-content">
+      <p><img src="images/1725278428243.jpeg" alt="Feature Image" /></p>
+
+<blockquote>
+  <p>Boost Your LLM Accuracy with “Writing in the Margins”</p>
+</blockquote>
+
+<p>Let’s talk about something we all face when working with Large Language Models (LLMs) – the more instructions you add, the worse they seem to perform. It’s like trying to juggle more and more balls; eventually, something’s going to drop. But what if I told you there’s a way to keep everything in the air, no matter how complex your prompt gets? Enter “Writing in the Margins.”</p>
+
+<h2 id="the-problem-with-long-prompts">The Problem with Long Prompts</h2>
+
+<p>When you keep adding details to your LLM prompts, the model starts to struggle. It’s as if the model is trying to hold onto too much information at once, and the result? It forgets some of the details. Imagine trying to remember a grocery list that just keeps getting longer and longer; eventually, you’re going to forget the milk or eggs. This is where “Writing in the Margins” comes in to save the day.</p>
+
+<h2 id="what-exactly-is-writing-in-the-margins">What Exactly is “Writing in the Margins”?</h2>
+
+<p>Okay, so picture this: you have a super long prompt, kind of like a big, complicated story. Normally, the LLM uses something called the chunked prefill method to break that story into manageable parts, or “chunks.” It processes each chunk one at a time, updating its memory (the KV cache) as it goes. This is supposed to help the model handle long prompts without running out of memory, but it doesn’t always keep everything straight. Important details can slip through the cracks.</p>
+
+<p>Now, here’s where “Writing in the Margins” switches things up:</p>
+
+<ol>
+  <li>
+    <p><strong>Breaking It Down</strong>: Just like before, the prompt is divided into segments. But instead of just moving on to the next chunk, this method adds a little twist.</p>
+  </li>
+  <li>
+    <p><strong>Extractive Instructions</strong>: Each segment gets an extractive instruction – think of it as a mini-summary or a note in the margin of your book. These are called “margins.” They’re checked to make sure they’re still on point with the task.</p>
+  </li>
+  <li>
+    <p><strong>Building It Back Up</strong>: Once the model has these “margins,” it combines the relevant ones and puts them back into the context. This way, nothing gets forgotten along the way, and the final instruction has all the info it needs to get things right.</p>
+  </li>
+</ol>
+
+<h2 id="why-does-this-matter">Why Does This Matter?</h2>
+
+<p>This approach does more than just sound cool; it actually works. “Writing in the Margins” boosts the model’s performance by over 7.5% in tasks that require multi-step thinking, like solving a problem that needs you to remember details from earlier steps. It gets even better with tasks that involve combining information from different parts of the prompt – here, the improvement is more than 30%.</p>
+
+<h2 id="the-takeaway">The Takeaway</h2>
+
+<p>If you’re working with LLMs, especially on tasks with long prompts or complex instructions, “Writing in the Margins” is like giving your model a cheat sheet. It helps the model keep track of everything, remember the important stuff, and deliver better results. So next time you’re trying to get your LLM to do some heavy lifting, remember – a little margin writing can go a long way.</p>
+
+<blockquote>
+  <p>I hope that makers of mainstream LLMs like Chatgpt and Claude integrate this in their LLMs so that we can leverage this.</p>
+</blockquote>
+
+<p><a href="https://arxiv.org/pdf/2408.14906">Read the full paper here</a></p>
+
+    </article>
+
+    <footer class="post-footer">
+      <a href="/">&larr; Back home</a>
+      <span class="post-footer-copy">&copy; 2026 Danish Mohd</span>
+    </footer>
+
+  </div>
+</body>
+</html>

@@ -1,0 +1,1621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Causal AI in Wealth, Explained | An Interactive Guide</title>
+<meta name="description" content="Why every wealth app confuses correlation with causation. An interactive guide to confounders, colliders, Pearl's causal ladder, and counterfactual reasoning for investor behavior. 6 hands-on demos.">
+
+<!-- Open Graph -->
+<meta property="og:title" content="Causal AI in Wealth, Explained">
+<meta property="og:description" content="Why every wealth app confuses correlation with causation. Interactive guide to causal AI with 6 hands-on demos.">
+<meta property="og:url" content="https://supergeek.in/causal-ai/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Danish Khan">
+<meta property="og:locale" content="en_US">
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Causal AI in Wealth, Explained">
+<meta name="twitter:description" content="Why every wealth app confuses correlation with causation. 6 interactive demos.">
+
+<!-- Canonical -->
+<link rel="canonical" href="https://supergeek.in/causal-ai/">
+
+<!-- Structured Data -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "Causal AI in Wealth, Explained",
+  "description": "Why every wealth app confuses correlation with causation. An interactive guide to confounders, colliders, Pearl's causal ladder, and counterfactual reasoning for investor behavior.",
+  "author": {
+    "@type": "Person",
+    "name": "Danish Khan",
+    "url": "https://supergeek.in",
+    "jobTitle": "AI Product Builder",
+    "sameAs": [
+      "https://github.com/DanisHack"
+    ]
+  },
+  "publisher": {
+    "@type": "Person",
+    "name": "Danish Khan",
+    "url": "https://supergeek.in"
+  },
+  "datePublished": "2026-03-05",
+  "dateModified": "2026-03-05",
+  "mainEntityOfPage": "https://supergeek.in/causal-ai/",
+  "keywords": ["causal AI", "causal inference", "wealth management", "Pearl causal ladder", "confounders", "colliders", "counterfactual reasoning", "investor behavior", "SIP retention"]
+}
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,700;1,6..72,400&family=Figtree:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+/* ── Reset ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Newsreader', Georgia, serif;
+  font-size: 21px;
+  line-height: 1.4;
+  color: rgb(45,45,45);
+  background: rgb(250,249,247);
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: #5B4AE8; text-decoration: none; }
+a:hover { color: #7B4AE8; }
+
+/* ── Layout ── */
+.content { max-width: 700px; margin: 0 auto; padding: 0 24px; }
+
+/* ── Hero ── */
+.hero {
+  position: relative;
+  border-radius: 16px;
+  margin: 12px auto;
+  max-width: calc(100% - 24px);
+  min-height: 300px;
+  overflow: hidden;
+  display: flex;
+  align-items: flex-end;
+  padding: 48px 40px;
+}
+.hero-bg {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+}
+.hero .content { position: relative; z-index: 1; max-width: none; padding: 0; }
+.hero h1 {
+  font-family: 'Newsreader', Georgia, serif;
+  font-size: 64px;
+  font-weight: 700;
+  line-height: 1.1;
+  color: #fff;
+  margin-bottom: 12px;
+}
+.post-subtitle {
+  font-family: 'Figtree', system-ui, sans-serif;
+  font-size: 26px;
+  font-weight: 500;
+  line-height: 1.1;
+  color: rgba(255,255,255,0.85);
+}
+
+/* ── Intro ── */
+.intro { margin: 60px auto 40px; }
+.intro-text {
+  font-style: italic;
+  font-size: 23px;
+  line-height: 1.45;
+  color: rgb(80,80,80);
+}
+
+/* ── TOC ── */
+.toc {
+  margin: 0 auto 60px;
+  padding: 24px 28px;
+  background: rgb(242,241,239);
+  border-radius: 12px;
+}
+.toc h4 {
+  font-family: 'Figtree', system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 12px;
+  color: rgb(100,100,100);
+}
+.toc ol { padding-left: 20px; }
+.toc li {
+  font-family: 'Figtree', system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.8;
+  color: rgb(80,80,80);
+}
+.toc a { color: rgb(45,45,45); border-bottom: 1px solid transparent; }
+.toc a:hover { color: #5B4AE8; border-bottom-color: #5B4AE8; }
+
+/* ── Section Headers ── */
+.section-header {
+  display: flex;
+  align-items: baseline;
+  gap: 20px;
+  padding-top: 100px;
+  margin-bottom: 40px;
+  border-top: 1px solid rgb(220,218,214);
+}
+.section-number {
+  font-family: 'Newsreader', Georgia, serif;
+  font-size: 50px;
+  font-weight: 400;
+  color: rgb(180,178,174);
+  flex-shrink: 0;
+}
+.section-header h2 {
+  font-family: 'Figtree', system-ui, sans-serif;
+  font-size: 44px;
+  font-weight: 700;
+  line-height: 1.1;
+  color: rgb(45,45,45);
+}
+h3 {
+  font-family: 'Figtree', system-ui, sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.1;
+  margin-top: 40px;
+  margin-bottom: 16px;
+}
+
+/* ── Prose ── */
+main p {
+  margin-bottom: 20px;
+}
+main p strong {
+  font-weight: 700;
+}
+
+/* ── Demo Containers ── */
+.demo-container {
+  background: rgb(242,241,239);
+  border-radius: 12px;
+  padding: 32px;
+  margin: 32px 0;
+}
+.label {
+  font-family: 'Figtree', system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgb(45,45,45);
+  margin-bottom: 16px;
+}
+figcaption {
+  font-family: 'Newsreader', Georgia, serif;
+  font-style: italic;
+  font-size: 17px;
+  line-height: 1.4;
+  color: rgb(100,100,100);
+  text-align: center;
+  margin-top: 16px;
+}
+
+/* ── Controls ── */
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 16px 0;
+  flex-wrap: wrap;
+}
+.controls label {
+  font-family: 'Figtree', system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: rgb(80,80,80);
+}
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 6px;
+  border-radius: 3px;
+  background: rgb(200,198,194);
+  outline: none;
+  flex: 1;
+  min-width: 120px;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  background: #5B4AE8;
+  cursor: pointer;
+  border: 3px solid #fff;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+}
+input[type="range"]::-moz-range-thumb {
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  background: #5B4AE8;
+  cursor: pointer;
+  border: 3px solid #fff;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+}
+.toggle-btn {
+  font-family: 'Figtree', system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: 1px solid rgb(200,198,194);
+  background: #fff;
+  color: rgb(45,45,45);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.toggle-btn:hover { border-color: #5B4AE8; color: #5B4AE8; }
+.toggle-btn.active { background: #5B4AE8; color: #fff; border-color: #5B4AE8; }
+
+/* ── Value Display ── */
+.value-display {
+  font-family: 'Figtree', system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: #5B4AE8;
+  min-width: 60px;
+}
+
+/* ── Stat Cards ── */
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+  margin: 16px 0;
+}
+.stat-card {
+  background: #fff;
+  border-radius: 8px;
+  padding: 16px;
+  text-align: center;
+}
+.stat-value {
+  font-family: 'Figtree', system-ui, sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+.stat-label {
+  font-family: 'Figtree', system-ui, sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: rgb(100,100,100);
+  margin-top: 4px;
+}
+
+/* ── Callout ── */
+.callout {
+  border-left: 4px solid #5B4AE8;
+  padding: 20px 24px;
+  margin: 32px 0;
+  background: rgba(91,74,232,0.04);
+  border-radius: 0 8px 8px 0;
+}
+.callout p { margin-bottom: 8px; }
+.callout p:last-child { margin-bottom: 0; }
+
+/* ── Sidenotes ── */
+.sidenote-trigger {
+  font-family: 'Figtree', system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: #5B4AE8;
+  cursor: pointer;
+  vertical-align: super;
+}
+.sidenote {
+  display: none;
+  background: rgb(242,241,239);
+  padding: 16px 20px;
+  border-radius: 8px;
+  margin: 8px 0 16px;
+}
+.sidenote.open { display: block; }
+.sidenote p {
+  font-family: 'Figtree', system-ui, sans-serif;
+  font-size: 15px;
+  line-height: 1.4;
+  margin-bottom: 8px;
+}
+.sidenote p:last-child { margin-bottom: 0; }
+
+/* ── Legend ── */
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 20px;
+  margin: 12px 0;
+}
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'Figtree', system-ui, sans-serif;
+  font-size: 13px;
+  color: rgb(80,80,80);
+}
+.legend-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* ── Fade In ── */
+.fade-in {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+.fade-in.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── Footer ── */
+.site-footer {
+  background: #3A2D7A;
+  color: rgba(255,255,255,0.7);
+  padding: 60px 24px;
+  margin-top: 100px;
+  text-align: center;
+}
+.site-footer p:first-child {
+  font-family: 'Newsreader', Georgia, serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 8px;
+}
+.site-footer .footer-tagline {
+  font-family: 'Newsreader', Georgia, serif;
+  font-style: italic;
+  font-size: 17px;
+  color: rgba(255,255,255,0.5);
+  margin-top: 16px;
+}
+.site-footer a { color: rgba(255,255,255,0.8); }
+.site-footer a:hover { color: #fff; }
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  body { font-size: 19px; }
+  .hero h1 { font-size: 40px; }
+  .post-subtitle { font-size: 20px; }
+  .hero { padding: 32px 24px; min-height: 220px; }
+  .section-header { padding-top: 60px; margin-bottom: 30px; gap: 14px; }
+  .section-number { font-size: 36px; }
+  .section-header h2 { font-size: 32px; }
+  h3 { font-size: 22px; }
+  .intro-text { font-size: 20px; }
+  .demo-container { padding: 20px 16px; }
+  .stat-grid { grid-template-columns: repeat(2, 1fr); }
+  .stat-value { font-size: 22px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
+</style>
+</head>
+<body>
+
+<a href="/" style="display:inline-block;margin:16px 0 0 16px;font-family:'Figtree',system-ui,sans-serif;font-size:15px;font-weight:600;color:rgb(100,100,100);text-decoration:none;" onmouseover="this.style.color='#5B4AE8'" onmouseout="this.style.color='rgb(100,100,100)'">&larr; Danish Khan</a>
+
+<!-- ════════════════════════════════════════════════════ -->
+<!-- HERO                                                -->
+<!-- ════════════════════════════════════════════════════ -->
+<div class="hero">
+  <svg class="hero-bg" viewBox="0 0 1200 400" preserveAspectRatio="xMidYMid slice">
+    <defs>
+      <linearGradient id="heroGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#1a1a2e"/>
+        <stop offset="30%" stop-color="#16213e"/>
+        <stop offset="60%" stop-color="#3A2D7A"/>
+        <stop offset="100%" stop-color="#5B4AE8"/>
+      </linearGradient>
+      <pattern id="gridP" width="40" height="40" patternUnits="userSpaceOnUse">
+        <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+      </pattern>
+    </defs>
+    <rect width="1200" height="400" fill="url(#heroGrad)"/>
+    <rect width="1200" height="400" fill="url(#gridP)"/>
+    <!-- Decorative: causal DAG nodes and arrows -->
+    <circle cx="200" cy="180" r="28" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="2"/>
+    <circle cx="500" cy="100" r="28" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="2"/>
+    <circle cx="500" cy="260" r="28" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="2"/>
+    <circle cx="800" cy="180" r="28" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="2"/>
+    <circle cx="1000" cy="120" r="22" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="2"/>
+    <circle cx="1000" cy="240" r="22" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="2"/>
+    <!-- Arrows -->
+    <line x1="228" y1="168" x2="472" y2="112" stroke="rgba(255,255,255,0.08)" stroke-width="2"/>
+    <line x1="228" y1="192" x2="472" y2="248" stroke="rgba(255,255,255,0.08)" stroke-width="2"/>
+    <line x1="528" y1="112" x2="772" y2="168" stroke="rgba(255,255,255,0.08)" stroke-width="2"/>
+    <line x1="528" y1="248" x2="772" y2="192" stroke="rgba(255,255,255,0.08)" stroke-width="2"/>
+    <line x1="828" y1="168" x2="978" y2="132" stroke="rgba(255,255,255,0.06)" stroke-width="1.5"/>
+    <line x1="828" y1="192" x2="978" y2="228" stroke="rgba(255,255,255,0.06)" stroke-width="1.5"/>
+    <!-- Question mark -->
+    <text x="200" y="188" text-anchor="middle" font-family="Figtree,sans-serif" font-size="22" font-weight="700" fill="rgba(255,255,255,0.15)">X</text>
+    <text x="500" y="108" text-anchor="middle" font-family="Figtree,sans-serif" font-size="22" font-weight="700" fill="rgba(255,255,255,0.15)">?</text>
+    <text x="500" y="268" text-anchor="middle" font-family="Figtree,sans-serif" font-size="22" font-weight="700" fill="rgba(255,255,255,0.15)">Y</text>
+    <text x="800" y="188" text-anchor="middle" font-family="Figtree,sans-serif" font-size="22" font-weight="700" fill="rgba(255,255,255,0.15)">Z</text>
+    <!-- Crossed-out spurious arrow -->
+    <line x1="500" y1="128" x2="500" y2="232" stroke="rgba(232,99,74,0.15)" stroke-width="2" stroke-dasharray="6,4"/>
+    <line x1="485" y1="165" x2="515" y2="195" stroke="rgba(232,99,74,0.2)" stroke-width="3"/>
+    <line x1="515" y1="165" x2="485" y2="195" stroke="rgba(232,99,74,0.2)" stroke-width="3"/>
+  </svg>
+  <div class="content">
+    <h1>Causal AI in Wealth, Explained</h1>
+    <p class="post-subtitle">Why every investment app confuses correlation with causation &mdash; and what actually changes behavior.</p>
+  </div>
+</div>
+
+<main class="content">
+<article>
+
+<!-- ════════════════════════════════════════════════════ -->
+<!-- INTRO                                               -->
+<!-- ════════════════════════════════════════════════════ -->
+<section class="intro">
+  <p class="intro-text">There&rsquo;s a chart your mutual fund app shows you: &ldquo;Investors who stay invested for 10 years earn 14% annually on average.&rdquo; That chart is real. The advice is correct. And almost nobody follows it. Not because people are stupid &mdash; because knowing something and doing it are completely different problems. The entire wealth management industry has spent fifty years solving the wrong one. They&rsquo;ve been obsessed with <em>what</em> to invest in. Nobody has seriously asked <em>why</em> people stop investing. India&rsquo;s SIP stoppage ratio hit 109% in January 2025 &mdash; more SIPs cancelled than opened, for the first time in history. Causal AI is starting to answer why.</p>
+</section>
+
+<nav class="toc">
+  <h4>Contents</h4>
+  <ol>
+    <li><a href="#section-1">The Ice Cream Problem</a></li>
+    <li><a href="#section-2">Confounders &amp; Colliders</a></li>
+    <li><a href="#section-3">Pearl&rsquo;s Ladder</a></li>
+    <li><a href="#section-4">The Causal Graph</a></li>
+    <li><a href="#section-5">The Engagement Trap</a></li>
+    <li><a href="#section-6">The Counterfactual Mirror</a></li>
+  </ol>
+</nav>
+
+
+<!-- ════════════════════════════════════════════════════ -->
+<!-- SECTION I                                           -->
+<!-- ════════════════════════════════════════════════════ -->
+<section id="section-1" class="fade-in">
+  <div class="section-header">
+    <span class="section-number">I.</span>
+    <h2>The Ice Cream Problem</h2>
+  </div>
+
+  <p>In 1970s New York, city officials noticed something alarming: on days when ice cream sales spiked, so did the murder rate. The correlation was strong, consistent, and reproducible across years of data.</p>
+
+  <p>The actual explanation is summer. Hot weather causes people to buy ice cream. Hot weather also drives people outside, increases social friction, and causes more violence. Ice cream and murders share a <strong>common cause</strong>. Neither caused the other.</p>
+
+  <p>This is so obvious in retrospect that it&rsquo;s almost funny. But the same mistake &mdash; confusing correlation with causation &mdash; is embedded in virtually every financial model ever built, every robo-advisor ever launched, and every &ldquo;AI-powered&rdquo; investment app you&rsquo;ve ever used.<span class="sidenote-trigger" onclick="toggleSidenote('sn1')">[1]</span></p>
+  <div class="sidenote" id="sn1"><p>Marcos L&oacute;pez de Prado at Cornell and ADIA Lab showed with 10,000 Monte Carlo simulations that correlation-based factor models frequently produce portfolios that <em>buy what they should sell and sell what they should buy</em>. He called the result a &ldquo;factor mirage.&rdquo;</p></div>
+
+  <p>When a wealth platform builds its recommendation engine, it looks at historical data and asks: what patterns predict good outcomes? &ldquo;Users who rebalance quarterly outperform.&rdquo; &ldquo;Investors who pause SIPs during corrections underperform.&rdquo; All of this is <strong>correlation</strong>. The data is real. But correlation is not the same as causation, and the difference matters enormously when you&rsquo;re trying to <em>do something</em> about it.</p>
+
+  <figure>
+    <div class="demo-container" id="icecream-demo">
+      <p class="label">Correlation &ne; Causation: The Ice Cream &amp; Murder Puzzle</p>
+      <div class="controls">
+        <button class="toggle-btn active" onclick="toggleIceCream('corr')">Show Correlation</button>
+        <button class="toggle-btn" onclick="toggleIceCream('cause')">Reveal the Confounder</button>
+      </div>
+      <svg id="icecream-svg" viewBox="0 0 636 380" width="100%"></svg>
+      <div class="stat-grid" id="icecream-stats"></div>
+      <figcaption>Click &ldquo;Reveal the Confounder&rdquo; to see why ice cream doesn&rsquo;t cause murder. The hidden variable &mdash; temperature &mdash; drives both.</figcaption>
+      <noscript><p>In 1970s New York, ice cream sales and murder rates showed a strong correlation (r = 0.87). A scatter plot of monthly data reveals both variables rise and fall together. But neither causes the other. The confounder is temperature: hot weather causes both ice cream purchases and increased violence. When data points are colored by temperature, the pattern becomes obvious &mdash; cold months cluster at the bottom-left (low ice cream, low murder), hot months at the top-right. The correlation is real but the causal inference is wrong. This same mistake pervades financial modeling.</p></noscript>
+    </div>
+  </figure>
+
+  <p>Here&rsquo;s a concrete example. Suppose you observe that investors who check their portfolio frequently have better long-term returns. Correlation is clear. So you design a feature to make people check more. Does this work? Probably not. People who are financially committed both check their portfolio more <em>and</em> have better returns. The checking didn&rsquo;t cause the returns. Both were caused by the same upstream thing: genuine financial engagement.</p>
+</section>
+
+
+<!-- ════════════════════════════════════════════════════ -->
+<!-- SECTION II                                          -->
+<!-- ════════════════════════════════════════════════════ -->
+<section id="section-2" class="fade-in">
+  <div class="section-header">
+    <span class="section-number">II.</span>
+    <h2>Confounders &amp; Colliders</h2>
+  </div>
+
+  <p>Before going further, two concepts that explain exactly how correlations mislead you.</p>
+
+  <p>A <strong>confounder</strong> is a hidden third variable that causes both things you&rsquo;re observing. Summer causes both ice cream and murders. Financial commitment causes both app usage and SIP continuation. If you don&rsquo;t measure the confounder, you&rsquo;ll incorrectly conclude one thing caused the other.</p>
+
+  <p>A <strong>collider</strong> is trickier. It&rsquo;s a variable that is <em>caused by</em> two things you&rsquo;re measuring. And when you try to control for it, you <em>create</em> a fake relationship between those two things that wasn&rsquo;t there before.<span class="sidenote-trigger" onclick="toggleSidenote('sn2')">[2]</span></p>
+  <div class="sidenote" id="sn2"><p>The classic example: shoe size and reading ability are unrelated. But both are caused by age. If you filter to only look at children of the same age, shoe size and reading ability suddenly look correlated &mdash; because you&rsquo;ve controlled for the collider (age) and manufactured a relationship that doesn&rsquo;t exist.</p></div>
+
+  <p>In finance, this happens constantly. Adding more variables to your model to make it look sophisticated often makes it <em>worse</em> &mdash; not because the variables are irrelevant, but because some are colliders, and including them corrupts everything else.</p>
+
+  <div class="callout">
+    <p><strong>L&oacute;pez de Prado&rsquo;s 10,000 simulations.</strong> With 10,000 Monte Carlo trials, he showed that correlation-based factor models &mdash; the kind used by every major asset manager &mdash; frequently produce portfolios that buy what they should sell and sell what they should buy. He called the result a &ldquo;factor mirage&rdquo; &mdash; a pattern that looks real in backtests but evaporates with real money.</p>
+  </div>
+
+  <figure>
+    <div class="demo-container" id="confcoll-demo">
+      <p class="label">Confounder vs Collider: Two Ways Correlations Lie</p>
+      <div class="controls">
+        <button class="toggle-btn active" onclick="toggleConfColl('conf')">Confounder</button>
+        <button class="toggle-btn" onclick="toggleConfColl('coll')">Collider</button>
+      </div>
+      <svg id="confcoll-svg" viewBox="0 0 636 380" width="100%"></svg>
+      <div class="stat-grid" id="confcoll-stats"></div>
+      <figcaption>Toggle between the two structures. A confounder hides above, creating a spurious link below. A collider sits below, and controlling for it creates a fake link above.</figcaption>
+      <noscript><p>Confounders and colliders are the two specific ways correlations mislead causal reasoning. A confounder is a hidden common cause: in a triangle diagram, Summer sits at the top causing both Ice Cream Sales and Murder Rate below. The spurious correlation between ice cream and murder (r = 0.87) disappears when you control for Summer. A collider is the opposite structure: Financial Commitment and SIP Retention both cause App Engagement. When you filter on high-engagement users (controlling for the collider), you create a fake negative correlation between commitment and retention that doesn&rsquo;t actually exist. Understanding which variables are confounders and which are colliders is essential for correct causal inference.</p></noscript>
+    </div>
+  </figure>
+</section>
+
+
+<!-- ════════════════════════════════════════════════════ -->
+<!-- SECTION III                                         -->
+<!-- ════════════════════════════════════════════════════ -->
+<section id="section-3" class="fade-in">
+  <div class="section-header">
+    <span class="section-number">III.</span>
+    <h2>Pearl&rsquo;s Ladder</h2>
+  </div>
+
+  <p>Judea Pearl &mdash; who won the Turing Award in 2011 for his work on causal inference &mdash; describes three levels of causal reasoning. They map almost perfectly onto the gap between what current wealth apps do and what&rsquo;s actually possible.</p>
+
+  <p><strong>Level 1: Observation.</strong> &ldquo;What happened?&rdquo; Your portfolio dropped 8%. Your SIP continuation rate is 70%. This is what every platform tells you.</p>
+
+  <p><strong>Level 2: Intervention.</strong> &ldquo;What happens if I do X?&rdquo; If we send a goal reminder, what&rsquo;s the probability they keep their SIP? This requires a causal model &mdash; you can&rsquo;t answer intervention questions with pure correlation.</p>
+
+  <p><strong>Level 3: Counterfactual.</strong> &ldquo;What would have happened if?&rdquo; You stopped your SIP in February 2022. If you had stayed invested, your portfolio would be &#x20B9;2.3 lakhs larger. This level of reasoning is only possible with a structural causal model.<span class="sidenote-trigger" onclick="toggleSidenote('sn3')">[3]</span></p>
+  <div class="sidenote" id="sn3"><p>Pearl&rsquo;s &ldquo;Ladder of Causation&rdquo; is formalized in his 2009 book <em>Causality</em> and popularized in <em>The Book of Why</em> (2018). The three levels correspond to increasing levels of causal reasoning that no amount of data alone can bridge.</p></div>
+
+  <p>Every current platform operates primarily on Level 1. Some gesture toward Level 2. Nobody has seriously built Level 3. But Level 3 is the one that actually changes behavior &mdash; because people don&rsquo;t respond to abstract advice. &ldquo;Stay invested for the long term&rdquo; bounces off. But &ldquo;if you had stayed invested through the last correction, you&rsquo;d have &#x20B9;2.3 lakhs more right now&rdquo; &mdash; that gets through.</p>
+
+  <figure>
+    <div class="demo-container" id="ladder-demo">
+      <p class="label">Pearl&rsquo;s Ladder of Causation: Three Levels</p>
+      <div class="controls">
+        <button class="toggle-btn active" onclick="toggleLadder(1)">Level 1: Observation</button>
+        <button class="toggle-btn" onclick="toggleLadder(2)">Level 2: Intervention</button>
+        <button class="toggle-btn" onclick="toggleLadder(3)">Level 3: Counterfactual</button>
+      </div>
+      <svg id="ladder-svg" viewBox="0 0 636 380" width="100%"></svg>
+      <div class="stat-grid" id="ladder-stats"></div>
+      <figcaption>Each level requires strictly more causal knowledge than the one below. No amount of Level 1 data can answer Level 2 questions.</figcaption>
+      <noscript><p>Judea Pearl&rsquo;s Ladder of Causation has three levels. Level 1 (Observation) answers &ldquo;What happened?&rdquo; &mdash; showing that a portfolio dropped 8% and SIP continuation rate is 70%. Level 2 (Intervention) answers &ldquo;What happens if I do X?&rdquo; &mdash; predicting that a goal reminder would increase SIP continuation to 85%. Level 3 (Counterfactual) answers &ldquo;What would have happened?&rdquo; &mdash; calculating that staying invested through a specific correction would have yielded &#x20B9;2.3 lakhs more. Each level requires strictly more causal knowledge. Current platforms operate at Level 1. Level 3 is what actually changes investor behavior, because concrete counterfactuals are more persuasive than abstract advice.</p></noscript>
+    </div>
+  </figure>
+
+  <p>The counterfactual is a mirror. And mirrors change people in a way that charts don&rsquo;t.</p>
+</section>
+
+
+<!-- ════════════════════════════════════════════════════ -->
+<!-- SECTION IV                                          -->
+<!-- ════════════════════════════════════════════════════ -->
+<section id="section-4" class="fade-in">
+  <div class="section-header">
+    <span class="section-number">IV.</span>
+    <h2>The Causal Graph</h2>
+  </div>
+
+  <p>Causal AI starts from a different question. Instead of &ldquo;what patterns exist in this data?&rdquo;, it asks &ldquo;what actually causes what?&rdquo; The machinery involves a <strong>causal graph</strong> &mdash; a diagram that explicitly maps which variables cause which other variables. Not just which ones correlate.</p>
+
+  <p>Here&rsquo;s a causal graph for why an investor stops their SIP. A market drop triggers loss aversion, which leads to &ldquo;I&rsquo;m losing money, this was a mistake,&rdquo; which forms a cancellation intent, and then &mdash; crucially &mdash; there&rsquo;s a <strong>21-day window</strong> before the SIP is actually cancelled.</p>
+
+  <p>A correlation-based system sees: &ldquo;market down &rarr; SIP cancellations increase.&rdquo; A causal system discovers: there&rsquo;s a 21-day intervention window. And the right intervention isn&rsquo;t market reassurance &mdash; it&rsquo;s <strong>goal re-anchoring</strong>. Reminding the investor of the specific thing they&rsquo;re investing for. When the goal becomes vivid again, short-term noise becomes irrelevant.</p>
+
+  <figure>
+    <div class="demo-container" id="dag-demo">
+      <p class="label">SIP Cancellation Causal Graph</p>
+      <div class="controls">
+        <label>Day after market drop:</label>
+        <input type="range" id="dag-slider" min="0" max="35" step="1" value="0">
+        <span class="value-display" id="dag-day-val">Day 0</span>
+      </div>
+      <div class="controls">
+        <button class="toggle-btn active" onclick="toggleDagIntervention('none')">No Intervention</button>
+        <button class="toggle-btn" onclick="toggleDagIntervention('goal')">Goal Re-anchoring</button>
+      </div>
+      <svg id="dag-svg" viewBox="0 0 636 340" width="100%"></svg>
+      <div class="stat-grid" id="dag-stats"></div>
+      <figcaption>Drag the slider to trace the causal chain. Then toggle &ldquo;Goal Re-anchoring&rdquo; to see how the right intervention in the 21-day window changes the outcome.</figcaption>
+      <noscript><p>A causal graph for SIP cancellation shows a five-stage chain: Market Drop &rarr; Loss Aversion Activates &rarr; &ldquo;I&rsquo;m losing money&rdquo; &rarr; Cancellation Intent Forms &rarr; SIP Cancelled. The key insight is a 21-day window between intent formation and actual cancellation. During this window, a goal re-anchoring intervention &mdash; reminding the investor of their specific financial goal &mdash; can reduce cancellation probability from 68% to 23%. This is fundamentally different from the industry&rsquo;s standard response of sending market reassurance notifications, which have near-zero causal effect on cancellation behavior.</p></noscript>
+    </div>
+  </figure>
+
+  <div class="callout">
+    <p><strong>The intervention type matters, not the intensity.</strong> The industry sends market reassurance: &ldquo;Markets are volatile. Stay the course.&rdquo; Research on loss aversion shows this has near-zero effect. People in the grip of loss aversion are moved by something more primal &mdash; the vivid reality of what they&rsquo;re trying to build. Their children&rsquo;s education. Their freedom from financial anxiety. Reconnecting someone to their goal changes behavior in a way that market reassurance doesn&rsquo;t.</p>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════════════ -->
+<!-- SECTION V                                           -->
+<!-- ════════════════════════════════════════════════════ -->
+<section id="section-5" class="fade-in">
+  <div class="section-header">
+    <span class="section-number">V.</span>
+    <h2>The Engagement Trap</h2>
+  </div>
+
+  <p>Here&rsquo;s the specific mistake that most consumer fintech companies make. Engagement &mdash; how often users open the app, check their portfolio, read notifications &mdash; correlates with retention. Users who engage more tend to stay invested longer. So product teams optimize for engagement. More notifications. Gamification. Streaks. Confetti animations.</p>
+
+  <p>This doesn&rsquo;t work. Engagement and retention share a common cause: <strong>financial commitment</strong>. People who are genuinely committed both engage more <em>and</em> stay invested longer. The engagement didn&rsquo;t cause the retention.</p>
+
+  <p>In causal terms: engagement is a <strong>collider</strong>. Both commitment and retention cause engagement. When you control for engagement &mdash; by trying to maximize it &mdash; you open a spurious relationship. Your model thinks the nudges are working, but you&rsquo;re really just measuring the committed users and calling the difference &ldquo;impact.&rdquo;<span class="sidenote-trigger" onclick="toggleSidenote('sn4')">[4]</span></p>
+  <div class="sidenote" id="sn4"><p>The correct intervention is upstream. Not &ldquo;get the user to engage more&rdquo; but &ldquo;increase the user&rsquo;s financial commitment&rdquo; &mdash; make the goal more concrete, vivid, and emotionally real. Engagement follows naturally.</p></div>
+
+  <figure>
+    <div class="demo-container" id="trap-demo">
+      <p class="label">The Engagement Trap: Collider Bias in Practice</p>
+      <div class="controls">
+        <button class="toggle-btn active" onclick="toggleTrap('naive')">Naive Analysis</button>
+        <button class="toggle-btn" onclick="toggleTrap('causal')">Causal Analysis</button>
+      </div>
+      <svg id="trap-svg" viewBox="0 0 636 380" width="100%"></svg>
+      <div class="stat-grid" id="trap-stats"></div>
+      <figcaption>The naive analysis shows engagement predicts retention (r = 0.71). The causal analysis reveals commitment drives both &mdash; engagement has zero causal effect on retention.</figcaption>
+      <noscript><p>The engagement trap is a common collider bias in fintech. Naive analysis shows that high-engagement users have 82% SIP retention while low-engagement users have only 31% retention, suggesting a strong correlation (r = 0.71). Product teams conclude: increase engagement to increase retention. But causal analysis reveals that financial commitment is the common cause of both engagement and retention. When commitment is measured directly, engagement has zero additional causal effect on retention. The users who need help most are the quiet ones who stop engaging before cancelling. Optimizing for engagement selects for already-committed users while deprioritizing those who would benefit from intervention.</p></noscript>
+    </div>
+  </figure>
+
+  <p>The users who actually need help are the ones who stop engaging. The quiet ones. The ones who don&rsquo;t open the app for three weeks, then cancel their SIP on a Tuesday morning. Those users never received an intervention, because the engagement-optimization system had already classified them as &ldquo;low-engagement&rdquo; and deprioritized them.</p>
+</section>
+
+
+<!-- ════════════════════════════════════════════════════ -->
+<!-- SECTION VI                                          -->
+<!-- ════════════════════════════════════════════════════ -->
+<section id="section-6" class="fade-in">
+  <div class="section-header">
+    <span class="section-number">VI.</span>
+    <h2>The Counterfactual Mirror</h2>
+  </div>
+
+  <p>What if, instead of a portfolio dashboard, your investment app showed you this: &ldquo;You&rsquo;ve started 3 SIPs in the last 4 years. You&rsquo;ve stopped all 3. Here&rsquo;s why &mdash; not what you might think.&rdquo;</p>
+
+  <p>Each cancellation has a different root cause. One was pure loss aversion during a market dip. One was a calendar mismatch between SIP debit and salary credit dates. One was goal ambiguity &mdash; &ldquo;general savings&rdquo; was too vague to survive a competing priority. The total cost across all three: &#x20B9;74,400 in compounding.</p>
+
+  <p>Nobody has ever shown a user this. Because nobody has ever built the causal model required to produce it. This isn&rsquo;t a feature. It&rsquo;s a different kind of relationship between a product and a user &mdash; one built on accurate diagnosis rather than generic advice.</p>
+
+  <figure>
+    <div class="demo-container" id="mirror-demo">
+      <p class="label">The Counterfactual Mirror: What If You Had Stayed?</p>
+      <div class="controls">
+        <button class="toggle-btn active" onclick="toggleMirror('sip1')">SIP 1: Loss Aversion</button>
+        <button class="toggle-btn" onclick="toggleMirror('sip2')">SIP 2: Calendar Mismatch</button>
+        <button class="toggle-btn" onclick="toggleMirror('sip3')">SIP 3: Goal Ambiguity</button>
+      </div>
+      <svg id="mirror-svg" viewBox="0 0 636 380" width="100%"></svg>
+      <div class="stat-grid" id="mirror-stats"></div>
+      <figcaption>Three SIP cancellations, three different root causes, three different counterfactuals. The causal model diagnoses each one differently.</figcaption>
+      <noscript><p>The Counterfactual Mirror shows three real SIP cancellation scenarios with diverging paths. SIP 1 (February 2022): stopped during a Nifty downturn of 9.2% despite stable income, caused by pure loss aversion. The market bottomed 6 weeks later. Counterfactual cost: &#x20B9;38,400 in lost compounding. SIP 2 (August 2023): stopped during flat markets because the SIP debited on the 3rd but salary arrived on the 7th, creating 4 months of low-balance anxiety. Root cause was a calendar mismatch, not investment performance. Cost: &#x20B9;21,200. SIP 3 (January 2024): stopped with no market trigger, but 30 days after mentioning a car purchase with a vague &ldquo;general savings&rdquo; goal. Root cause was goal ambiguity. Cost: &#x20B9;14,800. Total cost of stopping: &#x20B9;74,400.</p></noscript>
+    </div>
+  </figure>
+
+  <div class="callout">
+    <p><strong>Why this is hard.</strong> Causal models require intellectual humility (you must commit to testable assumptions), longitudinal data (the same users observed over years), domain knowledge (you can&rsquo;t learn causal direction from data alone), and new tooling (DoWhy, EconML, tigramite). All barriers are real. They&rsquo;re also exactly why the competitive moat is deep.</p>
+  </div>
+
+  <p>Causal AI is not magic. It doesn&rsquo;t predict the market. It doesn&rsquo;t guarantee returns. What it does is give you an honest accounting of what&rsquo;s actually happening &mdash; in your portfolio, in your behavior, in the interventions that do and don&rsquo;t work. That&rsquo;s the difference between knowing what you should do and actually doing it. Between advice and intervention. Between a chart and a mirror.</p>
+
+  <p style="margin-top:40px;font-size:16px;color:rgb(120,120,120);font-style:italic;">Based on the work of Judea Pearl (Causality, 2009), Marcos L&oacute;pez de Prado et al. (Causal Factor Analysis, ADIA Lab, 2025), Susan Athey &amp; Stefan Wager (Causal Forests, 2018), and Victor Chernozhukov et al. (Double Machine Learning, 2018). Market data from AMFI monthly SIP statistics.</p>
+
+</article>
+</main>
+
+<footer class="site-footer">
+  <div class="content">
+    <p>Compounding Intelligence</p>
+    <p><a href="https://supergeek.in">supergeek.in</a></p>
+    <p class="footer-tagline">Because you don&rsquo;t understand something until you can play with it.</p>
+  </div>
+</footer>
+
+<script>
+// ── Sidenotes ──
+function toggleSidenote(id) {
+  var el = document.getElementById(id);
+  if (el) el.classList.toggle('open');
+}
+
+// ════════════════════════════════════════════════════
+// WIDGET 1: Ice Cream & Murder Correlation
+// ════════════════════════════════════════════════════
+(function() {
+  var svg = document.getElementById('icecream-svg');
+  var statsEl = document.getElementById('icecream-stats');
+  if (!svg) return;
+
+  var data = [
+    { month: 'Jan', ice: 15, murder: 22, temp: 2 },
+    { month: 'Feb', ice: 18, murder: 20, temp: 5 },
+    { month: 'Mar', ice: 30, murder: 35, temp: 12 },
+    { month: 'Apr', ice: 45, murder: 42, temp: 18 },
+    { month: 'May', ice: 62, murder: 55, temp: 24 },
+    { month: 'Jun', ice: 80, murder: 72, temp: 30 },
+    { month: 'Jul', ice: 95, murder: 85, temp: 35 },
+    { month: 'Aug', ice: 90, murder: 80, temp: 33 },
+    { month: 'Sep', ice: 65, murder: 60, temp: 26 },
+    { month: 'Oct', ice: 40, murder: 38, temp: 17 },
+    { month: 'Nov', ice: 22, murder: 25, temp: 9 },
+    { month: 'Dec', ice: 12, murder: 18, temp: 3 }
+  ];
+
+  var mode = 'corr';
+
+  window.toggleIceCream = function(m) {
+    mode = m;
+    var btns = document.querySelectorAll('#icecream-demo .toggle-btn');
+    for (var i = 0; i < btns.length; i++) btns[i].className = 'toggle-btn';
+    btns[m === 'corr' ? 0 : 1].className = 'toggle-btn active';
+    render();
+  };
+
+  function tempColor(t) {
+    var ratio = (t - 0) / 35;
+    var r = Math.round(50 + ratio * 200);
+    var g = Math.round(100 + (1 - Math.abs(ratio - 0.5) * 2) * 80);
+    var b = Math.round(220 - ratio * 180);
+    return 'rgb(' + r + ',' + g + ',' + b + ')';
+  }
+
+  function render() {
+    var pad = { top: 30, right: 30, bottom: 50, left: 60 };
+    var w = 636 - pad.left - pad.right;
+    var h = 380 - pad.top - pad.bottom;
+
+    var html = '<rect width="636" height="380" fill="rgb(242,241,239)" rx="4"/>';
+    html += '<rect x="' + pad.left + '" y="' + pad.top + '" width="' + w + '" height="' + h + '" fill="#fff" rx="2"/>';
+
+    // Grid lines
+    for (var g = 0; g <= 4; g++) {
+      var gy = pad.top + h - (g / 4) * h;
+      var gx = pad.left + (g / 4) * w;
+      html += '<line x1="' + pad.left + '" y1="' + gy + '" x2="' + (pad.left + w) + '" y2="' + gy + '" stroke="rgb(243,243,243)" stroke-width="1"/>';
+      html += '<line x1="' + gx + '" y1="' + pad.top + '" x2="' + gx + '" y2="' + (pad.top + h) + '" stroke="rgb(243,243,243)" stroke-width="1"/>';
+      html += '<text x="' + (pad.left - 8) + '" y="' + (gy + 4) + '" text-anchor="end" font-family="Figtree,sans-serif" font-size="10" fill="rgb(150,150,150)">' + (g * 25) + '</text>';
+      html += '<text x="' + gx + '" y="' + (pad.top + h + 16) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="10" fill="rgb(150,150,150)">' + (g * 25) + '</text>';
+    }
+
+    // Axis labels
+    html += '<text x="' + (pad.left + w / 2) + '" y="' + (pad.top + h + 38) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="12" font-weight="600" fill="rgb(80,80,80)">Ice Cream Sales Index</text>';
+    html += '<text x="14" y="' + (pad.top + h / 2) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="12" font-weight="600" fill="rgb(80,80,80)" transform="rotate(-90,14,' + (pad.top + h / 2) + ')">Murder Rate Index</text>';
+
+    // Trend line (correlation)
+    var sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0, n = data.length;
+    for (var i = 0; i < n; i++) {
+      sumX += data[i].ice; sumY += data[i].murder;
+      sumXY += data[i].ice * data[i].murder; sumX2 += data[i].ice * data[i].ice;
+    }
+    var slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
+    var intercept = (sumY - slope * sumX) / n;
+
+    var lx1 = 5, ly1 = slope * lx1 + intercept;
+    var lx2 = 100, ly2 = slope * lx2 + intercept;
+    var tlx1 = pad.left + (lx1 / 100) * w;
+    var tly1 = pad.top + h - (ly1 / 100) * h;
+    var tlx2 = pad.left + (lx2 / 100) * w;
+    var tly2 = pad.top + h - (ly2 / 100) * h;
+
+    if (mode === 'corr') {
+      html += '<line x1="' + tlx1 + '" y1="' + tly1 + '" x2="' + tlx2 + '" y2="' + tly2 + '" stroke="#E8634A" stroke-width="2" stroke-dasharray="6,4" opacity="0.6"/>';
+    }
+
+    // Data points
+    for (var i = 0; i < n; i++) {
+      var cx = pad.left + (data[i].ice / 100) * w;
+      var cy = pad.top + h - (data[i].murder / 100) * h;
+      var dotColor = mode === 'cause' ? tempColor(data[i].temp) : '#5B4AE8';
+      var dotR = mode === 'cause' ? 8 : 7;
+      html += '<circle cx="' + cx + '" cy="' + cy + '" r="' + dotR + '" fill="' + dotColor + '" opacity="0.85" stroke="#fff" stroke-width="1.5"/>';
+      html += '<text x="' + cx + '" y="' + (cy - 12) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="9" font-weight="600" fill="rgb(100,100,100)">' + data[i].month + '</text>';
+    }
+
+    // Confounder reveal
+    if (mode === 'cause') {
+      // Temperature legend
+      html += '<rect x="' + (pad.left + w - 160) + '" y="' + (pad.top + 8) + '" width="152" height="48" rx="6" fill="rgba(255,255,255,0.9)"/>';
+      html += '<text x="' + (pad.left + w - 148) + '" y="' + (pad.top + 24) + '" font-family="Figtree,sans-serif" font-size="11" font-weight="700" fill="rgb(45,45,45)">Temperature (the confounder)</text>';
+      for (var t = 0; t <= 35; t += 5) {
+        var tx = pad.left + w - 148 + (t / 35) * 130;
+        html += '<rect x="' + tx + '" y="' + (pad.top + 32) + '" width="18" height="10" fill="' + tempColor(t) + '" rx="2"/>';
+      }
+      html += '<text x="' + (pad.left + w - 148) + '" y="' + (pad.top + 52) + '" font-family="Figtree,sans-serif" font-size="9" fill="rgb(120,120,120)">Cold</text>';
+      html += '<text x="' + (pad.left + w - 10) + '" y="' + (pad.top + 52) + '" text-anchor="end" font-family="Figtree,sans-serif" font-size="9" fill="rgb(120,120,120)">Hot</text>';
+
+      // "Summer causes BOTH" label
+      html += '<text x="' + (pad.left + w / 2) + '" y="' + (pad.top + 20) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="13" font-weight="700" fill="#E8634A">Summer causes BOTH &mdash; neither causes the other</text>';
+    }
+
+    svg.innerHTML = html;
+
+    if (mode === 'corr') {
+      statsEl.innerHTML =
+        '<div class="stat-card"><div class="stat-value" style="color:#E8634A">r = 0.87</div><div class="stat-label">Correlation</div></div>' +
+        '<div class="stat-card"><div class="stat-value" style="color:#5B4AE8">Spurious</div><div class="stat-label">Causal Link</div></div>' +
+        '<div class="stat-card"><div class="stat-value" style="color:rgb(100,100,100)">Hidden</div><div class="stat-label">Confounder</div></div>';
+    } else {
+      statsEl.innerHTML =
+        '<div class="stat-card"><div class="stat-value" style="color:#E8634A">r = 0.87</div><div class="stat-label">Correlation</div></div>' +
+        '<div class="stat-card"><div class="stat-value" style="color:#5BAE8A">Temperature</div><div class="stat-label">True Cause</div></div>' +
+        '<div class="stat-card"><div class="stat-value" style="color:#5BAE8A">0%</div><div class="stat-label">Causal Effect</div></div>';
+    }
+  }
+
+  render();
+})();
+
+
+// ════════════════════════════════════════════════════
+// WIDGET 2: Confounder vs Collider
+// ════════════════════════════════════════════════════
+(function() {
+  var svg = document.getElementById('confcoll-svg');
+  var statsEl = document.getElementById('confcoll-stats');
+  if (!svg) return;
+
+  var mode = 'conf';
+
+  window.toggleConfColl = function(m) {
+    mode = m;
+    var btns = document.querySelectorAll('#confcoll-demo .toggle-btn');
+    for (var i = 0; i < btns.length; i++) btns[i].className = 'toggle-btn';
+    btns[m === 'conf' ? 0 : 1].className = 'toggle-btn active';
+    render();
+  };
+
+  function drawArrow(html, x1, y1, x2, y2, color, dashed) {
+    var angle = Math.atan2(y2 - y1, x2 - x1);
+    var headLen = 10;
+    var dash = dashed ? ' stroke-dasharray="6,4"' : '';
+    html += '<line x1="' + x1 + '" y1="' + y1 + '" x2="' + x2 + '" y2="' + y2 + '" stroke="' + color + '" stroke-width="2.5"' + dash + '/>';
+    var ax1 = x2 - headLen * Math.cos(angle - 0.4);
+    var ay1 = y2 - headLen * Math.sin(angle - 0.4);
+    var ax2 = x2 - headLen * Math.cos(angle + 0.4);
+    var ay2 = y2 - headLen * Math.sin(angle + 0.4);
+    html += '<polygon points="' + x2 + ',' + y2 + ' ' + ax1 + ',' + ay1 + ' ' + ax2 + ',' + ay2 + '" fill="' + color + '"/>';
+    return html;
+  }
+
+  function drawNode(html, cx, cy, label, sublabel, color, dashed) {
+    var dashAttr = dashed ? ' stroke-dasharray="6,4"' : '';
+    html += '<circle cx="' + cx + '" cy="' + cy + '" r="44" fill="rgba(255,255,255,0.95)" stroke="' + color + '" stroke-width="2.5"' + dashAttr + '/>';
+    html += '<text x="' + cx + '" y="' + (cy - 2) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="12" font-weight="700" fill="rgb(45,45,45)">' + label + '</text>';
+    if (sublabel) {
+      html += '<text x="' + cx + '" y="' + (cy + 14) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="10" fill="rgb(120,120,120)">' + sublabel + '</text>';
+    }
+    return html;
+  }
+
+  function render() {
+    var html = '<rect width="636" height="380" fill="rgb(242,241,239)" rx="4"/>';
+
+    if (mode === 'conf') {
+      // Confounder: hidden cause at top, two effects below
+      var topX = 318, topY = 80;
+      var leftX = 160, leftY = 270;
+      var rightX = 476, rightY = 270;
+
+      // Title
+      html += '<text x="318" y="30" text-anchor="middle" font-family="Figtree,sans-serif" font-size="16" font-weight="700" fill="rgb(45,45,45)">Confounder: Hidden Common Cause</text>';
+
+      // Arrows from confounder to both
+      html = drawArrow(html, topX - 20, topY + 44, leftX + 20, leftY - 44, '#5B4AE8', false);
+      html = drawArrow(html, topX + 20, topY + 44, rightX - 20, rightY - 44, '#5B4AE8', false);
+
+      // Spurious arrow between the two (crossed out)
+      html += '<line x1="' + (leftX + 44) + '" y1="' + leftY + '" x2="' + (rightX - 44) + '" y2="' + rightY + '" stroke="#E8634A" stroke-width="2" stroke-dasharray="6,4" opacity="0.5"/>';
+      var midX = (leftX + rightX) / 2;
+      html += '<line x1="' + (midX - 10) + '" y1="' + (leftY - 10) + '" x2="' + (midX + 10) + '" y2="' + (leftY + 10) + '" stroke="#E8634A" stroke-width="3"/>';
+      html += '<line x1="' + (midX + 10) + '" y1="' + (leftY - 10) + '" x2="' + (midX - 10) + '" y2="' + (leftY + 10) + '" stroke="#E8634A" stroke-width="3"/>';
+      html += '<text x="' + midX + '" y="' + (leftY + 28) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="11" font-weight="600" fill="#E8634A">Spurious (r=0.87)</text>';
+
+      // Nodes
+      html = drawNode(html, topX, topY, 'Summer', '(Confounder)', '#5B4AE8', true);
+      html = drawNode(html, leftX, leftY, 'Ice Cream', 'Sales', '#E8634A', false);
+      html = drawNode(html, rightX, rightY, 'Murder', 'Rate', '#E8634A', false);
+
+      // Arrow labels
+      html += '<text x="' + (topX - 100) + '" y="' + ((topY + leftY) / 2 - 10) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="11" font-weight="600" fill="#5B4AE8" transform="rotate(-35,' + (topX - 100) + ',' + ((topY + leftY) / 2 - 10) + ')">causes</text>';
+      html += '<text x="' + (topX + 100) + '" y="' + ((topY + rightY) / 2 - 10) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="11" font-weight="600" fill="#5B4AE8" transform="rotate(35,' + (topX + 100) + ',' + ((topY + rightY) / 2 - 10) + ')">causes</text>';
+
+      // Insight
+      html += '<text x="318" y="350" text-anchor="middle" font-family="Figtree,sans-serif" font-size="12" fill="rgb(100,100,100)">Control for the confounder → spurious correlation disappears</text>';
+
+      statsEl.innerHTML =
+        '<div class="stat-card"><div class="stat-value" style="color:#5B4AE8">Summer</div><div class="stat-label">Hidden Cause</div></div>' +
+        '<div class="stat-card"><div class="stat-value" style="color:#E8634A">r = 0.87</div><div class="stat-label">Spurious Correlation</div></div>' +
+        '<div class="stat-card"><div class="stat-value" style="color:#5BAE8A">Control it</div><div class="stat-label">Fix</div></div>';
+
+    } else {
+      // Collider: two causes at top, collider at bottom
+      var leftX = 160, leftY = 100;
+      var rightX = 476, rightY = 100;
+      var botX = 318, botY = 280;
+
+      html += '<text x="318" y="30" text-anchor="middle" font-family="Figtree,sans-serif" font-size="16" font-weight="700" fill="rgb(45,45,45)">Collider: Controlling Creates a Fake Link</text>';
+
+      // Arrows from both into collider
+      html = drawArrow(html, leftX + 20, leftY + 44, botX - 20, botY - 44, '#5B4AE8', false);
+      html = drawArrow(html, rightX - 20, rightY + 44, botX + 20, botY - 44, '#5B4AE8', false);
+
+      // Spurious arrow between the two (appears when you control for collider)
+      html += '<line x1="' + (leftX + 44) + '" y1="' + leftY + '" x2="' + (rightX - 44) + '" y2="' + rightY + '" stroke="#E8634A" stroke-width="2" stroke-dasharray="6,4" opacity="0.5"/>';
+      var midX = (leftX + rightX) / 2;
+      html += '<text x="' + midX + '" y="' + (leftY - 16) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="11" font-weight="600" fill="#E8634A">Fake link appears!</text>';
+
+      // "Filter on collider" annotation
+      html += '<rect x="' + (botX - 70) + '" y="' + (botY + 50) + '" width="140" height="24" rx="4" fill="#E8634A" opacity="0.15"/>';
+      html += '<text x="' + botX + '" y="' + (botY + 66) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="11" font-weight="700" fill="#E8634A">↑ Filtered on this</text>';
+
+      // Nodes
+      html = drawNode(html, leftX, leftY, 'Commitment', '', '#5B4AE8', false);
+      html = drawNode(html, rightX, rightY, 'SIP Retention', '', '#5B4AE8', false);
+      html = drawNode(html, botX, botY, 'Engagement', '(Collider)', '#E8634A', false);
+
+      html += '<text x="' + (botX - 100) + '" y="' + ((leftY + botY) / 2 + 10) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="11" font-weight="600" fill="#5B4AE8" transform="rotate(50,' + (botX - 100) + ',' + ((leftY + botY) / 2 + 10) + ')">causes</text>';
+      html += '<text x="' + (botX + 100) + '" y="' + ((rightY + botY) / 2 + 10) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="11" font-weight="600" fill="#5B4AE8" transform="rotate(-50,' + (botX + 100) + ',' + ((rightY + botY) / 2 + 10) + ')">causes</text>';
+
+      html += '<text x="318" y="360" text-anchor="middle" font-family="Figtree,sans-serif" font-size="12" fill="rgb(100,100,100)">Control for the collider → fake correlation appears between the causes</text>';
+
+      statsEl.innerHTML =
+        '<div class="stat-card"><div class="stat-value" style="color:#E8634A">Engagement</div><div class="stat-label">Collider Variable</div></div>' +
+        '<div class="stat-card"><div class="stat-value" style="color:#E8634A">Fake</div><div class="stat-label">Induced Correlation</div></div>' +
+        '<div class="stat-card"><div class="stat-value" style="color:#5BAE8A">Don\'t control</div><div class="stat-label">Fix</div></div>';
+    }
+
+    svg.innerHTML = html;
+  }
+
+  render();
+})();
+
+
+// ════════════════════════════════════════════════════
+// WIDGET 3: Pearl's Ladder
+// ════════════════════════════════════════════════════
+(function() {
+  var svg = document.getElementById('ladder-svg');
+  var statsEl = document.getElementById('ladder-stats');
+  if (!svg) return;
+
+  var level = 1;
+
+  window.toggleLadder = function(l) {
+    level = l;
+    var btns = document.querySelectorAll('#ladder-demo .toggle-btn');
+    for (var i = 0; i < btns.length; i++) btns[i].className = 'toggle-btn';
+    btns[l - 1].className = 'toggle-btn active';
+    render();
+  };
+
+  function render() {
+    var pad = { top: 30, right: 30, bottom: 30, left: 30 };
+    var w = 636 - pad.left - pad.right;
+    var h = 380 - pad.top - pad.bottom;
+
+    var html = '<rect width="636" height="380" fill="rgb(242,241,239)" rx="4"/>';
+
+    // Draw 3-step ladder on the left
+    var ladderX = pad.left + 20;
+    var ladderW = 130;
+    var stepH = h / 3;
+
+    var colors = ['rgb(200,198,194)', 'rgb(200,198,194)', 'rgb(200,198,194)'];
+    var labels = ['Observation', 'Intervention', 'Counterfactual'];
+    var icons = ['👁', '🔧', '🪞'];
+
+    colors[level - 1] = level === 1 ? '#5B4AE8' : level === 2 ? '#E8B44A' : '#5BAE8A';
+
+    for (var i = 0; i < 3; i++) {
+      var sy = pad.top + h - (i + 1) * stepH;
+      var active = (i + 1) === level;
+      var fill = active ? colors[i] : 'rgba(255,255,255,0.5)';
+      var stroke = colors[i];
+      html += '<rect x="' + ladderX + '" y="' + sy + '" width="' + ladderW + '" height="' + (stepH - 8) + '" rx="8" fill="' + fill + '" stroke="' + stroke + '" stroke-width="' + (active ? 2.5 : 1) + '" opacity="' + (active ? 1 : 0.5) + '"/>';
+      var textColor = active ? '#fff' : 'rgb(80,80,80)';
+      html += '<text x="' + (ladderX + ladderW / 2) + '" y="' + (sy + stepH / 2 - 10) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="22" fill="' + textColor + '">' + icons[i] + '</text>';
+      html += '<text x="' + (ladderX + ladderW / 2) + '" y="' + (sy + stepH / 2 + 12) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="11" font-weight="700" fill="' + textColor + '">Level ' + (i + 1) + '</text>';
+      html += '<text x="' + (ladderX + ladderW / 2) + '" y="' + (sy + stepH / 2 + 26) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="10" fill="' + textColor + '">' + labels[i] + '</text>';
+    }
+
+    // Right panel: scenario visualization
+    var panelX = ladderX + ladderW + 40;
+    var panelW = w - ladderW - 60;
+    var panelY = pad.top + 10;
+    var panelH = h - 20;
+
+    html += '<rect x="' + panelX + '" y="' + panelY + '" width="' + panelW + '" height="' + panelH + '" rx="8" fill="#fff"/>';
+
+    var chartX = panelX + 30;
+    var chartY = panelY + 60;
+    var chartW = panelW - 60;
+    var chartH = panelH - 120;
+
+    // Mini portfolio chart
+    var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    var portfolio = [100, 104, 108, 103, 95, 92, 97, 103, 108, 112, 116, 120];
+
+    if (level === 1) {
+      // Observation: just the chart with a label
+      html += '<text x="' + (panelX + panelW / 2) + '" y="' + (panelY + 28) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="14" font-weight="700" fill="rgb(45,45,45)">"What happened?"</text>';
+      html += '<text x="' + (panelX + panelW / 2) + '" y="' + (panelY + 46) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="12" fill="rgb(100,100,100)">Your portfolio dropped 8% in April-June</text>';
+
+      // Draw portfolio line
+      for (var i = 0; i < months.length; i++) {
+        var x = chartX + (i / (months.length - 1)) * chartW;
+        var y = chartY + chartH - ((portfolio[i] - 85) / 40) * chartH;
+        if (i > 0) {
+          var px = chartX + ((i - 1) / (months.length - 1)) * chartW;
+          var py = chartY + chartH - ((portfolio[i - 1] - 85) / 40) * chartH;
+          html += '<line x1="' + px + '" y1="' + py + '" x2="' + x + '" y2="' + y + '" stroke="#5B4AE8" stroke-width="2.5"/>';
+        }
+        html += '<circle cx="' + x + '" cy="' + y + '" r="3" fill="#5B4AE8"/>';
+        if (i % 2 === 0) html += '<text x="' + x + '" y="' + (chartY + chartH + 16) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="9" fill="rgb(150,150,150)">' + months[i] + '</text>';
+      }
+      // Highlight drop
+      var dropStartX = chartX + (3 / 11) * chartW;
+      var dropEndX = chartX + (5 / 11) * chartW;
+      html += '<rect x="' + dropStartX + '" y="' + chartY + '" width="' + (dropEndX - dropStartX) + '" height="' + chartH + '" fill="rgba(232,99,74,0.08)" rx="4"/>';
+      html += '<text x="' + ((dropStartX + dropEndX) / 2) + '" y="' + (chartY + chartH - 10) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="10" font-weight="600" fill="#E8634A">-8%</text>';
+
+    } else if (level === 2) {
+      // Intervention: chart with intervention arrow
+      html += '<text x="' + (panelX + panelW / 2) + '" y="' + (panelY + 28) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="14" font-weight="700" fill="rgb(45,45,45)">"What if we intervene?"</text>';
+      html += '<text x="' + (panelX + panelW / 2) + '" y="' + (panelY + 46) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="12" fill="rgb(100,100,100)">Goal reminder → predicted SIP continuation: 85%</text>';
+
+      for (var i = 0; i < months.length; i++) {
+        var x = chartX + (i / (months.length - 1)) * chartW;
+        var y = chartY + chartH - ((portfolio[i] - 85) / 40) * chartH;
+        if (i > 0) {
+          var px = chartX + ((i - 1) / (months.length - 1)) * chartW;
+          var py = chartY + chartH - ((portfolio[i - 1] - 85) / 40) * chartH;
+          html += '<line x1="' + px + '" y1="' + py + '" x2="' + x + '" y2="' + y + '" stroke="#5B4AE8" stroke-width="2.5"/>';
+        }
+        html += '<circle cx="' + x + '" cy="' + y + '" r="3" fill="#5B4AE8"/>';
+      }
+      // Intervention arrow at month 5
+      var intX = chartX + (5 / 11) * chartW;
+      var intY = chartY + chartH - ((92 - 85) / 40) * chartH;
+      html += '<line x1="' + intX + '" y1="' + (intY + 40) + '" x2="' + intX + '" y2="' + (intY + 8) + '" stroke="#5BAE8A" stroke-width="3"/>';
+      html += '<polygon points="' + intX + ',' + (intY + 5) + ' ' + (intX - 6) + ',' + (intY + 15) + ' ' + (intX + 6) + ',' + (intY + 15) + '" fill="#5BAE8A"/>';
+      html += '<text x="' + intX + '" y="' + (intY + 56) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="10" font-weight="700" fill="#5BAE8A">Goal Reminder</text>';
+      html += '<text x="' + intX + '" y="' + (intY + 68) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="9" fill="#5BAE8A">do(remind)</text>';
+
+    } else {
+      // Counterfactual: two diverging paths
+      html += '<text x="' + (panelX + panelW / 2) + '" y="' + (panelY + 28) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="14" font-weight="700" fill="rgb(45,45,45)">"What would have happened?"</text>';
+      html += '<text x="' + (panelX + panelW / 2) + '" y="' + (panelY + 46) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="12" fill="rgb(100,100,100)">You stopped in June. The market recovered.</text>';
+
+      // Actual path (stopped at month 5)
+      for (var i = 0; i <= 5; i++) {
+        var x = chartX + (i / 11) * chartW;
+        var y = chartY + chartH - ((portfolio[i] - 85) / 40) * chartH;
+        if (i > 0) {
+          var px = chartX + ((i - 1) / 11) * chartW;
+          var py = chartY + chartH - ((portfolio[i - 1] - 85) / 40) * chartH;
+          html += '<line x1="' + px + '" y1="' + py + '" x2="' + x + '" y2="' + y + '" stroke="#E8634A" stroke-width="2.5"/>';
+        }
+        html += '<circle cx="' + x + '" cy="' + y + '" r="3" fill="#E8634A"/>';
+      }
+      // Flat line after stop
+      var stopY = chartY + chartH - ((92 - 85) / 40) * chartH;
+      var stopX = chartX + (5 / 11) * chartW;
+      html += '<line x1="' + stopX + '" y1="' + stopY + '" x2="' + (chartX + chartW) + '" y2="' + stopY + '" stroke="#E8634A" stroke-width="2" stroke-dasharray="6,4"/>';
+      html += '<text x="' + (stopX + 10) + '" y="' + (stopY - 8) + '" font-family="Figtree,sans-serif" font-size="10" font-weight="600" fill="#E8634A">Stopped SIP</text>';
+
+      // Counterfactual path (continued)
+      for (var i = 5; i < months.length; i++) {
+        var x = chartX + (i / 11) * chartW;
+        var y = chartY + chartH - ((portfolio[i] - 85) / 40) * chartH;
+        if (i > 5) {
+          var px = chartX + ((i - 1) / 11) * chartW;
+          var py = chartY + chartH - ((portfolio[i - 1] - 85) / 40) * chartH;
+          html += '<line x1="' + px + '" y1="' + py + '" x2="' + x + '" y2="' + y + '" stroke="#5BAE8A" stroke-width="2.5" stroke-dasharray="6,3"/>';
+        }
+        html += '<circle cx="' + x + '" cy="' + y + '" r="3" fill="#5BAE8A"/>';
+      }
+
+      // Gap annotation
+      var endX = chartX + chartW;
+      var cfEndY = chartY + chartH - ((120 - 85) / 40) * chartH;
+      html += '<line x1="' + (endX + 8) + '" y1="' + stopY + '" x2="' + (endX + 8) + '" y2="' + cfEndY + '" stroke="#5B4AE8" stroke-width="2"/>';
+      html += '<text x="' + (endX + 16) + '" y="' + ((stopY + cfEndY) / 2 + 4) + '" font-family="Figtree,sans-serif" font-size="11" font-weight="700" fill="#5B4AE8">₹2.3L</text>';
+
+      // Legend
+      html += '<text x="' + (chartX + chartW - 10) + '" y="' + (chartY + chartH + 30) + '" text-anchor="end" font-family="Figtree,sans-serif" font-size="10" fill="#5BAE8A">— If you had stayed</text>';
+      html += '<text x="' + (chartX + chartW - 10) + '" y="' + (chartY + chartH + 44) + '" text-anchor="end" font-family="Figtree,sans-serif" font-size="10" fill="#E8634A">— What actually happened</text>';
+    }
+
+    svg.innerHTML = html;
+
+    var levelLabels = [
+      ['#5B4AE8', 'What happened?', 'Level 1: See', '70%', 'SIP Continuation', 'Every platform does this'],
+      ['#E8B44A', 'If we intervene?', 'Level 2: Do', '85%', 'Predicted Retention', 'Requires causal model'],
+      ['#5BAE8A', 'If you had stayed?', 'Level 3: Imagine', '₹2.3L', 'Cost of Stopping', 'Changes behavior']
+    ];
+    var l = levelLabels[level - 1];
+    statsEl.innerHTML =
+      '<div class="stat-card"><div class="stat-value" style="color:' + l[0] + '">' + l[1] + '</div><div class="stat-label">' + l[2] + '</div></div>' +
+      '<div class="stat-card"><div class="stat-value" style="color:' + l[0] + '">' + l[3] + '</div><div class="stat-label">' + l[4] + '</div></div>' +
+      '<div class="stat-card"><div class="stat-value" style="color:' + l[0] + ';font-size:16px">' + l[5] + '</div><div class="stat-label">Status</div></div>';
+  }
+
+  render();
+})();
+
+
+// ════════════════════════════════════════════════════
+// WIDGET 4: SIP Cancellation Causal Graph
+// ════════════════════════════════════════════════════
+(function() {
+  var svg = document.getElementById('dag-svg');
+  var statsEl = document.getElementById('dag-stats');
+  var slider = document.getElementById('dag-slider');
+  var dayLabel = document.getElementById('dag-day-val');
+  if (!svg) return;
+
+  var intervention = 'none';
+
+  window.toggleDagIntervention = function(v) {
+    intervention = v;
+    var btns = document.querySelectorAll('#dag-demo .controls:nth-child(3) .toggle-btn');
+    for (var i = 0; i < btns.length; i++) btns[i].className = 'toggle-btn';
+    btns[v === 'none' ? 0 : 1].className = 'toggle-btn active';
+    render();
+  };
+
+  var stages = [
+    { label: 'Market\nDrops 10%', x: 70, y: 100, trigger: 0 },
+    { label: 'Loss Aversion\nActivates', x: 200, y: 100, trigger: 3 },
+    { label: '"I\'m Losing\nMoney"', x: 330, y: 100, trigger: 7 },
+    { label: 'Cancellation\nIntent', x: 460, y: 100, trigger: 14 },
+    { label: 'SIP\nCancelled', x: 570, y: 100, trigger: 21 }
+  ];
+
+  function render() {
+    var day = parseInt(slider.value);
+    dayLabel.textContent = day === 0 ? 'Day 0' : 'Day ' + day;
+
+    var pad = { top: 20, right: 20, bottom: 20, left: 20 };
+    var html = '<rect width="636" height="340" fill="rgb(242,241,239)" rx="4"/>';
+
+    // 21-day window highlight
+    var windowActive = day >= 14 && day <= 21;
+    if (day >= 14) {
+      html += '<rect x="420" y="40" width="140" height="140" rx="8" fill="' + (windowActive ? 'rgba(91,174,138,0.1)' : 'rgba(232,99,74,0.05)') + '" stroke="' + (windowActive ? '#5BAE8A' : 'transparent') + '" stroke-width="1.5" stroke-dasharray="6,3"/>';
+      if (windowActive && intervention === 'none') {
+        html += '<text x="490" y="56" text-anchor="middle" font-family="Figtree,sans-serif" font-size="10" font-weight="700" fill="#5BAE8A">21-DAY WINDOW</text>';
+      }
+    }
+
+    // Draw arrows between stages
+    for (var i = 0; i < stages.length - 1; i++) {
+      var s = stages[i], e = stages[i + 1];
+      var active = day >= s.trigger;
+      var color = active ? '#5B4AE8' : 'rgb(200,198,194)';
+      html += '<line x1="' + (s.x + 42) + '" y1="' + s.y + '" x2="' + (e.x - 42) + '" y2="' + e.y + '" stroke="' + color + '" stroke-width="2"/>';
+      // Arrowhead
+      html += '<polygon points="' + (e.x - 42) + ',' + e.y + ' ' + (e.x - 52) + ',' + (e.y - 5) + ' ' + (e.x - 52) + ',' + (e.y + 5) + '" fill="' + color + '"/>';
+    }
+
+    // Draw nodes
+    for (var i = 0; i < stages.length; i++) {
+      var s = stages[i];
+      var active = day >= s.trigger;
+      var isLast = i === stages.length - 1;
+
+      var nodeColor, textColor, strokeColor;
+      if (isLast && day >= 21 && intervention === 'goal') {
+        nodeColor = '#5BAE8A';
+        textColor = '#fff';
+        strokeColor = '#5BAE8A';
+      } else if (isLast && day >= 21) {
+        nodeColor = '#E8634A';
+        textColor = '#fff';
+        strokeColor = '#E8634A';
+      } else if (active) {
+        nodeColor = '#5B4AE8';
+        textColor = '#fff';
+        strokeColor = '#5B4AE8';
+      } else {
+        nodeColor = '#fff';
+        textColor = 'rgb(150,150,150)';
+        strokeColor = 'rgb(200,198,194)';
+      }
+
+      html += '<circle cx="' + s.x + '" cy="' + s.y + '" r="40" fill="' + nodeColor + '" stroke="' + strokeColor + '" stroke-width="2"/>';
+
+      var lines = s.label.split('\n');
+      for (var j = 0; j < lines.length; j++) {
+        var ly = s.y - ((lines.length - 1) * 7) + j * 14;
+        html += '<text x="' + s.x + '" y="' + ly + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="10" font-weight="600" fill="' + textColor + '">' + lines[j] + '</text>';
+      }
+
+      // Day label below
+      html += '<text x="' + s.x + '" y="' + (s.y + 54) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="9" fill="rgb(150,150,150)">Day ' + s.trigger + '</text>';
+    }
+
+    // Override last node label if intervention
+    if (day >= 21 && intervention === 'goal') {
+      html += '<circle cx="570" cy="100" r="40" fill="#5BAE8A" stroke="#5BAE8A" stroke-width="2"/>';
+      html += '<text x="570" y="96" text-anchor="middle" font-family="Figtree,sans-serif" font-size="10" font-weight="600" fill="#fff">SIP</text>';
+      html += '<text x="570" y="110" text-anchor="middle" font-family="Figtree,sans-serif" font-size="10" font-weight="600" fill="#fff">Saved ✓</text>';
+    }
+
+    // Intervention arrow (goal re-anchoring)
+    if (intervention === 'goal' && day >= 14) {
+      var intX = 460;
+      var intY = 200;
+      html += '<line x1="' + intX + '" y1="' + intY + '" x2="' + intX + '" y2="' + (stages[3].y + 44) + '" stroke="#5BAE8A" stroke-width="2.5"/>';
+      html += '<polygon points="' + intX + ',' + (stages[3].y + 42) + ' ' + (intX - 6) + ',' + (stages[3].y + 52) + ' ' + (intX + 6) + ',' + (stages[3].y + 52) + '" fill="#5BAE8A"/>';
+      // Label
+      html += '<rect x="' + (intX - 70) + '" y="' + (intY + 5) + '" width="140" height="44" rx="6" fill="rgba(91,174,138,0.1)" stroke="#5BAE8A" stroke-width="1.5"/>';
+      html += '<text x="' + intX + '" y="' + (intY + 22) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="11" font-weight="700" fill="#5BAE8A">Goal Re-anchoring</text>';
+      html += '<text x="' + intX + '" y="' + (intY + 38) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="10" fill="rgb(100,100,100)">"Your daughter\'s education"</text>';
+    }
+
+    // Timeline bar at bottom
+    var barY = 280;
+    var barX = 50;
+    var barW = 536;
+    html += '<rect x="' + barX + '" y="' + barY + '" width="' + barW + '" height="6" rx="3" fill="rgb(220,218,214)"/>';
+    var progress = Math.min(day / 35, 1);
+    var progColor = day > 21 ? (intervention === 'goal' ? '#5BAE8A' : '#E8634A') : '#5B4AE8';
+    html += '<rect x="' + barX + '" y="' + barY + '" width="' + (progress * barW) + '" height="6" rx="3" fill="' + progColor + '"/>';
+    html += '<circle cx="' + (barX + progress * barW) + '" cy="' + (barY + 3) + '" r="8" fill="' + progColor + '" stroke="#fff" stroke-width="2"/>';
+
+    // Timeline labels
+    html += '<text x="' + barX + '" y="' + (barY + 24) + '" font-family="Figtree,sans-serif" font-size="9" fill="rgb(150,150,150)">Day 0</text>';
+    html += '<text x="' + (barX + (14 / 35) * barW) + '" y="' + (barY + 24) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="9" fill="rgb(150,150,150)">Day 14</text>';
+    html += '<text x="' + (barX + (21 / 35) * barW) + '" y="' + (barY + 24) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="9" fill="#5BAE8A">Day 21</text>';
+    html += '<text x="' + (barX + barW) + '" y="' + (barY + 24) + '" text-anchor="end" font-family="Figtree,sans-serif" font-size="9" fill="rgb(150,150,150)">Day 35</text>';
+
+    svg.innerHTML = html;
+
+    // Stats
+    var cancelProb, status, statusColor;
+    if (day < 3) { cancelProb = '5%'; status = 'No trigger'; statusColor = '#5BAE8A'; }
+    else if (day < 7) { cancelProb = '22%'; status = 'Anxiety rising'; statusColor = '#E8B44A'; }
+    else if (day < 14) { cancelProb = '45%'; status = 'Doubt forming'; statusColor = '#E8B44A'; }
+    else if (day < 21) {
+      cancelProb = intervention === 'goal' ? '23%' : '68%';
+      status = intervention === 'goal' ? 'Intervention active' : 'Intent formed';
+      statusColor = intervention === 'goal' ? '#5BAE8A' : '#E8634A';
+    } else {
+      cancelProb = intervention === 'goal' ? '12%' : '89%';
+      status = intervention === 'goal' ? 'SIP saved' : 'SIP cancelled';
+      statusColor = intervention === 'goal' ? '#5BAE8A' : '#E8634A';
+    }
+
+    statsEl.innerHTML =
+      '<div class="stat-card"><div class="stat-value" style="color:' + statusColor + '">' + cancelProb + '</div><div class="stat-label">Cancel Probability</div></div>' +
+      '<div class="stat-card"><div class="stat-value" style="color:' + statusColor + ';font-size:18px">' + status + '</div><div class="stat-label">Status</div></div>' +
+      '<div class="stat-card"><div class="stat-value" style="color:#5B4AE8">Day ' + day + '</div><div class="stat-label">Timeline</div></div>';
+  }
+
+  slider.addEventListener('input', render);
+  render();
+})();
+
+
+// ════════════════════════════════════════════════════
+// WIDGET 5: The Engagement Trap
+// ════════════════════════════════════════════════════
+(function() {
+  var svg = document.getElementById('trap-svg');
+  var statsEl = document.getElementById('trap-stats');
+  if (!svg) return;
+
+  var mode = 'naive';
+
+  // Generate 80 simulated users
+  var users = [];
+  function seededRandom(seed) {
+    var x = Math.sin(seed) * 10000;
+    return x - Math.floor(x);
+  }
+  for (var i = 0; i < 80; i++) {
+    var commitment = 15 + seededRandom(i * 7 + 1) * 70;
+    var engagement = commitment * 0.6 + seededRandom(i * 13 + 5) * 40;
+    var retention = commitment * 0.7 + seededRandom(i * 19 + 3) * 25;
+    engagement = Math.max(5, Math.min(95, engagement));
+    retention = Math.max(2, Math.min(36, retention * 0.35));
+    users.push({ commitment: commitment, engagement: engagement, retention: retention });
+  }
+
+  window.toggleTrap = function(m) {
+    mode = m;
+    var btns = document.querySelectorAll('#trap-demo .toggle-btn');
+    for (var i = 0; i < btns.length; i++) btns[i].className = 'toggle-btn';
+    btns[m === 'naive' ? 0 : 1].className = 'toggle-btn active';
+    render();
+  };
+
+  function render() {
+    var pad = { top: 35, right: 30, bottom: 50, left: 60 };
+    var w = 636 - pad.left - pad.right;
+    var h = 380 - pad.top - pad.bottom;
+
+    var html = '<rect width="636" height="380" fill="rgb(242,241,239)" rx="4"/>';
+    html += '<rect x="' + pad.left + '" y="' + pad.top + '" width="' + w + '" height="' + h + '" fill="#fff" rx="2"/>';
+
+    // Grid
+    for (var g = 0; g <= 4; g++) {
+      var gy = pad.top + h - (g / 4) * h;
+      var gx = pad.left + (g / 4) * w;
+      html += '<line x1="' + pad.left + '" y1="' + gy + '" x2="' + (pad.left + w) + '" y2="' + gy + '" stroke="rgb(243,243,243)" stroke-width="1"/>';
+      html += '<line x1="' + gx + '" y1="' + pad.top + '" x2="' + gx + '" y2="' + (pad.top + h) + '" stroke="rgb(243,243,243)" stroke-width="1"/>';
+    }
+
+    if (mode === 'naive') {
+      // Scatter: Engagement (x) vs Retention (y) — shows correlation
+      html += '<text x="' + (pad.left + w / 2) + '" y="' + (pad.top - 8) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="13" font-weight="700" fill="rgb(45,45,45)">Naive: "Engagement drives retention"</text>';
+      html += '<text x="' + (pad.left + w / 2) + '" y="' + (pad.top + h + 38) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="12" font-weight="600" fill="rgb(80,80,80)">App Engagement Score</text>';
+      html += '<text x="14" y="' + (pad.top + h / 2) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="12" font-weight="600" fill="rgb(80,80,80)" transform="rotate(-90,14,' + (pad.top + h / 2) + ')">SIP Retention (months)</text>';
+
+      // Y axis labels
+      for (var g = 0; g <= 4; g++) {
+        var gy = pad.top + h - (g / 4) * h;
+        html += '<text x="' + (pad.left - 8) + '" y="' + (gy + 4) + '" text-anchor="end" font-family="Figtree,sans-serif" font-size="10" fill="rgb(150,150,150)">' + (g * 9) + '</text>';
+        html += '<text x="' + (pad.left + (g / 4) * w) + '" y="' + (pad.top + h + 16) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="10" fill="rgb(150,150,150)">' + (g * 25) + '</text>';
+      }
+
+      // Trend line
+      var engMin = 5, engMax = 95, retAtMin = 8, retAtMax = 30;
+      var tlx1 = pad.left + (engMin / 100) * w;
+      var tly1 = pad.top + h - (retAtMin / 36) * h;
+      var tlx2 = pad.left + (engMax / 100) * w;
+      var tly2 = pad.top + h - (retAtMax / 36) * h;
+      html += '<line x1="' + tlx1 + '" y1="' + tly1 + '" x2="' + tlx2 + '" y2="' + tly2 + '" stroke="#E8634A" stroke-width="2" stroke-dasharray="6,4" opacity="0.5"/>';
+
+      for (var i = 0; i < users.length; i++) {
+        var cx = pad.left + (users[i].engagement / 100) * w;
+        var cy = pad.top + h - (users[i].retention / 36) * h;
+        html += '<circle cx="' + cx + '" cy="' + cy + '" r="5" fill="#5B4AE8" opacity="0.6"/>';
+      }
+
+      html += '<text x="' + tlx2 + '" y="' + (tly2 - 8) + '" text-anchor="end" font-family="Figtree,sans-serif" font-size="11" font-weight="700" fill="#E8634A">r = 0.71</text>';
+
+      statsEl.innerHTML =
+        '<div class="stat-card"><div class="stat-value" style="color:#E8634A">r = 0.71</div><div class="stat-label">Eng. ↔ Retention</div></div>' +
+        '<div class="stat-card"><div class="stat-value" style="color:#E8634A;font-size:16px">Send nudges!</div><div class="stat-label">Naive Conclusion</div></div>' +
+        '<div class="stat-card"><div class="stat-value" style="color:#E8634A">Wrong</div><div class="stat-label">Causal Validity</div></div>';
+
+    } else {
+      // Causal: color by commitment, show commitment is the true driver
+      html += '<text x="' + (pad.left + w / 2) + '" y="' + (pad.top - 8) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="13" font-weight="700" fill="rgb(45,45,45)">Causal: Commitment drives BOTH</text>';
+      html += '<text x="' + (pad.left + w / 2) + '" y="' + (pad.top + h + 38) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="12" font-weight="600" fill="rgb(80,80,80)">App Engagement Score</text>';
+      html += '<text x="14" y="' + (pad.top + h / 2) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="12" font-weight="600" fill="rgb(80,80,80)" transform="rotate(-90,14,' + (pad.top + h / 2) + ')">SIP Retention (months)</text>';
+
+      for (var g = 0; g <= 4; g++) {
+        var gy = pad.top + h - (g / 4) * h;
+        html += '<text x="' + (pad.left - 8) + '" y="' + (gy + 4) + '" text-anchor="end" font-family="Figtree,sans-serif" font-size="10" fill="rgb(150,150,150)">' + (g * 9) + '</text>';
+        html += '<text x="' + (pad.left + (g / 4) * w) + '" y="' + (pad.top + h + 16) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="10" fill="rgb(150,150,150)">' + (g * 25) + '</text>';
+      }
+
+      for (var i = 0; i < users.length; i++) {
+        var cx = pad.left + (users[i].engagement / 100) * w;
+        var cy = pad.top + h - (users[i].retention / 36) * h;
+        var ratio = (users[i].commitment - 15) / 70;
+        var r = Math.round(232 - ratio * 141);
+        var g2 = Math.round(99 + ratio * 75);
+        var b = Math.round(74 + ratio * 64);
+        var color = 'rgb(' + r + ',' + g2 + ',' + b + ')';
+        html += '<circle cx="' + cx + '" cy="' + cy + '" r="6" fill="' + color + '" opacity="0.8" stroke="#fff" stroke-width="1"/>';
+      }
+
+      // Commitment legend
+      html += '<rect x="' + (pad.left + w - 170) + '" y="' + (pad.top + 8) + '" width="162" height="40" rx="6" fill="rgba(255,255,255,0.9)"/>';
+      html += '<text x="' + (pad.left + w - 158) + '" y="' + (pad.top + 24) + '" font-family="Figtree,sans-serif" font-size="11" font-weight="700" fill="rgb(45,45,45)">Commitment Level</text>';
+      for (var c = 0; c <= 6; c++) {
+        var ratio = c / 6;
+        var cr = Math.round(232 - ratio * 141);
+        var cg = Math.round(99 + ratio * 75);
+        var cb = Math.round(74 + ratio * 64);
+        var tx = pad.left + w - 158 + c * 22;
+        html += '<rect x="' + tx + '" y="' + (pad.top + 30) + '" width="18" height="10" fill="rgb(' + cr + ',' + cg + ',' + cb + ')" rx="2"/>';
+      }
+      html += '<text x="' + (pad.left + w - 158) + '" y="' + (pad.top + 52) + '" font-family="Figtree,sans-serif" font-size="9" fill="rgb(120,120,120)">Low</text>';
+      html += '<text x="' + (pad.left + w - 10) + '" y="' + (pad.top + 52) + '" text-anchor="end" font-family="Figtree,sans-serif" font-size="9" fill="rgb(120,120,120)">High</text>';
+
+      // Annotation
+      html += '<text x="' + (pad.left + 10) + '" y="' + (pad.top + h - 10) + '" font-family="Figtree,sans-serif" font-size="11" font-weight="600" fill="#5BAE8A">↑ Same color = same commitment = same cluster</text>';
+
+      statsEl.innerHTML =
+        '<div class="stat-card"><div class="stat-value" style="color:#5BAE8A">0%</div><div class="stat-label">Causal Effect of Engagement</div></div>' +
+        '<div class="stat-card"><div class="stat-value" style="color:#5BAE8A;font-size:16px">Increase commitment</div><div class="stat-label">Correct Intervention</div></div>' +
+        '<div class="stat-card"><div class="stat-value" style="color:#5BAE8A">82%</div><div class="stat-label">Commitment → Retention</div></div>';
+    }
+
+    svg.innerHTML = html;
+  }
+
+  render();
+})();
+
+
+// ════════════════════════════════════════════════════
+// WIDGET 6: Counterfactual Mirror
+// ════════════════════════════════════════════════════
+(function() {
+  var svg = document.getElementById('mirror-svg');
+  var statsEl = document.getElementById('mirror-stats');
+  if (!svg) return;
+
+  var scenarios = {
+    sip1: {
+      label: 'SIP 1: Loss Aversion',
+      trigger: 'Nifty down 9.2%',
+      cause: 'Loss aversion',
+      date: 'Feb 2022',
+      cost: '₹38,400',
+      stopMonth: 4,
+      // 18 months of portfolio values (₹ thousands)
+      actual:       [50, 55, 60, 58, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52],
+      counterfactual:[50, 55, 60, 58, 52, 48, 54, 62, 68, 72, 76, 80, 84, 87, 90, 88, 90, 92]
+    },
+    sip2: {
+      label: 'SIP 2: Calendar Mismatch',
+      trigger: 'Markets flat',
+      cause: 'SIP date vs salary date',
+      date: 'Aug 2023',
+      cost: '₹21,200',
+      stopMonth: 5,
+      actual:       [30, 35, 40, 45, 50, 54, 54, 54, 54, 54, 54, 54, 54, 54, 54, 54, 54, 54],
+      counterfactual:[30, 35, 40, 45, 50, 54, 58, 62, 65, 68, 70, 72, 74, 76, 78, 75, 76, 78]
+    },
+    sip3: {
+      label: 'SIP 3: Goal Ambiguity',
+      trigger: 'No market trigger',
+      cause: 'Goal too vague',
+      date: 'Jan 2024',
+      cost: '₹14,800',
+      stopMonth: 6,
+      actual:       [20, 24, 28, 32, 36, 40, 43, 43, 43, 43, 43, 43, 43, 43, 43, 43, 43, 43],
+      counterfactual:[20, 24, 28, 32, 36, 40, 43, 46, 50, 53, 56, 58, 60, 62, 58, 59, 60, 62]
+    }
+  };
+
+  var currentSip = 'sip1';
+
+  window.toggleMirror = function(s) {
+    currentSip = s;
+    var btns = document.querySelectorAll('#mirror-demo .toggle-btn');
+    for (var i = 0; i < btns.length; i++) btns[i].className = 'toggle-btn';
+    var idx = s === 'sip1' ? 0 : s === 'sip2' ? 1 : 2;
+    btns[idx].className = 'toggle-btn active';
+    render();
+  };
+
+  function render() {
+    var sc = scenarios[currentSip];
+    var n = sc.actual.length;
+
+    var pad = { top: 40, right: 50, bottom: 40, left: 55 };
+    var w = 636 - pad.left - pad.right;
+    var h = 380 - pad.top - pad.bottom;
+
+    // Find min/max
+    var minV = 1000, maxV = 0;
+    for (var i = 0; i < n; i++) {
+      if (sc.actual[i] < minV) minV = sc.actual[i];
+      if (sc.counterfactual[i] < minV) minV = sc.counterfactual[i];
+      if (sc.actual[i] > maxV) maxV = sc.actual[i];
+      if (sc.counterfactual[i] > maxV) maxV = sc.counterfactual[i];
+    }
+    minV = Math.floor(minV / 10) * 10 - 5;
+    maxV = Math.ceil(maxV / 10) * 10 + 5;
+    var range = maxV - minV;
+
+    var html = '<rect width="636" height="380" fill="rgb(242,241,239)" rx="4"/>';
+    html += '<rect x="' + pad.left + '" y="' + pad.top + '" width="' + w + '" height="' + h + '" fill="#fff" rx="2"/>';
+
+    // Title
+    html += '<text x="' + (pad.left + w / 2) + '" y="' + (pad.top - 10) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="14" font-weight="700" fill="rgb(45,45,45)">' + sc.label + ' (' + sc.date + ')</text>';
+
+    // Y axis
+    for (var g = 0; g <= 4; g++) {
+      var gy = pad.top + h - (g / 4) * h;
+      var gVal = minV + (g / 4) * range;
+      html += '<line x1="' + pad.left + '" y1="' + gy + '" x2="' + (pad.left + w) + '" y2="' + gy + '" stroke="rgb(243,243,243)" stroke-width="1"/>';
+      html += '<text x="' + (pad.left - 8) + '" y="' + (gy + 4) + '" text-anchor="end" font-family="Figtree,sans-serif" font-size="10" fill="rgb(150,150,150)">₹' + Math.round(gVal) + 'K</text>';
+    }
+
+    // Shade the gap area
+    var gapPath = 'M';
+    for (var i = sc.stopMonth; i < n; i++) {
+      var x = pad.left + (i / (n - 1)) * w;
+      var y = pad.top + h - ((sc.counterfactual[i] - minV) / range) * h;
+      gapPath += (i === sc.stopMonth ? '' : 'L') + x + ',' + y;
+    }
+    for (var i = n - 1; i >= sc.stopMonth; i--) {
+      var x = pad.left + (i / (n - 1)) * w;
+      var y = pad.top + h - ((sc.actual[i] - minV) / range) * h;
+      gapPath += 'L' + x + ',' + y;
+    }
+    gapPath += 'Z';
+    html += '<path d="' + gapPath + '" fill="rgba(91,74,232,0.08)"/>';
+
+    // Stop line
+    var stopX = pad.left + (sc.stopMonth / (n - 1)) * w;
+    html += '<line x1="' + stopX + '" y1="' + pad.top + '" x2="' + stopX + '" y2="' + (pad.top + h) + '" stroke="#E8634A" stroke-width="1" stroke-dasharray="4,3" opacity="0.5"/>';
+    html += '<text x="' + (stopX + 6) + '" y="' + (pad.top + 14) + '" font-family="Figtree,sans-serif" font-size="10" font-weight="600" fill="#E8634A">Stopped</text>';
+
+    // Counterfactual line (dashed green)
+    for (var i = 1; i < n; i++) {
+      var x1 = pad.left + ((i - 1) / (n - 1)) * w;
+      var y1 = pad.top + h - ((sc.counterfactual[i - 1] - minV) / range) * h;
+      var x2 = pad.left + (i / (n - 1)) * w;
+      var y2 = pad.top + h - ((sc.counterfactual[i] - minV) / range) * h;
+      var dash = i > sc.stopMonth ? ' stroke-dasharray="6,3"' : '';
+      html += '<line x1="' + x1 + '" y1="' + y1 + '" x2="' + x2 + '" y2="' + y2 + '" stroke="#5BAE8A" stroke-width="2.5"' + dash + '/>';
+    }
+
+    // Actual line
+    for (var i = 1; i < n; i++) {
+      var x1 = pad.left + ((i - 1) / (n - 1)) * w;
+      var y1 = pad.top + h - ((sc.actual[i - 1] - minV) / range) * h;
+      var x2 = pad.left + (i / (n - 1)) * w;
+      var y2 = pad.top + h - ((sc.actual[i] - minV) / range) * h;
+      html += '<line x1="' + x1 + '" y1="' + y1 + '" x2="' + x2 + '" y2="' + y2 + '" stroke="#E8634A" stroke-width="2.5"/>';
+    }
+
+    // End dots
+    var endX = pad.left + w;
+    var endYCf = pad.top + h - ((sc.counterfactual[n - 1] - minV) / range) * h;
+    var endYAct = pad.top + h - ((sc.actual[n - 1] - minV) / range) * h;
+    html += '<circle cx="' + endX + '" cy="' + endYCf + '" r="4" fill="#5BAE8A"/>';
+    html += '<circle cx="' + endX + '" cy="' + endYAct + '" r="4" fill="#E8634A"/>';
+
+    // Gap bracket
+    html += '<line x1="' + (endX + 10) + '" y1="' + endYCf + '" x2="' + (endX + 10) + '" y2="' + endYAct + '" stroke="#5B4AE8" stroke-width="2"/>';
+    html += '<text x="' + (endX + 18) + '" y="' + ((endYCf + endYAct) / 2 + 4) + '" font-family="Figtree,sans-serif" font-size="12" font-weight="700" fill="#5B4AE8">' + sc.cost + '</text>';
+
+    // Legend
+    html += '<text x="' + (pad.left + 8) + '" y="' + (pad.top + h + 24) + '" font-family="Figtree,sans-serif" font-size="11" fill="#5BAE8A">— If you had stayed invested</text>';
+    html += '<text x="' + (pad.left + w / 2) + '" y="' + (pad.top + h + 24) + '" font-family="Figtree,sans-serif" font-size="11" fill="#E8634A">— What actually happened</text>';
+
+    svg.innerHTML = html;
+
+    statsEl.innerHTML =
+      '<div class="stat-card"><div class="stat-value" style="color:#E8634A">' + sc.trigger + '</div><div class="stat-label">Trigger</div></div>' +
+      '<div class="stat-card"><div class="stat-value" style="color:#5B4AE8;font-size:18px">' + sc.cause + '</div><div class="stat-label">Root Cause</div></div>' +
+      '<div class="stat-card"><div class="stat-value" style="color:#E8634A">' + sc.cost + '</div><div class="stat-label">Cost of Stopping</div></div>';
+  }
+
+  render();
+})();
+
+
+// ════════════════════════════════════════════════════
+// SCROLL REVEAL
+// ════════════════════════════════════════════════════
+(function() {
+  var observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+  document.querySelectorAll('.fade-in').forEach(function(el) { observer.observe(el); });
+})();
+</script>
+</body>
+</html>

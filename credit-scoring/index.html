@@ -1,0 +1,1691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Credit Scoring, Explained Plainly | An Interactive Guide</title>
+<meta name="description" content="How banks decide who gets a loan in 30 seconds. From FICO components to SHAP explainability — an interactive guide with 6 hands-on demos.">
+
+<!-- Open Graph -->
+<meta property="og:title" content="Credit Scoring, Explained Plainly">
+<meta property="og:description" content="How banks decide who gets a loan: from FICO components to machine learning to SHAP explainability. Interactive guide with 6 hands-on demos.">
+<meta property="og:url" content="https://supergeek.in/credit-scoring/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Danish Mohd">
+<meta property="og:locale" content="en_US">
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Credit Scoring, Explained Plainly">
+<meta name="twitter:description" content="How banks decide who gets a loan in 30 seconds. Interactive guide with 6 demos.">
+
+<!-- Canonical -->
+<link rel="canonical" href="https://supergeek.in/credit-scoring/">
+
+<!-- Structured Data -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "Credit Scoring, Explained Plainly",
+  "description": "How banks decide who gets a loan: from FICO components to machine learning to SHAP explainability. Interactive guide with 6 hands-on demos.",
+  "author": {
+    "@type": "Person",
+    "name": "Danish Mohd",
+    "url": "https://supergeek.in",
+    "jobTitle": "AI Product Builder",
+    "sameAs": [
+      "https://github.com/DanisHack"
+    ]
+  },
+  "publisher": {
+    "@type": "Person",
+    "name": "Danish Mohd",
+    "url": "https://supergeek.in"
+  },
+  "datePublished": "2026-03-05",
+  "dateModified": "2026-03-05",
+  "mainEntityOfPage": "https://supergeek.in/credit-scoring/",
+  "keywords": ["credit scoring", "FICO score", "weight of evidence", "logistic regression scorecard", "SHAP explainability", "XGBoost credit risk", "PSI monitoring", "credit risk modeling"]
+}
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,700;1,6..72,400&family=Figtree:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+/* ── Reset ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Newsreader', Georgia, serif;
+  font-size: 21px;
+  line-height: 1.4;
+  color: rgb(45,45,45);
+  background: rgb(250,249,247);
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: #5B4AE8; text-decoration: none; }
+a:hover { color: #7B4AE8; }
+
+/* ── Layout ── */
+.content { max-width: 700px; margin: 0 auto; padding: 0 24px; }
+
+/* ── Hero ── */
+.hero {
+  position: relative;
+  border-radius: 16px;
+  margin: 12px auto;
+  max-width: calc(100% - 24px);
+  min-height: 300px;
+  overflow: hidden;
+  display: flex;
+  align-items: flex-end;
+  padding: 48px 40px;
+}
+.hero-bg {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+}
+.hero .content { position: relative; z-index: 1; max-width: none; padding: 0; }
+.hero h1 {
+  font-family: 'Newsreader', Georgia, serif;
+  font-size: 64px;
+  font-weight: 700;
+  line-height: 1.1;
+  color: #fff;
+  margin-bottom: 12px;
+}
+.post-subtitle {
+  font-family: 'Figtree', system-ui, sans-serif;
+  font-size: 26px;
+  font-weight: 500;
+  line-height: 1.1;
+  color: rgba(255,255,255,0.85);
+}
+
+/* ── Intro ── */
+.intro { margin: 60px auto 40px; }
+.intro-text {
+  font-style: italic;
+  font-size: 23px;
+  line-height: 1.45;
+  color: rgb(80,80,80);
+}
+
+/* ── TOC ── */
+.toc {
+  margin: 0 auto 60px;
+  padding: 24px 28px;
+  background: rgb(242,241,239);
+  border-radius: 12px;
+}
+.toc h4 {
+  font-family: 'Figtree', system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 12px;
+  color: rgb(100,100,100);
+}
+.toc ol { padding-left: 20px; }
+.toc li {
+  font-family: 'Figtree', system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.8;
+  color: rgb(80,80,80);
+}
+.toc a { color: rgb(45,45,45); border-bottom: 1px solid transparent; }
+.toc a:hover { color: #5B4AE8; border-bottom-color: #5B4AE8; }
+
+/* ── Section Headers ── */
+.section-header {
+  display: flex;
+  align-items: baseline;
+  gap: 20px;
+  padding-top: 100px;
+  margin-bottom: 40px;
+  border-top: 1px solid rgb(220,218,214);
+}
+.section-number {
+  font-family: 'Newsreader', Georgia, serif;
+  font-size: 50px;
+  font-weight: 400;
+  color: rgb(180,178,174);
+  flex-shrink: 0;
+}
+.section-header h2 {
+  font-family: 'Figtree', system-ui, sans-serif;
+  font-size: 44px;
+  font-weight: 700;
+  line-height: 1.1;
+  color: rgb(45,45,45);
+}
+h3 {
+  font-family: 'Figtree', system-ui, sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.1;
+  margin-top: 40px;
+  margin-bottom: 16px;
+}
+
+/* ── Prose ── */
+main p {
+  margin-bottom: 20px;
+}
+main p strong {
+  font-weight: 700;
+}
+
+/* ── Demo Containers ── */
+.demo-container {
+  background: rgb(242,241,239);
+  border-radius: 12px;
+  padding: 32px;
+  margin: 32px 0;
+}
+.label {
+  font-family: 'Figtree', system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgb(45,45,45);
+  margin-bottom: 16px;
+}
+figcaption {
+  font-family: 'Newsreader', Georgia, serif;
+  font-style: italic;
+  font-size: 17px;
+  line-height: 1.4;
+  color: rgb(100,100,100);
+  text-align: center;
+  margin-top: 16px;
+}
+
+/* ── Controls ── */
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 16px 0;
+  flex-wrap: wrap;
+}
+.controls label {
+  font-family: 'Figtree', system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: rgb(80,80,80);
+}
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 6px;
+  border-radius: 3px;
+  background: rgb(200,198,194);
+  outline: none;
+  flex: 1;
+  min-width: 120px;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  background: #5B4AE8;
+  cursor: pointer;
+  border: 3px solid #fff;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+}
+input[type="range"]::-moz-range-thumb {
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  background: #5B4AE8;
+  cursor: pointer;
+  border: 3px solid #fff;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+}
+.toggle-btn {
+  font-family: 'Figtree', system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: 1px solid rgb(200,198,194);
+  background: #fff;
+  color: rgb(45,45,45);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.toggle-btn:hover { border-color: #5B4AE8; color: #5B4AE8; }
+.toggle-btn.active { background: #5B4AE8; color: #fff; border-color: #5B4AE8; }
+
+/* ── Value Display ── */
+.value-display {
+  font-family: 'Figtree', system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: #5B4AE8;
+  min-width: 60px;
+}
+
+/* ── Stat Cards ── */
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+  margin: 16px 0;
+}
+.stat-card {
+  background: #fff;
+  border-radius: 8px;
+  padding: 16px;
+  text-align: center;
+}
+.stat-value {
+  font-family: 'Figtree', system-ui, sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+.stat-label {
+  font-family: 'Figtree', system-ui, sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: rgb(100,100,100);
+  margin-top: 4px;
+}
+
+/* ── Callout ── */
+.callout {
+  border-left: 4px solid #5B4AE8;
+  padding: 20px 24px;
+  margin: 32px 0;
+  background: rgba(91,74,232,0.04);
+  border-radius: 0 8px 8px 0;
+}
+.callout p { margin-bottom: 8px; }
+.callout p:last-child { margin-bottom: 0; }
+
+/* ── Sidenotes ── */
+.sidenote-trigger {
+  font-family: 'Figtree', system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: #5B4AE8;
+  cursor: pointer;
+  vertical-align: super;
+}
+.sidenote {
+  display: none;
+  background: rgb(242,241,239);
+  padding: 16px 20px;
+  border-radius: 8px;
+  margin: 8px 0 16px;
+}
+.sidenote.open { display: block; }
+.sidenote p {
+  font-family: 'Figtree', system-ui, sans-serif;
+  font-size: 15px;
+  line-height: 1.4;
+  margin-bottom: 8px;
+}
+.sidenote p:last-child { margin-bottom: 0; }
+
+/* ── Select ── */
+select {
+  font-family: 'Figtree', system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid rgb(200,198,194);
+  background: #fff;
+  color: rgb(45,45,45);
+  cursor: pointer;
+}
+
+/* ── Fade In ── */
+.fade-in {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+.fade-in.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── Footer ── */
+.site-footer {
+  background: #3A2D7A;
+  color: rgba(255,255,255,0.7);
+  padding: 60px 24px;
+  margin-top: 100px;
+  text-align: center;
+}
+.site-footer p:first-child {
+  font-family: 'Newsreader', Georgia, serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 8px;
+}
+.site-footer .footer-tagline {
+  font-family: 'Newsreader', Georgia, serif;
+  font-style: italic;
+  font-size: 17px;
+  color: rgba(255,255,255,0.5);
+  margin-top: 16px;
+}
+.site-footer a { color: rgba(255,255,255,0.8); }
+.site-footer a:hover { color: #fff; }
+
+/* ── Legend ── */
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 20px;
+  margin: 12px 0;
+}
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'Figtree', system-ui, sans-serif;
+  font-size: 13px;
+  color: rgb(80,80,80);
+}
+.legend-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  body { font-size: 19px; }
+  .hero h1 { font-size: 40px; }
+  .post-subtitle { font-size: 20px; }
+  .hero { padding: 32px 24px; min-height: 220px; }
+  .section-header { padding-top: 60px; margin-bottom: 30px; gap: 14px; }
+  .section-number { font-size: 36px; }
+  .section-header h2 { font-size: 32px; }
+  h3 { font-size: 22px; }
+  .intro-text { font-size: 20px; }
+  .demo-container { padding: 20px 16px; }
+  .stat-grid { grid-template-columns: repeat(2, 1fr); }
+  .stat-value { font-size: 22px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
+</style>
+</head>
+<body>
+
+<a href="/" style="display:inline-block;margin:16px 0 0 16px;font-family:'Figtree',system-ui,sans-serif;font-size:15px;font-weight:600;color:rgb(100,100,100);text-decoration:none;" onmouseover="this.style.color='#5B4AE8'" onmouseout="this.style.color='rgb(100,100,100)'">&larr; Danish Khan</a>
+
+<!-- ════════════════════════════════════════════════════ -->
+<!-- HERO                                                -->
+<!-- ════════════════════════════════════════════════════ -->
+<div class="hero">
+  <svg class="hero-bg" viewBox="0 0 1200 400" preserveAspectRatio="xMidYMid slice">
+    <defs>
+      <linearGradient id="heroGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#0d1b2a"/>
+        <stop offset="30%" stop-color="#1b2d4f"/>
+        <stop offset="60%" stop-color="#3A2D7A"/>
+        <stop offset="100%" stop-color="#5B4AE8"/>
+      </linearGradient>
+      <pattern id="gridP" width="35" height="35" patternUnits="userSpaceOnUse">
+        <path d="M 35 0 L 0 0 0 35" fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+      </pattern>
+    </defs>
+    <rect width="1200" height="400" fill="url(#heroGrad)"/>
+    <rect width="1200" height="400" fill="url(#gridP)"/>
+    <!-- Decorative score gauge arc -->
+    <path d="M 350 320 A 250 250 0 0 1 850 320" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="3"/>
+    <circle cx="390" cy="260" r="3" fill="rgba(232,99,74,0.35)"/>
+    <circle cx="460" cy="180" r="4" fill="rgba(232,180,74,0.35)"/>
+    <circle cx="550" cy="140" r="4" fill="rgba(232,180,74,0.30)"/>
+    <circle cx="600" cy="130" r="5" fill="rgba(91,174,138,0.35)"/>
+    <circle cx="700" cy="140" r="5" fill="rgba(91,174,138,0.40)"/>
+    <circle cx="790" cy="180" r="4" fill="rgba(91,74,232,0.40)"/>
+    <circle cx="840" cy="240" r="3" fill="rgba(91,74,232,0.35)"/>
+    <text x="600" y="350" text-anchor="middle" font-family="Figtree,sans-serif" font-size="48" font-weight="700" fill="rgba(255,255,255,0.05)">750</text>
+  </svg>
+  <div class="content">
+    <h1>Credit Scoring, Explained Plainly</h1>
+    <p class="post-subtitle">You apply for a loan. A model has 30 seconds to decide. How does it work?</p>
+  </div>
+</div>
+
+<main class="content">
+<article>
+
+<!-- ════════════════════════════════════════════════════ -->
+<!-- INTRO                                               -->
+<!-- ════════════════════════════════════════════════════ -->
+<section class="intro">
+  <p class="intro-text">You walk into a bank and apply for a loan. Within 30 seconds, a model has scored you, ranked you against millions of other borrowers, and decided whether you're worth the risk. The bank doesn't read your essay about why you need the money. It reads a three-digit number. That number &mdash; your credit score &mdash; determines your interest rate, your credit limit, and sometimes whether you get approved at all. A 2025 systematic review of over 330 research papers found that the methods behind this number have evolved dramatically: from logistic regression scorecards to gradient-boosted ensembles that achieve AUCs above 0.85. But the fundamental question remains the same &mdash; can you predict who will default?</p>
+</section>
+
+<nav class="toc">
+  <h4>Contents</h4>
+  <ol>
+    <li><a href="#section-1">What Goes Into a Credit Score</a></li>
+    <li><a href="#section-2">Turning Raw Data Into Signals</a></li>
+    <li><a href="#section-3">The Scorecard</a></li>
+    <li><a href="#section-4">Enter Machine Learning</a></li>
+    <li><a href="#section-5">Why Was I Denied?</a></li>
+    <li><a href="#section-6">When Models Go Stale</a></li>
+  </ol>
+</nav>
+
+
+<!-- ════════════════════════════════════════════════════ -->
+<!-- SECTION I                                           -->
+<!-- ════════════════════════════════════════════════════ -->
+<section id="section-1" class="fade-in">
+  <div class="section-header">
+    <span class="section-number">I.</span>
+    <h2>What Goes Into a Credit Score</h2>
+  </div>
+
+  <p>The FICO score is the industry standard. Over 90% of top US lenders use some version of it. The score ranges from 300 to 850, and it's built from five components &mdash; each weighted by how predictive it is of default.</p>
+
+  <p><strong>Payment History (35%)</strong> dominates because past behavior is the strongest predictor of future behavior. If you've missed payments before, you'll probably miss them again. <strong>Credit Utilization (30%)</strong> measures how much of your available credit you're using &mdash; maxing out your cards signals financial stress. <strong>Length of Credit History (15%)</strong> rewards longevity; longer track records mean more data. <strong>New Credit (10%)</strong> penalizes a flurry of recent applications. <strong>Credit Mix (10%)</strong> gives a small bonus for having both revolving (credit cards) and installment (mortgages, car loans) accounts.</p>
+
+  <div class="callout">
+    <p><strong>The FICO score was invented in 1989</strong> by Fair, Isaac and Company. Over 35 years later, it remains the dominant scoring system in the US. The model has been updated &mdash; FICO 8, FICO 9, FICO 10 &mdash; but the core five-component structure has been remarkably stable. FICO 10T, the latest version, introduced 24-month trended data instead of point-in-time snapshots.</p>
+  </div>
+
+  <figure>
+    <div class="demo-container" id="score-anatomy-demo">
+      <p class="label">Score Anatomy: Build a Credit Profile</p>
+
+      <div class="controls">
+        <label>Payment History:</label>
+        <input type="range" id="sa-payment" min="0" max="100" value="75">
+        <span class="value-display" id="sa-payment-val">75</span>
+      </div>
+      <div class="controls">
+        <label>Utilization:</label>
+        <input type="range" id="sa-util" min="0" max="100" value="60">
+        <span class="value-display" id="sa-util-val">60</span>
+      </div>
+      <div class="controls">
+        <label>Credit Length:</label>
+        <input type="range" id="sa-length" min="0" max="100" value="50">
+        <span class="value-display" id="sa-length-val">50</span>
+      </div>
+      <div class="controls">
+        <label>New Credit:</label>
+        <input type="range" id="sa-new" min="0" max="100" value="80">
+        <span class="value-display" id="sa-new-val">80</span>
+      </div>
+      <div class="controls">
+        <label>Credit Mix:</label>
+        <input type="range" id="sa-mix" min="0" max="100" value="70">
+        <span class="value-display" id="sa-mix-val">70</span>
+      </div>
+
+      <div class="stat-grid" id="sa-stats"></div>
+
+      <svg id="sa-svg" viewBox="0 0 636 260" width="100%"></svg>
+
+      <div class="legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#5B4AE8;"></div>Payment History (35%)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#E8634A;"></div>Utilization (30%)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#E8B44A;"></div>Credit Length (15%)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#4A7DE8;"></div>New Credit (10%)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#5BAE8A;"></div>Credit Mix (10%)</div>
+      </div>
+
+      <figcaption>Drag the sliders to see how each component affects the total score. A score of 670+ is generally considered "good."</figcaption>
+
+      <noscript>
+        <p>The FICO credit score ranges from 300 to 850 and is composed of five weighted factors: Payment History (35%), Credit Utilization (30%), Length of Credit History (15%), New Credit Inquiries (10%), and Credit Mix (10%). A borrower with excellent payment history, low utilization under 30%, 10+ years of credit history, few recent inquiries, and a mix of installment and revolving credit would score approximately 800. Each component contributes independently. Payment history dominates because past delinquency is the strongest single predictor of future default, validated across decades of data from major US credit bureaus (FICO, 2024).</p>
+      </noscript>
+    </div>
+  </figure>
+
+  <p>The problem with component-based scoring is that it's a black box to the consumer. You know the five categories exist, but you don't know exactly how your specific payment history maps to points. And the weights themselves are averages &mdash; the actual impact of each factor varies by individual profile.<span class="sidenote-trigger" onclick="toggleSidenote('sn1')">[1]</span></p>
+  <div class="sidenote" id="sn1">
+    <p>VantageScore, the main competitor to FICO, uses a similar 300-850 range but weights factors differently. It's more forgiving of medical debt and treats recent behavior more heavily. Both models agree on the basic principle: payment history matters most.</p>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════════════ -->
+<!-- SECTION II                                          -->
+<!-- ════════════════════════════════════════════════════ -->
+<section id="section-2" class="fade-in">
+  <div class="section-header">
+    <span class="section-number">II.</span>
+    <h2>Turning Raw Data Into Signals</h2>
+  </div>
+
+  <p>Raw features like age, income, and debt ratio are continuous numbers. A 45-year-old isn't categorically different from a 46-year-old, but a 25-year-old is very different from a 65-year-old. To build a scorecard, you need to transform these continuous features into discrete risk buckets. That's where <strong>Weight of Evidence (WoE)</strong> comes in.</p>
+
+  <p>WoE bins a continuous variable and measures how much each bin separates good borrowers from bad ones. The formula is simple: WoE = ln(% of Good in bin / % of Bad in bin). A positive WoE means the bin has more good borrowers than expected. A negative WoE means more bad borrowers. The larger the absolute value, the stronger the signal.</p>
+
+  <p><strong>Information Value (IV)</strong> summarizes the total predictive power of a variable across all its bins. It's the go-to metric for feature screening in credit scoring. IV below 0.02 means the variable is useless. Between 0.02 and 0.10, it's weak. Between 0.10 and 0.30, medium. Above 0.30, you have a strong predictor.</p>
+
+  <figure>
+    <div class="demo-container" id="woe-demo">
+      <p class="label">Weight of Evidence Explorer</p>
+
+      <div class="controls">
+        <button class="toggle-btn active" onclick="toggleWoeVar('util')">Revolving Utilization</button>
+        <button class="toggle-btn" onclick="toggleWoeVar('age')">Age</button>
+        <button class="toggle-btn" onclick="toggleWoeVar('debt')">Debt Ratio</button>
+      </div>
+
+      <div class="stat-grid" id="woe-stats"></div>
+
+      <svg id="woe-svg" viewBox="0 0 636 420" width="100%"></svg>
+
+      <div class="legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#5BAE8A;"></div>Good borrowers (%)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#E8634A;"></div>Bad borrowers (%)</div>
+      </div>
+
+      <figcaption>Toggle between variables to compare their predictive power. Taller WoE bars (bottom chart) mean stronger separation between good and bad borrowers.</figcaption>
+
+      <noscript>
+        <p>Weight of Evidence (WoE) transforms continuous features into risk signals by binning values and measuring the ratio of good to bad borrowers in each bin. In the Give Me Some Credit dataset (150,000 records, 6.8% default rate), Revolving Utilization has an Information Value of 0.72, the strongest single predictor. Borrowers using under 10% of available credit default at roughly 2%, while those using over 100% default at approximately 12%. Age shows moderate predictive power (IV = 0.12): borrowers over 60 default half as often as those under 30. Debt Ratio is weaker (IV = 0.08), providing only marginal separation between good and bad borrowers.</p>
+      </noscript>
+    </div>
+  </figure>
+
+  <div class="callout">
+    <p><strong>Why does WoE matter?</strong> It transforms non-linear relationships into something logistic regression can handle. A raw age variable has a complex, non-monotonic relationship with default risk. After WoE transformation, each bin gets a single number that captures its relative riskiness. This is why traditional scorecards still work despite being "simple" &mdash; the feature engineering does the heavy lifting.</p>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════════════ -->
+<!-- SECTION III                                         -->
+<!-- ════════════════════════════════════════════════════ -->
+<section id="section-3" class="fade-in">
+  <div class="section-header">
+    <span class="section-number">III.</span>
+    <h2>The Scorecard</h2>
+  </div>
+
+  <p>A credit scorecard is a logistic regression model wearing a disguise. Under the hood, it's estimating the log-odds of default. But instead of showing you coefficients, it translates everything into <strong>points</strong>. Each attribute bin gets a fixed number of points. You sum them up, and the total maps to a probability of default.</p>
+
+  <p>The math is straightforward: Score = Offset + Factor &times; log-odds. The Offset and Factor are chosen so that a convenient reference point maps to a round score &mdash; for example, odds of 50:1 against default might equal 600 points, with every 20 additional points doubling the odds in your favor.</p>
+
+  <p>Banks love scorecards because they're interpretable, auditable, and compliant with SR 11-7<span class="sidenote-trigger" onclick="toggleSidenote('sn2')">[2]</span>. A loan officer can literally look at the points table and explain exactly why an applicant scored the way they did. No black box, no "the algorithm decided."</p>
+  <div class="sidenote" id="sn2">
+    <p>SR 11-7 is the Federal Reserve's model risk management guidance, issued in April 2011. It governs how banks develop, validate, and monitor models used for credit decisions. It's the regulatory bible for model governance in US banking.</p>
+  </div>
+
+  <figure>
+    <div class="demo-container" id="scorecard-demo">
+      <p class="label">Scorecard Simulator</p>
+
+      <div class="controls">
+        <label>Revolving Utilization:</label>
+        <select id="sc-util">
+          <option value="0">0-10% (+62 pts)</option>
+          <option value="1">10-30% (+48 pts)</option>
+          <option value="2" selected>30-50% (+28 pts)</option>
+          <option value="3">50-70% (-6 pts)</option>
+          <option value="4">70-100% (-22 pts)</option>
+          <option value="5">100%+ (-38 pts)</option>
+        </select>
+      </div>
+      <div class="controls">
+        <label>Age:</label>
+        <select id="sc-age">
+          <option value="0">21-30 (-18 pts)</option>
+          <option value="1">31-40 (-4 pts)</option>
+          <option value="2" selected>41-50 (+8 pts)</option>
+          <option value="3">51-60 (+22 pts)</option>
+          <option value="4">61+ (+36 pts)</option>
+        </select>
+      </div>
+      <div class="controls">
+        <label>Past Due (30-59 days):</label>
+        <select id="sc-pastdue">
+          <option value="0" selected>Never (+32 pts)</option>
+          <option value="1">Once (-14 pts)</option>
+          <option value="2">2-3 times (-38 pts)</option>
+          <option value="3">4+ times (-56 pts)</option>
+        </select>
+      </div>
+      <div class="controls">
+        <label>Debt Ratio:</label>
+        <select id="sc-debt">
+          <option value="0">0-20% (+16 pts)</option>
+          <option value="1" selected>20-40% (+8 pts)</option>
+          <option value="2">40-60% (+2 pts)</option>
+          <option value="3">60%+ (-8 pts)</option>
+        </select>
+      </div>
+      <div class="controls">
+        <label>Open Credit Lines:</label>
+        <select id="sc-lines">
+          <option value="0">0-3 (-12 pts)</option>
+          <option value="1" selected>4-8 (+14 pts)</option>
+          <option value="2">9-15 (+8 pts)</option>
+          <option value="3">16+ (-4 pts)</option>
+        </select>
+      </div>
+
+      <div class="stat-grid" id="sc-stats"></div>
+
+      <svg id="sc-svg" viewBox="0 0 636 280" width="100%"></svg>
+
+      <figcaption>Select different attribute bins to see how points add up. The total score maps to a probability of default via a logistic function.</figcaption>
+
+      <noscript>
+        <p>A traditional credit scorecard assigns fixed points per attribute bin. For example, Revolving Utilization under 10% adds +62 points, while over 100% subtracts 38 points. Age over 60 adds +36 points. Never having a 30-day past-due adds +32. The base score is 480, and total points are summed to produce a final score. A score of 650 corresponds to approximately 3% probability of default, while 550 corresponds to roughly 12% PD. The score-to-PD conversion uses a logistic function. Banks set cutoff thresholds based on their risk appetite, typically requiring scores above 600 for consumer lending.</p>
+      </noscript>
+    </div>
+  </figure>
+</section>
+
+
+<!-- ════════════════════════════════════════════════════ -->
+<!-- SECTION IV                                          -->
+<!-- ════════════════════════════════════════════════════ -->
+<section id="section-4" class="fade-in">
+  <div class="section-header">
+    <span class="section-number">IV.</span>
+    <h2>Enter Machine Learning</h2>
+  </div>
+
+  <p>The logistic regression scorecard achieves an AUC of around 0.72 on credit data. For decades, this was "good enough." Then gradient-boosted trees arrived.</p>
+
+  <p>XGBoost and LightGBM achieve AUC of 0.84&ndash;0.86 on the same data. That 12&ndash;14 point jump in AUC translates to catching significantly more defaults at the same false alarm rate. At a 5% false positive rate, logistic regression catches about 18% of defaults. LightGBM catches 38%. That's more than double the detection rate.</p>
+
+  <p>LightGBM is also <strong>20x faster to train</strong> than XGBoost on large datasets, thanks to histogram-based binning and leaf-wise tree growth. When you're processing millions of loan applications, that speed matters. A 2025 study in Nature Scientific Reports showed that a hybrid LightGBM framework captures non-linear interactions that logistic regression fundamentally cannot model.</p>
+
+  <p>The tradeoff is interpretability. A scorecard is transparent. A 1,000-tree gradient-boosted ensemble is not. Regulators require adverse action reasons &mdash; specific explanations for why an applicant was denied. This tension between accuracy and explainability is the central challenge in modern credit scoring.</p>
+
+  <figure>
+    <div class="demo-container" id="roc-demo">
+      <p class="label">ROC Curve Explorer: Model Comparison</p>
+
+      <div class="controls">
+        <label>False Positive Rate:</label>
+        <input type="range" id="roc-slider" min="1" max="99" value="20" step="1">
+        <span class="value-display" id="roc-fpr-val">20%</span>
+      </div>
+
+      <svg id="roc-svg" viewBox="0 0 636 420" width="100%"></svg>
+
+      <div class="legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#E8B44A;"></div>Logistic Regression</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#E8634A;"></div>XGBoost</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#5B4AE8;"></div>LightGBM</div>
+      </div>
+
+      <div class="stat-grid" id="roc-stats"></div>
+
+      <figcaption>Drag the slider to set a false positive rate. Watch how many defaults each model catches at that operating point. The gap between curves is the real-world improvement.</figcaption>
+
+      <noscript>
+        <p>Three models trained on the Give Me Some Credit dataset show dramatically different performance. Logistic Regression achieves AUC 0.72 (Gini 0.44, KS 33). XGBoost reaches AUC 0.85 (Gini 0.70, KS 52). LightGBM achieves AUC 0.86 (Gini 0.72, KS 54) while training 20x faster. At a fixed 5% false positive rate, logistic regression catches approximately 18% of defaults. XGBoost catches 35%. LightGBM catches 38%. Gradient-boosted models detect roughly twice as many defaults as traditional logistic regression at the same false alarm rate, according to benchmarks published in Nature Scientific Reports (2025).</p>
+      </noscript>
+    </div>
+  </figure>
+
+  <div class="callout">
+    <p><strong>The Gini coefficient</strong> is the most widely used metric in credit scoring. It relates to AUC by a simple formula: Gini = 2 &times; AUC &minus; 1. A Gini above 0.60 is considered strong. LightGBM's Gini of 0.72 means it ranks defaulters ahead of non-defaulters 86% of the time. For logistic regression (Gini 0.44), that figure drops to 72%.</p>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════════════ -->
+<!-- SECTION V                                           -->
+<!-- ════════════════════════════════════════════════════ -->
+<section id="section-5" class="fade-in">
+  <div class="section-header">
+    <span class="section-number">V.</span>
+    <h2>Why Was I Denied?</h2>
+  </div>
+
+  <p>When a bank denies your loan application, US law (the Equal Credit Opportunity Act) requires them to tell you why. "The model said no" is not a valid answer. They need specific reasons: "your credit utilization was too high" or "you've had recent late payments."</p>
+
+  <p><strong>SHAP</strong> (SHapley Additive exPlanations) solves this problem using game theory. Named after Lloyd Shapley's Nobel Prize-winning work on cooperative games, SHAP assigns each feature an exact contribution to the model's prediction. The idea: if we remove this feature, how much does the prediction change? By computing this across all possible combinations of features, SHAP produces consistent, mathematically rigorous explanations.</p>
+
+  <p>The <strong>base value</strong> is the average prediction across all borrowers &mdash; in our dataset, about 6.8% (the overall default rate). Each feature then pushes the prediction up (toward default) or down (toward safe). Green bars push toward approval. Red bars push toward denial. The final prediction is the sum of the base value and all feature contributions.</p>
+
+  <figure>
+    <div class="demo-container" id="shap-demo">
+      <p class="label">SHAP Explainer: Why This Decision?</p>
+
+      <div class="controls">
+        <button class="toggle-btn active" onclick="toggleShapBorrower(0)">Approved Safely</button>
+        <button class="toggle-btn" onclick="toggleShapBorrower(1)">Borderline Approved</button>
+        <button class="toggle-btn" onclick="toggleShapBorrower(2)">Borderline Denied</button>
+        <button class="toggle-btn" onclick="toggleShapBorrower(3)">Denied Clearly</button>
+      </div>
+
+      <div class="stat-grid" id="shap-stats"></div>
+
+      <svg id="shap-svg" viewBox="0 0 636 340" width="100%"></svg>
+
+      <div class="legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#5BAE8A;"></div>Pushes toward approval (lower PD)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#E8634A;"></div>Pushes toward denial (higher PD)</div>
+      </div>
+
+      <figcaption>Click each borrower profile to see which features drove the decision. The waterfall shows exactly how much each feature contributed to the final prediction.</figcaption>
+
+      <noscript>
+        <p>SHAP (SHapley Additive exPlanations) decomposes a model's prediction into individual feature contributions using game theory. For a clearly denied borrower with 105% revolving utilization and two 90-day-past-due events, the base default probability is 6.8%. Revolving utilization contributes +8.5 percentage points, 90-day delinquency +7.2 points, and 30-day delinquency +3.8 points, pushing the final predicted probability to 28%. For a safely approved borrower with 12% utilization and no delinquencies, SHAP values push the prediction down to 2%. This provides the regulatory-compliant adverse action reasons required by ECOA and FCRA.</p>
+      </noscript>
+    </div>
+  </figure>
+
+  <div class="callout">
+    <p><strong>ECOA compliance requires specific adverse action reasons.</strong> A 2024 study in PMC showed that SHAP explanations applied to credit scorecards improve both model trust and regulatory auditability. The top SHAP contributors map directly to the adverse action codes that lenders must provide: "excessive revolving utilization" (code 061), "delinquency on accounts" (code 007), "insufficient length of credit history" (code 009).</p>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════════════ -->
+<!-- SECTION VI                                          -->
+<!-- ════════════════════════════════════════════════════ -->
+<section id="section-6" class="fade-in">
+  <div class="section-header">
+    <span class="section-number">VI.</span>
+    <h2>When Models Go Stale</h2>
+  </div>
+
+  <p>A credit model is trained on historical data. But borrower populations change. Recessions hit. Lending policies shift. New customer segments emerge. The model that performed beautifully at launch slowly loses its edge. This is called <strong>population drift</strong>, and it's the reason you can't just deploy a model and walk away.</p>
+
+  <p>The <strong>Population Stability Index (PSI)</strong> measures how much the current borrower distribution has shifted from the development population. The formula sums across bins: PSI = &sum;(Actual% &minus; Expected%) &times; ln(Actual% / Expected%). Three thresholds guide action: PSI below 0.10 means stable &mdash; no action needed. Between 0.10 and 0.25, investigate the drift. Above 0.25, it's time to retrain.</p>
+
+  <p>SR 11-7 mandates ongoing monitoring programs. In practice, most credit models show measurable drift within 6&ndash;12 months of deployment. Banks run <strong>champion-challenger</strong> tests: the production model (champion) is continuously compared against a retrained model (challenger). When PSI triggers, the challenger gets promoted if it outperforms.</p>
+
+  <figure>
+    <div class="demo-container" id="psi-demo">
+      <p class="label">PSI Drift Monitor</p>
+
+      <div class="controls">
+        <label>Months since deployment:</label>
+        <input type="range" id="psi-month" min="0" max="12" value="0" step="1">
+        <span class="value-display" id="psi-month-val">Month 0</span>
+      </div>
+
+      <div class="controls">
+        <button class="toggle-btn active" onclick="togglePsiVar('util')">Revolving Utilization</button>
+        <button class="toggle-btn" onclick="togglePsiVar('age')">Age</button>
+        <button class="toggle-btn" onclick="togglePsiVar('debt')">Debt Ratio</button>
+      </div>
+
+      <div class="stat-grid" id="psi-stats"></div>
+
+      <svg id="psi-svg" viewBox="0 0 636 340" width="100%"></svg>
+
+      <div class="legend">
+        <div class="legend-item"><div class="legend-dot" style="background:rgba(91,74,232,0.25);border:2px solid #5B4AE8;width:12px;height:12px;border-radius:2px;"></div>Development sample</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#E8634A;width:12px;height:12px;border-radius:2px;"></div>Current month</div>
+      </div>
+
+      <figcaption>Drag the month slider to watch the borrower population drift over time. When PSI crosses 0.25, the model needs retraining.</figcaption>
+
+      <noscript>
+        <p>Population Stability Index (PSI) monitors whether a credit model's input distributions have shifted since deployment. PSI below 0.10 indicates stability. Between 0.10 and 0.25, minor drift requires investigation. Above 0.25, the model should be retrained. In simulated monthly monitoring of Revolving Utilization from the Give Me Some Credit dataset, PSI reaches 0.12 by month 6 and 0.28 by month 12 as borrower utilization patterns shift upward, crossing the retrain threshold. Continuous monitoring is mandated by the Federal Reserve's SR 11-7 model risk guidance. Most production credit models show measurable drift within 6 to 12 months.</p>
+      </noscript>
+    </div>
+  </figure>
+</section>
+
+
+<!-- ════════════════════════════════════════════════════ -->
+<!-- END MARK & ATTRIBUTION                              -->
+<!-- ════════════════════════════════════════════════════ -->
+<p style="text-align:center;margin-top:48px;color:rgb(180,178,174);font-size:32px;">&#9670;</p>
+
+<p style="font-style:italic;text-align:center;color:rgb(120,120,120);font-size:18px;margin-top:60px;line-height:1.5;">
+  Written by <a href="https://supergeek.in">Danish Mohd</a>.<br>
+  AI product builder. Previously VP Engineering at Pixis AI. Built credit risk models for a small finance bank.<br>
+  <time datetime="2026-03-05" style="font-size:14px;color:rgb(160,160,160);">Last updated March 2026</time>
+</p>
+
+</article>
+</main>
+
+<footer class="site-footer">
+  <div class="content">
+    <p>Compounding Intelligence</p>
+    <p><a href="https://supergeek.in">supergeek.in</a></p>
+    <p class="footer-tagline">Because you don't understand something until you can play with it.</p>
+  </div>
+</footer>
+
+<script>
+// ── Sidenotes ──
+function toggleSidenote(id) {
+  document.getElementById(id).classList.toggle('open');
+}
+
+// ════════════════════════════════════════════════════
+// WIDGET 1: Score Anatomy
+// ════════════════════════════════════════════════════
+(function() {
+  var svg = document.getElementById('sa-svg');
+  var statsEl = document.getElementById('sa-stats');
+  if (!svg) return;
+
+  var sliders = [
+    { id: 'sa-payment', valId: 'sa-payment-val', name: 'Payment History', weight: 0.35, color: '#5B4AE8' },
+    { id: 'sa-util',    valId: 'sa-util-val',    name: 'Utilization',     weight: 0.30, color: '#E8634A' },
+    { id: 'sa-length',  valId: 'sa-length-val',  name: 'Credit Length',   weight: 0.15, color: '#E8B44A' },
+    { id: 'sa-new',     valId: 'sa-new-val',     name: 'New Credit',      weight: 0.10, color: '#4A7DE8' },
+    { id: 'sa-mix',     valId: 'sa-mix-val',     name: 'Credit Mix',      weight: 0.10, color: '#5BAE8A' }
+  ];
+
+  var baseScore = 300;
+  var range = 550;
+
+  function qualityLabel(v) {
+    if (v >= 80) return 'Excellent';
+    if (v >= 60) return 'Good';
+    if (v >= 40) return 'Fair';
+    return 'Poor';
+  }
+
+  function scoreColor(s) {
+    if (s >= 740) return '#5BAE8A';
+    if (s >= 670) return '#5B4AE8';
+    if (s >= 580) return '#E8B44A';
+    return '#E8634A';
+  }
+
+  function render() {
+    var totalScore = baseScore;
+    var contributions = [];
+    var minVal = 100;
+    var minIdx = 0;
+
+    for (var i = 0; i < sliders.length; i++) {
+      var el = document.getElementById(sliders[i].id);
+      var v = parseFloat(el.value);
+      document.getElementById(sliders[i].valId).textContent = qualityLabel(v);
+      var pts = sliders[i].weight * (v / 100) * range;
+      totalScore += pts;
+      contributions.push({ name: sliders[i].name, pts: pts, color: sliders[i].color, quality: v });
+      if (v < minVal) { minVal = v; minIdx = i; }
+    }
+
+    totalScore = Math.round(totalScore);
+
+    var grade = totalScore >= 740 ? 'Excellent' : totalScore >= 670 ? 'Good' : totalScore >= 580 ? 'Fair' : 'Poor';
+
+    statsEl.innerHTML =
+      '<div class="stat-card"><div class="stat-value" style="color:' + scoreColor(totalScore) + '">' + totalScore + '</div><div class="stat-label">Total Score</div></div>' +
+      '<div class="stat-card"><div class="stat-value" style="color:' + scoreColor(totalScore) + '">' + grade + '</div><div class="stat-label">Rating</div></div>' +
+      '<div class="stat-card"><div class="stat-value" style="color:#E8634A">' + sliders[minIdx].name + '</div><div class="stat-label">Weakest Factor</div></div>';
+
+    // SVG: stacked horizontal bar
+    var pad = { top: 20, right: 20, bottom: 30, left: 20 };
+    var w = 636 - pad.left - pad.right;
+    var h = 260 - pad.top - pad.bottom;
+    var barH = 40;
+    var barY = pad.top + 10;
+
+    var html = '<rect width="636" height="260" fill="rgb(242,241,239)" rx="4"/>';
+
+    // Score scale labels
+    var scaleLabels = [300, 400, 500, 600, 700, 800, 850];
+    for (var s = 0; s < scaleLabels.length; s++) {
+      var sx = pad.left + ((scaleLabels[s] - 300) / 550) * w;
+      html += '<line x1="' + sx + '" y1="' + barY + '" x2="' + sx + '" y2="' + (barY + barH) + '" stroke="rgba(0,0,0,0.08)" stroke-width="1"/>';
+      html += '<text x="' + sx + '" y="' + (barY + barH + 18) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="11" fill="rgb(150,150,150)">' + scaleLabels[s] + '</text>';
+    }
+
+    // Stacked bar
+    var cumX = pad.left;
+    for (var c = 0; c < contributions.length; c++) {
+      var barW = (contributions[c].pts / range) * w;
+      if (barW < 0) barW = 0;
+      html += '<rect x="' + cumX + '" y="' + barY + '" width="' + barW + '" height="' + barH + '" fill="' + contributions[c].color + '" rx="' + (c === 0 ? '4 0 0 4' : c === contributions.length - 1 ? '0 4 4 0' : '0') + '"/>';
+      if (barW > 30) {
+        html += '<text x="' + (cumX + barW / 2) + '" y="' + (barY + barH / 2 + 5) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="12" font-weight="600" fill="#fff">' + Math.round(contributions[c].pts) + '</text>';
+      }
+      cumX += barW;
+    }
+
+    // Score marker
+    var scoreX = pad.left + ((totalScore - 300) / 550) * w;
+    html += '<line x1="' + scoreX + '" y1="' + (barY - 8) + '" x2="' + scoreX + '" y2="' + (barY + barH + 8) + '" stroke="rgb(45,45,45)" stroke-width="2"/>';
+    html += '<text x="' + scoreX + '" y="' + (barY - 14) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="16" font-weight="700" fill="rgb(45,45,45)">' + totalScore + '</text>';
+
+    // Breakdown bars below
+    var brkY = barY + barH + 45;
+    var brkH = 16;
+    var maxPts = sliders[0].weight * range; // max possible contribution
+
+    for (var b = 0; b < contributions.length; b++) {
+      var by = brkY + b * (brkH + 12);
+      // Label
+      html += '<text x="' + pad.left + '" y="' + (by + brkH / 2 + 4) + '" font-family="Figtree,sans-serif" font-size="11" font-weight="600" fill="rgb(80,80,80)">' + contributions[b].name + '</text>';
+      // Bar
+      var brkBarX = pad.left + 140;
+      var brkBarW = (contributions[b].pts / maxPts) * (w - 140);
+      html += '<rect x="' + brkBarX + '" y="' + by + '" width="' + Math.max(0, brkBarW) + '" height="' + brkH + '" fill="' + contributions[b].color + '" rx="3" opacity="0.7"/>';
+      // Points label
+      html += '<text x="' + (brkBarX + Math.max(0, brkBarW) + 8) + '" y="' + (by + brkH / 2 + 4) + '" font-family="Figtree,sans-serif" font-size="11" font-weight="700" fill="' + contributions[b].color + '">+' + Math.round(contributions[b].pts) + '</text>';
+    }
+
+    svg.innerHTML = html;
+  }
+
+  for (var i = 0; i < sliders.length; i++) {
+    document.getElementById(sliders[i].id).addEventListener('input', render);
+  }
+  render();
+})();
+
+
+// ════════════════════════════════════════════════════
+// WIDGET 2: WoE Binning Explorer
+// ════════════════════════════════════════════════════
+(function() {
+  var svg = document.getElementById('woe-svg');
+  var statsEl = document.getElementById('woe-stats');
+  if (!svg) return;
+
+  var variables = {
+    util: {
+      name: 'Revolving Utilization',
+      iv: 0.72,
+      ivLabel: 'Strong',
+      ivColor: '#5BAE8A',
+      bins: [
+        { range: '0-10%',  goodPct: 0.22, badPct: 0.05, woe: 1.48 },
+        { range: '10-30%', goodPct: 0.24, badPct: 0.10, woe: 0.88 },
+        { range: '30-50%', goodPct: 0.17, badPct: 0.13, woe: 0.27 },
+        { range: '50-70%', goodPct: 0.12, badPct: 0.16, woe: -0.29 },
+        { range: '70-100%',goodPct: 0.10, badPct: 0.19, woe: -0.64 },
+        { range: '100%+',  goodPct: 0.15, badPct: 0.37, woe: -0.90 }
+      ]
+    },
+    age: {
+      name: 'Age',
+      iv: 0.12,
+      ivLabel: 'Medium',
+      ivColor: '#E8B44A',
+      bins: [
+        { range: '21-30', goodPct: 0.10, badPct: 0.17, woe: -0.53 },
+        { range: '31-40', goodPct: 0.21, badPct: 0.26, woe: -0.21 },
+        { range: '41-50', goodPct: 0.27, badPct: 0.27, woe: 0.00 },
+        { range: '51-60', goodPct: 0.23, badPct: 0.18, woe: 0.24 },
+        { range: '61-70', goodPct: 0.13, badPct: 0.08, woe: 0.49 },
+        { range: '70+',   goodPct: 0.06, badPct: 0.04, woe: 0.41 }
+      ]
+    },
+    debt: {
+      name: 'Debt Ratio',
+      iv: 0.08,
+      ivLabel: 'Weak',
+      ivColor: '#E8634A',
+      bins: [
+        { range: '0-20%',  goodPct: 0.28, badPct: 0.21, woe: 0.29 },
+        { range: '20-40%', goodPct: 0.25, badPct: 0.24, woe: 0.04 },
+        { range: '40-60%', goodPct: 0.18, badPct: 0.20, woe: -0.11 },
+        { range: '60-80%', goodPct: 0.13, badPct: 0.16, woe: -0.21 },
+        { range: '80-100%',goodPct: 0.09, badPct: 0.12, woe: -0.29 },
+        { range: '100%+',  goodPct: 0.07, badPct: 0.07, woe: 0.00 }
+      ]
+    }
+  };
+
+  var currentVar = 'util';
+
+  window.toggleWoeVar = function(v) {
+    currentVar = v;
+    var btns = document.querySelectorAll('#woe-demo .toggle-btn');
+    for (var i = 0; i < btns.length; i++) btns[i].className = 'toggle-btn';
+    var idx = v === 'util' ? 0 : v === 'age' ? 1 : 2;
+    btns[idx].className = 'toggle-btn active';
+    render();
+  };
+
+  function render() {
+    var d = variables[currentVar];
+
+    statsEl.innerHTML =
+      '<div class="stat-card"><div class="stat-value" style="color:' + d.ivColor + '">' + d.iv.toFixed(2) + '</div><div class="stat-label">Information Value</div></div>' +
+      '<div class="stat-card"><div class="stat-value" style="color:' + d.ivColor + '">' + d.ivLabel + '</div><div class="stat-label">Predictor Strength</div></div>';
+
+    var pad = { top: 20, right: 30, bottom: 35, left: 70 };
+    var totalW = 636;
+    var totalH = 420;
+    var w = totalW - pad.left - pad.right;
+    var topH = 150; // distribution chart height
+    var gap = 50;
+    var botH = 150; // WoE chart height
+    var bins = d.bins;
+    var n = bins.length;
+    var barGroupW = w / n;
+    var barW = barGroupW * 0.3;
+
+    var html = '<rect width="' + totalW + '" height="' + totalH + '" fill="rgb(242,241,239)" rx="4"/>';
+
+    // Top chart: Distribution
+    html += '<rect x="' + pad.left + '" y="' + pad.top + '" width="' + w + '" height="' + topH + '" fill="#fff" rx="2"/>';
+    html += '<text x="' + (pad.left - 8) + '" y="' + (pad.top + topH / 2) + '" text-anchor="end" font-family="Figtree,sans-serif" font-size="11" font-weight="600" fill="rgb(100,100,100)" transform="rotate(-90,' + (pad.left - 8) + ',' + (pad.top + topH / 2) + ')">Distribution</text>';
+
+    var maxPct = 0;
+    for (var i = 0; i < n; i++) {
+      if (bins[i].goodPct > maxPct) maxPct = bins[i].goodPct;
+      if (bins[i].badPct > maxPct) maxPct = bins[i].badPct;
+    }
+    maxPct = Math.ceil(maxPct * 20) / 20;
+
+    for (var i = 0; i < n; i++) {
+      var cx = pad.left + i * barGroupW + barGroupW / 2;
+      var goodH = (bins[i].goodPct / maxPct) * (topH - 10);
+      var badH = (bins[i].badPct / maxPct) * (topH - 10);
+      var goodX = cx - barW - 1;
+      var badX = cx + 1;
+      var goodY = pad.top + topH - goodH;
+      var badY = pad.top + topH - badH;
+
+      html += '<rect x="' + goodX + '" y="' + goodY + '" width="' + barW + '" height="' + goodH + '" fill="#5BAE8A" rx="2"/>';
+      html += '<rect x="' + badX + '" y="' + badY + '" width="' + barW + '" height="' + badH + '" fill="#E8634A" rx="2"/>';
+
+      // Bin label
+      html += '<text x="' + cx + '" y="' + (pad.top + topH + 15) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="10" fill="rgb(100,100,100)">' + bins[i].range + '</text>';
+    }
+
+    // Bottom chart: WoE bars
+    var woeTop = pad.top + topH + gap;
+    html += '<rect x="' + pad.left + '" y="' + woeTop + '" width="' + w + '" height="' + botH + '" fill="#fff" rx="2"/>';
+    html += '<text x="' + (pad.left - 8) + '" y="' + (woeTop + botH / 2) + '" text-anchor="end" font-family="Figtree,sans-serif" font-size="11" font-weight="600" fill="rgb(100,100,100)" transform="rotate(-90,' + (pad.left - 8) + ',' + (woeTop + botH / 2) + ')">WoE</text>';
+
+    // Zero line
+    var zeroY = woeTop + botH / 2;
+    html += '<line x1="' + pad.left + '" y1="' + zeroY + '" x2="' + (pad.left + w) + '" y2="' + zeroY + '" stroke="rgb(200,200,200)" stroke-width="1" stroke-dasharray="4,3"/>';
+    html += '<text x="' + (pad.left - 6) + '" y="' + (zeroY + 4) + '" text-anchor="end" font-family="Figtree,sans-serif" font-size="10" fill="rgb(150,150,150)">0</text>';
+
+    var maxWoe = 0;
+    for (var i = 0; i < n; i++) {
+      if (Math.abs(bins[i].woe) > maxWoe) maxWoe = Math.abs(bins[i].woe);
+    }
+    maxWoe = Math.max(maxWoe, 0.5);
+    var woeScale = (botH / 2 - 10) / maxWoe;
+
+    for (var i = 0; i < n; i++) {
+      var cx = pad.left + i * barGroupW + barGroupW / 2;
+      var woeH = Math.abs(bins[i].woe) * woeScale;
+      var woeBarW = barGroupW * 0.5;
+      var bx = cx - woeBarW / 2;
+      var by, color;
+
+      if (bins[i].woe >= 0) {
+        by = zeroY - woeH;
+        color = '#5BAE8A';
+      } else {
+        by = zeroY;
+        color = '#E8634A';
+      }
+
+      html += '<rect x="' + bx + '" y="' + by + '" width="' + woeBarW + '" height="' + woeH + '" fill="' + color + '" rx="2" opacity="0.8"/>';
+      // WoE value label
+      var labelY = bins[i].woe >= 0 ? by - 6 : by + woeH + 14;
+      html += '<text x="' + cx + '" y="' + labelY + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="11" font-weight="600" fill="' + color + '">' + (bins[i].woe >= 0 ? '+' : '') + bins[i].woe.toFixed(2) + '</text>';
+
+      // Bin label below
+      html += '<text x="' + cx + '" y="' + (woeTop + botH + 15) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="10" fill="rgb(100,100,100)">' + bins[i].range + '</text>';
+    }
+
+    svg.innerHTML = html;
+  }
+
+  render();
+})();
+
+
+// ════════════════════════════════════════════════════
+// WIDGET 3: Scorecard Simulator
+// ════════════════════════════════════════════════════
+(function() {
+  var svg = document.getElementById('sc-svg');
+  var statsEl = document.getElementById('sc-stats');
+  if (!svg) return;
+
+  var attrs = [
+    { name: 'Revolving Util.', id: 'sc-util',    points: [62, 48, 28, -6, -22, -38], color: '#5B4AE8' },
+    { name: 'Age',             id: 'sc-age',      points: [-18, -4, 8, 22, 36],       color: '#E8634A' },
+    { name: 'Past Due 30-59',  id: 'sc-pastdue',  points: [32, -14, -38, -56],        color: '#E8B44A' },
+    { name: 'Debt Ratio',      id: 'sc-debt',     points: [16, 8, 2, -8],             color: '#4A7DE8' },
+    { name: 'Open Credit Lines',id: 'sc-lines',   points: [-12, 14, 8, -4],           color: '#5BAE8A' }
+  ];
+
+  var offset = 480;
+  var factor = 28.85;
+
+  function render() {
+    var totalPts = 0;
+    var breakdown = [];
+
+    for (var i = 0; i < attrs.length; i++) {
+      var sel = document.getElementById(attrs[i].id);
+      var idx = parseInt(sel.value);
+      var pts = attrs[i].points[idx];
+      totalPts += pts;
+      breakdown.push({ name: attrs[i].name, pts: pts, color: attrs[i].color });
+    }
+
+    var score = offset + totalPts;
+    var logOdds = (score - offset) / factor;
+    var pd = 1 / (1 + Math.exp(logOdds));
+    pd = Math.max(0.005, Math.min(0.95, pd));
+
+    var grade, gradeColor, decision, decColor;
+    if (score >= 640) { grade = 'A'; gradeColor = '#5BAE8A'; decision = 'Approve'; decColor = '#5BAE8A'; }
+    else if (score >= 580) { grade = 'B'; gradeColor = '#5B4AE8'; decision = 'Approve'; decColor = '#5BAE8A'; }
+    else if (score >= 520) { grade = 'C'; gradeColor = '#E8B44A'; decision = 'Review'; decColor = '#E8B44A'; }
+    else if (score >= 460) { grade = 'D'; gradeColor = '#E8634A'; decision = 'Review'; decColor = '#E8B44A'; }
+    else { grade = 'E'; gradeColor = '#E8634A'; decision = 'Deny'; decColor = '#E8634A'; }
+
+    statsEl.innerHTML =
+      '<div class="stat-card"><div class="stat-value" style="color:' + gradeColor + '">' + score + '</div><div class="stat-label">Total Score</div></div>' +
+      '<div class="stat-card"><div class="stat-value" style="color:' + gradeColor + '">' + (pd * 100).toFixed(1) + '%</div><div class="stat-label">Default Probability</div></div>' +
+      '<div class="stat-card"><div class="stat-value" style="color:' + gradeColor + '">Grade ' + grade + '</div><div class="stat-label">Risk Grade</div></div>' +
+      '<div class="stat-card"><div class="stat-value" style="color:' + decColor + '">' + decision + '</div><div class="stat-label">Decision</div></div>';
+
+    // SVG: horizontal point bars
+    var pad = { top: 15, right: 50, bottom: 15, left: 140 };
+    var w = 636 - pad.left - pad.right;
+    var h = 280 - pad.top - pad.bottom;
+    var barH = 24;
+    var rowH = h / attrs.length;
+
+    var maxPts = 70;
+    var centerX = pad.left + w / 2;
+
+    var html = '<rect width="636" height="280" fill="rgb(242,241,239)" rx="4"/>';
+
+    // Zero line
+    html += '<line x1="' + centerX + '" y1="' + pad.top + '" x2="' + centerX + '" y2="' + (280 - pad.bottom) + '" stroke="rgb(200,200,200)" stroke-width="1" stroke-dasharray="4,3"/>';
+
+    for (var i = 0; i < breakdown.length; i++) {
+      var by = pad.top + i * rowH + (rowH - barH) / 2;
+      var pts = breakdown[i].pts;
+      var barW = Math.abs(pts) / maxPts * (w / 2);
+      var bx, color;
+
+      if (pts >= 0) {
+        bx = centerX;
+        color = '#5BAE8A';
+      } else {
+        bx = centerX - barW;
+        color = '#E8634A';
+      }
+
+      // Label
+      html += '<text x="' + (pad.left - 8) + '" y="' + (by + barH / 2 + 5) + '" text-anchor="end" font-family="Figtree,sans-serif" font-size="12" font-weight="600" fill="rgb(80,80,80)">' + breakdown[i].name + '</text>';
+
+      // Bar
+      html += '<rect x="' + bx + '" y="' + by + '" width="' + barW + '" height="' + barH + '" fill="' + color + '" rx="3" opacity="0.8"/>';
+
+      // Points value
+      var labelX = pts >= 0 ? bx + barW + 6 : bx - 6;
+      var anchor = pts >= 0 ? 'start' : 'end';
+      html += '<text x="' + labelX + '" y="' + (by + barH / 2 + 5) + '" text-anchor="' + anchor + '" font-family="Figtree,sans-serif" font-size="12" font-weight="700" fill="' + color + '">' + (pts >= 0 ? '+' : '') + pts + '</text>';
+    }
+
+    svg.innerHTML = html;
+  }
+
+  for (var i = 0; i < attrs.length; i++) {
+    document.getElementById(attrs[i].id).addEventListener('change', render);
+  }
+  render();
+})();
+
+
+// ════════════════════════════════════════════════════
+// WIDGET 4: ROC Curve Explorer
+// ════════════════════════════════════════════════════
+(function() {
+  var svg = document.getElementById('roc-svg');
+  var statsEl = document.getElementById('roc-stats');
+  var slider = document.getElementById('roc-slider');
+  var fprLabel = document.getElementById('roc-fpr-val');
+  if (!svg) return;
+
+  var models = [
+    {
+      name: 'Logistic Regression', color: '#E8B44A', auc: 0.72, gini: 0.44, ks: 33,
+      curve: [[0,0],[0.01,0.04],[0.02,0.07],[0.05,0.16],[0.10,0.29],[0.15,0.39],[0.20,0.47],
+              [0.25,0.54],[0.30,0.59],[0.35,0.64],[0.40,0.68],[0.45,0.72],[0.50,0.75],
+              [0.55,0.78],[0.60,0.81],[0.65,0.84],[0.70,0.86],[0.75,0.89],[0.80,0.91],
+              [0.85,0.93],[0.90,0.95],[0.95,0.98],[1,1]]
+    },
+    {
+      name: 'XGBoost', color: '#E8634A', auc: 0.85, gini: 0.70, ks: 52,
+      curve: [[0,0],[0.01,0.10],[0.02,0.17],[0.05,0.33],[0.10,0.50],[0.15,0.60],[0.20,0.67],
+              [0.25,0.73],[0.30,0.77],[0.35,0.80],[0.40,0.83],[0.45,0.85],[0.50,0.87],
+              [0.55,0.89],[0.60,0.91],[0.65,0.93],[0.70,0.94],[0.75,0.96],[0.80,0.97],
+              [0.85,0.98],[0.90,0.99],[0.95,0.995],[1,1]]
+    },
+    {
+      name: 'LightGBM', color: '#5B4AE8', auc: 0.86, gini: 0.72, ks: 54,
+      curve: [[0,0],[0.01,0.12],[0.02,0.20],[0.05,0.36],[0.10,0.53],[0.15,0.63],[0.20,0.70],
+              [0.25,0.75],[0.30,0.79],[0.35,0.82],[0.40,0.85],[0.45,0.87],[0.50,0.89],
+              [0.55,0.91],[0.60,0.92],[0.65,0.94],[0.70,0.95],[0.75,0.965],[0.80,0.975],
+              [0.85,0.985],[0.90,0.99],[0.95,0.997],[1,1]]
+    }
+  ];
+
+  function interpolate(curve, fpr) {
+    for (var i = 1; i < curve.length; i++) {
+      if (curve[i][0] >= fpr) {
+        var x0 = curve[i-1][0], y0 = curve[i-1][1];
+        var x1 = curve[i][0], y1 = curve[i][1];
+        if (x1 === x0) return y0;
+        return y0 + (y1 - y0) * (fpr - x0) / (x1 - x0);
+      }
+    }
+    return 1;
+  }
+
+  function render() {
+    var fpr = parseFloat(slider.value) / 100;
+    fprLabel.textContent = Math.round(fpr * 100) + '%';
+
+    var pad = { top: 30, right: 30, bottom: 55, left: 60 };
+    var w = 636 - pad.left - pad.right;
+    var h = 420 - pad.top - pad.bottom;
+
+    var html = '<rect width="636" height="420" fill="rgb(242,241,239)" rx="4"/>';
+    html += '<rect x="' + pad.left + '" y="' + pad.top + '" width="' + w + '" height="' + h + '" fill="#fff" rx="2"/>';
+
+    // Grid lines
+    for (var g = 0; g <= 5; g++) {
+      var gx = pad.left + (g / 5) * w;
+      var gy = pad.top + (g / 5) * h;
+      html += '<line x1="' + gx + '" y1="' + pad.top + '" x2="' + gx + '" y2="' + (pad.top + h) + '" stroke="rgb(243,243,243)" stroke-width="1"/>';
+      html += '<line x1="' + pad.left + '" y1="' + gy + '" x2="' + (pad.left + w) + '" y2="' + gy + '" stroke="rgb(243,243,243)" stroke-width="1"/>';
+      // Axis labels
+      html += '<text x="' + gx + '" y="' + (pad.top + h + 20) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="11" fill="rgb(120,120,120)">' + (g * 20) + '%</text>';
+      html += '<text x="' + (pad.left - 10) + '" y="' + (pad.top + h - (g / 5) * h + 4) + '" text-anchor="end" font-family="Figtree,sans-serif" font-size="11" fill="rgb(120,120,120)">' + (g * 20) + '%</text>';
+    }
+
+    // Axis titles
+    html += '<text x="' + (pad.left + w / 2) + '" y="' + (420 - 8) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="12" font-weight="600" fill="rgb(100,100,100)">False Positive Rate &rarr;</text>';
+    html += '<text x="16" y="' + (pad.top + h / 2) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="12" font-weight="600" fill="rgb(100,100,100)" transform="rotate(-90,16,' + (pad.top + h / 2) + ')">True Positive Rate &rarr;</text>';
+
+    // Diagonal (random)
+    html += '<line x1="' + pad.left + '" y1="' + (pad.top + h) + '" x2="' + (pad.left + w) + '" y2="' + pad.top + '" stroke="rgb(200,200,200)" stroke-width="1" stroke-dasharray="6,4"/>';
+
+    // ROC curves
+    var tprs = [];
+    for (var m = 0; m < models.length; m++) {
+      var curve = models[m].curve;
+      var points = '';
+      for (var i = 0; i < curve.length; i++) {
+        var x = pad.left + curve[i][0] * w;
+        var y = pad.top + h - curve[i][1] * h;
+        points += (i === 0 ? '' : ' ') + x + ',' + y;
+      }
+      html += '<polyline points="' + points + '" fill="none" stroke="' + models[m].color + '" stroke-width="2.5" stroke-linejoin="round"/>';
+
+      // Interpolate TPR at current FPR
+      var tpr = interpolate(curve, fpr);
+      tprs.push(tpr);
+    }
+
+    // Vertical threshold line
+    var threshX = pad.left + fpr * w;
+    html += '<line x1="' + threshX + '" y1="' + pad.top + '" x2="' + threshX + '" y2="' + (pad.top + h) + '" stroke="rgb(45,45,45)" stroke-width="1" stroke-dasharray="4,3"/>';
+
+    // Intersection dots
+    for (var m = 0; m < models.length; m++) {
+      var dotY = pad.top + h - tprs[m] * h;
+      html += '<circle cx="' + threshX + '" cy="' + dotY + '" r="5" fill="' + models[m].color + '" stroke="#fff" stroke-width="2"/>';
+      var labelY = dotY - 12;
+      if (m > 0 && Math.abs(tprs[m] - tprs[m-1]) < 0.05) labelY = dotY + 18;
+      html += '<text x="' + (threshX + 10) + '" y="' + labelY + '" font-family="Figtree,sans-serif" font-size="11" font-weight="700" fill="' + models[m].color + '">' + Math.round(tprs[m] * 100) + '%</text>';
+    }
+
+    svg.innerHTML = html;
+
+    // Stats
+    statsEl.innerHTML = '';
+    for (var m = 0; m < models.length; m++) {
+      statsEl.innerHTML +=
+        '<div class="stat-card"><div class="stat-value" style="color:' + models[m].color + '">' + models[m].auc.toFixed(2) + '</div><div class="stat-label">' + models[m].name.split(' ')[0] + ' AUC</div></div>';
+    }
+  }
+
+  slider.addEventListener('input', render);
+  render();
+})();
+
+
+// ════════════════════════════════════════════════════
+// WIDGET 5: SHAP Waterfall
+// ════════════════════════════════════════════════════
+(function() {
+  var svg = document.getElementById('shap-svg');
+  var statsEl = document.getElementById('shap-stats');
+  if (!svg) return;
+
+  var borrowers = [
+    {
+      name: 'Approved Safely',
+      prediction: 0.02,
+      decision: 'Approved',
+      decColor: '#5BAE8A',
+      features: [
+        { name: 'Revolving Util.',   value: '12%',  shap: -0.025 },
+        { name: 'Past Due 90+',      value: '0',    shap: -0.010 },
+        { name: 'Age',               value: '58',   shap: -0.008 },
+        { name: 'Past Due 30-59',    value: '0',    shap: -0.006 },
+        { name: 'Debt Ratio',        value: '0.15', shap: -0.003 },
+        { name: 'Open Credit Lines', value: '7',    shap: +0.001 }
+      ]
+    },
+    {
+      name: 'Borderline Approved',
+      prediction: 0.058,
+      decision: 'Approved',
+      decColor: '#E8B44A',
+      features: [
+        { name: 'Past Due 90+',      value: '0',    shap: -0.028 },
+        { name: 'Past Due 30-59',    value: '1',    shap: +0.012 },
+        { name: 'Revolving Util.',   value: '45%',  shap: +0.008 },
+        { name: 'Open Credit Lines', value: '12',   shap: -0.006 },
+        { name: 'Age',               value: '34',   shap: +0.004 },
+        { name: 'Debt Ratio',        value: '0.38', shap: +0.002 }
+      ]
+    },
+    {
+      name: 'Borderline Denied',
+      prediction: 0.11,
+      decision: 'Denied',
+      decColor: '#E8634A',
+      features: [
+        { name: 'Revolving Util.',   value: '78%',  shap: +0.022 },
+        { name: 'Past Due 30-59',    value: '2',    shap: +0.018 },
+        { name: 'Age',               value: '27',   shap: +0.010 },
+        { name: 'Debt Ratio',        value: '0.62', shap: +0.006 },
+        { name: 'Open Credit Lines', value: '3',    shap: +0.004 },
+        { name: 'Past Due 90+',      value: '0',    shap: -0.018 }
+      ]
+    },
+    {
+      name: 'Denied Clearly',
+      prediction: 0.28,
+      decision: 'Denied',
+      decColor: '#E8634A',
+      features: [
+        { name: 'Revolving Util.',   value: '105%', shap: +0.085 },
+        { name: 'Past Due 90+',      value: '2',    shap: +0.072 },
+        { name: 'Past Due 30-59',    value: '4',    shap: +0.038 },
+        { name: 'Age',               value: '24',   shap: +0.014 },
+        { name: 'Debt Ratio',        value: '0.85', shap: +0.008 },
+        { name: 'Open Credit Lines', value: '1',    shap: -0.005 }
+      ]
+    }
+  ];
+
+  var baseValue = 0.068;
+  var currentBorrower = 0;
+
+  window.toggleShapBorrower = function(idx) {
+    currentBorrower = idx;
+    var btns = document.querySelectorAll('#shap-demo .toggle-btn');
+    for (var i = 0; i < btns.length; i++) btns[i].className = 'toggle-btn';
+    btns[idx].className = 'toggle-btn active';
+    render();
+  };
+
+  function render() {
+    var b = borrowers[currentBorrower];
+
+    // Sort by absolute SHAP value descending
+    var sorted = b.features.slice().sort(function(a, c) { return Math.abs(c.shap) - Math.abs(a.shap); });
+
+    var topFactor = sorted[0].name + ' = ' + sorted[0].value;
+
+    statsEl.innerHTML =
+      '<div class="stat-card"><div class="stat-value" style="color:rgb(100,100,100)">' + (baseValue * 100).toFixed(1) + '%</div><div class="stat-label">Base Rate</div></div>' +
+      '<div class="stat-card"><div class="stat-value" style="color:' + b.decColor + '">' + (b.prediction * 100).toFixed(1) + '%</div><div class="stat-label">Predicted PD</div></div>' +
+      '<div class="stat-card"><div class="stat-value" style="color:' + b.decColor + '">' + b.decision + '</div><div class="stat-label">Decision</div></div>';
+
+    var pad = { top: 20, right: 30, bottom: 20, left: 140 };
+    var totalW = 636;
+    var totalH = 340;
+    var w = totalW - pad.left - pad.right;
+    var h = totalH - pad.top - pad.bottom;
+    var n = sorted.length;
+    var rowH = h / (n + 1); // +1 for base value row
+    var barH = Math.min(rowH * 0.6, 22);
+
+    // Determine scale
+    var minVal = baseValue, maxVal = baseValue;
+    var cum = baseValue;
+    for (var i = 0; i < n; i++) {
+      cum += sorted[i].shap;
+      if (cum < minVal) minVal = cum;
+      if (cum > maxVal) maxVal = cum;
+    }
+    minVal = Math.max(0, minVal - 0.02);
+    maxVal = maxVal + 0.02;
+
+    function xScale(v) { return pad.left + ((v - minVal) / (maxVal - minVal)) * w; }
+
+    var html = '<rect width="' + totalW + '" height="' + totalH + '" fill="rgb(242,241,239)" rx="4"/>';
+
+    // Base value line
+    var baseX = xScale(baseValue);
+    html += '<line x1="' + baseX + '" y1="' + pad.top + '" x2="' + baseX + '" y2="' + (totalH - pad.bottom) + '" stroke="rgb(180,180,180)" stroke-width="1" stroke-dasharray="4,3"/>';
+    html += '<text x="' + baseX + '" y="' + (pad.top - 4) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="10" fill="rgb(140,140,140)">Base: ' + (baseValue * 100).toFixed(1) + '%</text>';
+
+    // Waterfall bars
+    cum = baseValue;
+    for (var i = 0; i < n; i++) {
+      var ry = pad.top + (i + 0.5) * rowH + (rowH - barH) / 2;
+      var startX = xScale(cum);
+      cum += sorted[i].shap;
+      var endX = xScale(cum);
+
+      var bx = Math.min(startX, endX);
+      var bw = Math.abs(endX - startX);
+      var color = sorted[i].shap >= 0 ? '#E8634A' : '#5BAE8A';
+
+      // Feature label
+      html += '<text x="' + (pad.left - 8) + '" y="' + (ry + barH / 2 + 4) + '" text-anchor="end" font-family="Figtree,sans-serif" font-size="11" font-weight="600" fill="rgb(80,80,80)">' + sorted[i].name + '</text>';
+
+      // Bar
+      html += '<rect x="' + bx + '" y="' + ry + '" width="' + Math.max(bw, 2) + '" height="' + barH + '" fill="' + color + '" rx="3" opacity="0.85"/>';
+
+      // Connector line to next bar
+      if (i < n - 1) {
+        var nextRy = pad.top + (i + 1.5) * rowH + (rowH - barH) / 2;
+        html += '<line x1="' + endX + '" y1="' + (ry + barH) + '" x2="' + endX + '" y2="' + nextRy + '" stroke="rgb(200,200,200)" stroke-width="1"/>';
+      }
+
+      // SHAP value + feature value
+      var valX = sorted[i].shap >= 0 ? endX + 6 : bx - 6;
+      var valAnchor = sorted[i].shap >= 0 ? 'start' : 'end';
+      var shapLabel = (sorted[i].shap >= 0 ? '+' : '') + (sorted[i].shap * 100).toFixed(1) + '%';
+      html += '<text x="' + valX + '" y="' + (ry + barH / 2 + 4) + '" text-anchor="' + valAnchor + '" font-family="Figtree,sans-serif" font-size="10" font-weight="700" fill="' + color + '">' + shapLabel + '</text>';
+
+      // Feature value (smaller, muted)
+      html += '<text x="' + (pad.left - 8) + '" y="' + (ry + barH / 2 + 16) + '" text-anchor="end" font-family="Figtree,sans-serif" font-size="9" fill="rgb(150,150,150)">= ' + sorted[i].value + '</text>';
+    }
+
+    // Final prediction marker
+    var finalX = xScale(b.prediction);
+    var finalY = pad.top + (n + 0.5) * rowH;
+    html += '<line x1="' + finalX + '" y1="' + (finalY - 10) + '" x2="' + finalX + '" y2="' + (finalY + 10) + '" stroke="' + b.decColor + '" stroke-width="3"/>';
+    html += '<text x="' + finalX + '" y="' + (finalY + 24) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="12" font-weight="700" fill="' + b.decColor + '">Prediction: ' + (b.prediction * 100).toFixed(1) + '%</text>';
+
+    svg.innerHTML = html;
+  }
+
+  render();
+})();
+
+
+// ════════════════════════════════════════════════════
+// WIDGET 6: PSI Drift Monitor
+// ════════════════════════════════════════════════════
+(function() {
+  var svg = document.getElementById('psi-svg');
+  var statsEl = document.getElementById('psi-stats');
+  var slider = document.getElementById('psi-month');
+  var monthLabel = document.getElementById('psi-month-val');
+  if (!svg) return;
+
+  var driftVars = {
+    util: {
+      name: 'Revolving Utilization',
+      labels: ['0-10%', '10-30%', '30-50%', '50-70%', '70-100%', '100%+'],
+      dev:    [0.22, 0.24, 0.17, 0.12, 0.10, 0.15],
+      drift:  [0.12, 0.16, 0.16, 0.17, 0.17, 0.22]
+    },
+    age: {
+      name: 'Age',
+      labels: ['21-30', '31-40', '41-50', '51-60', '61-70', '70+'],
+      dev:    [0.10, 0.21, 0.27, 0.23, 0.13, 0.06],
+      drift:  [0.15, 0.26, 0.25, 0.19, 0.10, 0.05]
+    },
+    debt: {
+      name: 'Debt Ratio',
+      labels: ['0-20%', '20-40%', '40-60%', '60-80%', '80-100%', '100%+'],
+      dev:    [0.28, 0.25, 0.18, 0.13, 0.09, 0.07],
+      drift:  [0.20, 0.21, 0.19, 0.16, 0.14, 0.10]
+    }
+  };
+
+  var currentPsiVar = 'util';
+
+  window.togglePsiVar = function(v) {
+    currentPsiVar = v;
+    var btns = document.querySelectorAll('#psi-demo .controls:nth-child(3) .toggle-btn');
+    for (var i = 0; i < btns.length; i++) btns[i].className = 'toggle-btn';
+    var idx = v === 'util' ? 0 : v === 'age' ? 1 : 2;
+    btns[idx].className = 'toggle-btn active';
+    render();
+  };
+
+  function calcPSI(dev, cur) {
+    var psi = 0;
+    var eps = 0.0001;
+    for (var i = 0; i < dev.length; i++) {
+      var d = dev[i] + eps;
+      var c = cur[i] + eps;
+      psi += (c - d) * Math.log(c / d);
+    }
+    return psi;
+  }
+
+  function render() {
+    var month = parseInt(slider.value);
+    monthLabel.textContent = month === 0 ? 'Deployment' : 'Month ' + month;
+
+    var dv = driftVars[currentPsiVar];
+    var n = dv.dev.length;
+
+    // Interpolate current distribution
+    var cur = [];
+    for (var i = 0; i < n; i++) {
+      cur.push(dv.dev[i] + (dv.drift[i] - dv.dev[i]) * (month / 12));
+    }
+
+    var psi = calcPSI(dv.dev, cur);
+
+    var psiStatus, psiColor;
+    if (psi < 0.10) { psiStatus = 'Stable'; psiColor = '#5BAE8A'; }
+    else if (psi < 0.25) { psiStatus = 'Minor Drift'; psiColor = '#E8B44A'; }
+    else { psiStatus = 'Retrain Needed'; psiColor = '#E8634A'; }
+
+    statsEl.innerHTML =
+      '<div class="stat-card"><div class="stat-value" style="color:' + psiColor + '">' + psi.toFixed(3) + '</div><div class="stat-label">PSI Value</div></div>' +
+      '<div class="stat-card"><div class="stat-value" style="color:' + psiColor + '">' + psiStatus + '</div><div class="stat-label">Status</div></div>';
+
+    var pad = { top: 25, right: 30, bottom: 40, left: 55 };
+    var totalW = 636;
+    var totalH = 340;
+    var w = totalW - pad.left - pad.right;
+    var h = totalH - pad.top - pad.bottom;
+    var barGroupW = w / n;
+    var barW = barGroupW * 0.32;
+
+    var maxPct = 0;
+    for (var i = 0; i < n; i++) {
+      if (dv.dev[i] > maxPct) maxPct = dv.dev[i];
+      if (cur[i] > maxPct) maxPct = cur[i];
+    }
+    maxPct = Math.ceil(maxPct * 20) / 20 + 0.02;
+
+    var html = '<rect width="' + totalW + '" height="' + totalH + '" fill="rgb(242,241,239)" rx="4"/>';
+    html += '<rect x="' + pad.left + '" y="' + pad.top + '" width="' + w + '" height="' + h + '" fill="#fff" rx="2"/>';
+
+    // Y axis grid
+    for (var g = 0; g <= 4; g++) {
+      var gy = pad.top + h - (g / 4) * h;
+      var gVal = (maxPct * g / 4 * 100).toFixed(0);
+      html += '<line x1="' + pad.left + '" y1="' + gy + '" x2="' + (pad.left + w) + '" y2="' + gy + '" stroke="rgb(243,243,243)" stroke-width="1"/>';
+      html += '<text x="' + (pad.left - 8) + '" y="' + (gy + 4) + '" text-anchor="end" font-family="Figtree,sans-serif" font-size="10" fill="rgb(150,150,150)">' + gVal + '%</text>';
+    }
+
+    for (var i = 0; i < n; i++) {
+      var cx = pad.left + i * barGroupW + barGroupW / 2;
+
+      // Dev bar (outline)
+      var devH = (dv.dev[i] / maxPct) * h;
+      var devY = pad.top + h - devH;
+      html += '<rect x="' + (cx - barW - 2) + '" y="' + devY + '" width="' + barW + '" height="' + devH + '" fill="rgba(91,74,232,0.15)" stroke="#5B4AE8" stroke-width="1.5" rx="2"/>';
+
+      // Current bar (filled)
+      var curH = (cur[i] / maxPct) * h;
+      var curY = pad.top + h - curH;
+      html += '<rect x="' + (cx + 2) + '" y="' + curY + '" width="' + barW + '" height="' + curH + '" fill="#E8634A" rx="2" opacity="0.8"/>';
+
+      // Bin label
+      html += '<text x="' + cx + '" y="' + (pad.top + h + 18) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="10" fill="rgb(100,100,100)">' + dv.labels[i] + '</text>';
+    }
+
+    // PSI threshold lines annotation
+    var threshY = pad.top + 8;
+    html += '<text x="' + (pad.left + w - 4) + '" y="' + threshY + '" text-anchor="end" font-family="Figtree,sans-serif" font-size="10" fill="' + psiColor + '">PSI = ' + psi.toFixed(3) + ' (' + psiStatus + ')</text>';
+
+    svg.innerHTML = html;
+  }
+
+  slider.addEventListener('input', render);
+  render();
+})();
+
+
+// ════════════════════════════════════════════════════
+// SCROLL REVEAL
+// ════════════════════════════════════════════════════
+(function() {
+  var observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+  document.querySelectorAll('.fade-in').forEach(function(el) { observer.observe(el); });
+})();
+</script>
+</body>
+</html>

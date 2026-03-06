@@ -1,0 +1,1663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Build Trap: Why Most AI Products Solve the Wrong Problem | An Interactive Guide</title>
+<meta name="description" content="95% of AI pilots produce zero ROI. The problem isn't the models. An interactive guide to problem framing, accuracy vs utility, and what to measure instead.">
+
+<!-- Open Graph -->
+<meta property="og:title" content="The Build Trap: Why Most AI Products Solve the Wrong Problem">
+<meta property="og:description" content="95% of AI pilots produce zero ROI. The problem isn't the models. An interactive guide to problem framing, accuracy vs utility, and what to measure instead.">
+<meta property="og:url" content="https://supergeek.in/build-trap/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Danish Khan">
+<meta property="og:locale" content="en_US">
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="The Build Trap: Why Most AI Products Solve the Wrong Problem">
+<meta name="twitter:description" content="95% of AI pilots produce zero ROI. The problem isn't the models. An interactive guide with 6 hands-on demos.">
+
+<!-- Canonical -->
+<link rel="canonical" href="https://supergeek.in/build-trap/">
+
+<!-- Structured Data -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "The Build Trap: Why Most AI Products Solve the Wrong Problem",
+  "description": "95% of AI pilots produce zero ROI. The problem isn't the models. An interactive guide to problem framing, accuracy vs utility, and what to measure instead.",
+  "author": {
+    "@type": "Person",
+    "name": "Danish Khan",
+    "url": "https://supergeek.in",
+    "jobTitle": "AI Product Builder",
+    "sameAs": [
+      "https://github.com/DanisHack"
+    ]
+  },
+  "publisher": {
+    "@type": "Person",
+    "name": "Danish Khan",
+    "url": "https://supergeek.in"
+  },
+  "datePublished": "2026-03-07",
+  "dateModified": "2026-03-07",
+  "mainEntityOfPage": "https://supergeek.in/build-trap/",
+  "keywords": ["AI product management", "build trap", "AI failure", "problem framing", "accuracy vs utility", "RAG vs fine-tuning", "AI evaluation", "prototype to production", "applied AI"]
+}
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,700;1,6..72,400&family=Figtree:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+/* ── Reset ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Newsreader', Georgia, serif;
+  font-size: 21px;
+  line-height: 1.4;
+  color: rgb(45,45,45);
+  background: rgb(250,249,247);
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: #5B4AE8; text-decoration: none; }
+a:hover { color: #7B4AE8; }
+
+.content { max-width: 700px; margin: 0 auto; padding: 0 24px; }
+
+.hero {
+  position: relative;
+  border-radius: 16px;
+  margin: 12px auto;
+  max-width: calc(100% - 24px);
+  min-height: 300px;
+  overflow: hidden;
+  display: flex;
+  align-items: flex-end;
+  padding: 48px 40px;
+}
+.hero-bg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.hero .content { position: relative; z-index: 1; max-width: none; padding: 0; }
+.hero h1 {
+  font-family: 'Newsreader', Georgia, serif;
+  font-size: 64px;
+  font-weight: 700;
+  line-height: 1.1;
+  color: #fff;
+  margin-bottom: 12px;
+}
+.post-subtitle {
+  font-family: 'Figtree', system-ui, sans-serif;
+  font-size: 26px;
+  font-weight: 500;
+  line-height: 1.1;
+  color: rgba(255,255,255,0.85);
+}
+
+.intro { margin: 60px auto 40px; }
+.intro-text {
+  font-style: italic;
+  font-size: 23px;
+  line-height: 1.45;
+  color: rgb(80,80,80);
+}
+
+.toc {
+  margin: 0 auto 60px;
+  padding: 24px 28px;
+  background: rgb(242,241,239);
+  border-radius: 12px;
+}
+.toc h4 {
+  font-family: 'Figtree', system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 12px;
+  color: rgb(100,100,100);
+}
+.toc ol { padding-left: 20px; }
+.toc li {
+  font-family: 'Figtree', system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.8;
+  color: rgb(80,80,80);
+}
+.toc a { color: rgb(45,45,45); border-bottom: 1px solid transparent; }
+.toc a:hover { color: #5B4AE8; border-bottom-color: #5B4AE8; }
+
+.section-header {
+  display: flex;
+  align-items: baseline;
+  gap: 20px;
+  padding-top: 100px;
+  margin-bottom: 40px;
+  border-top: 1px solid rgb(220,218,214);
+}
+.section-number {
+  font-family: 'Newsreader', Georgia, serif;
+  font-size: 50px;
+  font-weight: 400;
+  color: rgb(180,178,174);
+  flex-shrink: 0;
+}
+.section-header h2 {
+  font-family: 'Figtree', system-ui, sans-serif;
+  font-size: 44px;
+  font-weight: 700;
+  line-height: 1.1;
+  color: rgb(45,45,45);
+}
+h3 {
+  font-family: 'Figtree', system-ui, sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.1;
+  margin-top: 40px;
+  margin-bottom: 16px;
+}
+
+main p { margin-bottom: 20px; }
+main p strong { font-weight: 700; }
+
+.demo-container {
+  background: rgb(242,241,239);
+  border-radius: 12px;
+  padding: 32px;
+  margin: 32px 0;
+}
+.label {
+  font-family: 'Figtree', system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgb(45,45,45);
+  margin-bottom: 16px;
+}
+figcaption {
+  font-family: 'Newsreader', Georgia, serif;
+  font-style: italic;
+  font-size: 17px;
+  line-height: 1.4;
+  color: rgb(100,100,100);
+  text-align: center;
+  margin-top: 16px;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 16px 0;
+  flex-wrap: wrap;
+}
+.controls label {
+  font-family: 'Figtree', system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: rgb(80,80,80);
+}
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 6px;
+  border-radius: 3px;
+  background: rgb(200,198,194);
+  outline: none;
+  flex: 1;
+  min-width: 120px;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  background: #5B4AE8;
+  cursor: pointer;
+  border: 3px solid #fff;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+}
+input[type="range"]::-moz-range-thumb {
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  background: #5B4AE8;
+  cursor: pointer;
+  border: 3px solid #fff;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+}
+.toggle-btn {
+  font-family: 'Figtree', system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: 1px solid rgb(200,198,194);
+  background: #fff;
+  color: rgb(45,45,45);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.toggle-btn:hover { border-color: #5B4AE8; color: #5B4AE8; }
+.toggle-btn.active { background: #5B4AE8; color: #fff; border-color: #5B4AE8; }
+
+.value-display {
+  font-family: 'Figtree', system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: #5B4AE8;
+  min-width: 60px;
+}
+
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+  margin: 16px 0;
+}
+.stat-card {
+  background: #fff;
+  border-radius: 8px;
+  padding: 16px;
+  text-align: center;
+}
+.stat-value {
+  font-family: 'Figtree', system-ui, sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+.stat-label {
+  font-family: 'Figtree', system-ui, sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: rgb(100,100,100);
+  margin-top: 4px;
+}
+
+.callout {
+  border-left: 4px solid #5B4AE8;
+  padding: 20px 24px;
+  margin: 32px 0;
+  background: rgba(91,74,232,0.04);
+  border-radius: 0 8px 8px 0;
+}
+.callout p { margin-bottom: 8px; }
+.callout p:last-child { margin-bottom: 0; }
+
+.sidenote-trigger {
+  font-family: 'Figtree', system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: #5B4AE8;
+  cursor: pointer;
+  vertical-align: super;
+}
+.sidenote {
+  display: none;
+  background: rgb(242,241,239);
+  padding: 16px 20px;
+  border-radius: 8px;
+  margin: 8px 0 16px;
+}
+.sidenote.open { display: block; }
+.sidenote p {
+  font-family: 'Figtree', system-ui, sans-serif;
+  font-size: 15px;
+  line-height: 1.4;
+  margin-bottom: 8px;
+}
+.sidenote p:last-child { margin-bottom: 0; }
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 20px;
+  margin: 12px 0;
+}
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'Figtree', system-ui, sans-serif;
+  font-size: 13px;
+  color: rgb(80,80,80);
+}
+.legend-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.fade-in {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+.fade-in.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.site-footer {
+  background: #3A2D7A;
+  color: rgba(255,255,255,0.7);
+  padding: 60px 24px;
+  margin-top: 100px;
+  text-align: center;
+}
+.site-footer p:first-child {
+  font-family: 'Newsreader', Georgia, serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 8px;
+}
+.site-footer .footer-tagline {
+  font-family: 'Newsreader', Georgia, serif;
+  font-style: italic;
+  font-size: 17px;
+  color: rgba(255,255,255,0.5);
+  margin-top: 16px;
+}
+.site-footer a { color: rgba(255,255,255,0.8); }
+.site-footer a:hover { color: #fff; }
+
+@media (max-width: 768px) {
+  body { font-size: 19px; }
+  .hero h1 { font-size: 40px; }
+  .post-subtitle { font-size: 20px; }
+  .hero { padding: 32px 24px; min-height: 220px; }
+  .section-header { padding-top: 60px; margin-bottom: 30px; gap: 14px; }
+  .section-number { font-size: 36px; }
+  .section-header h2 { font-size: 32px; }
+  h3 { font-size: 22px; }
+  .intro-text { font-size: 20px; }
+  .demo-container { padding: 20px 16px; }
+  .stat-grid { grid-template-columns: repeat(2, 1fr); }
+  .stat-value { font-size: 22px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
+</style>
+</head>
+<body>
+
+<a href="/" style="display:inline-block;margin:16px 0 0 16px;font-family:'Figtree',system-ui,sans-serif;font-size:15px;font-weight:600;color:rgb(100,100,100);text-decoration:none;" onmouseover="this.style.color='#5B4AE8'" onmouseout="this.style.color='rgb(100,100,100)'">&larr; Danish Khan</a>
+
+<div class="hero">
+  <svg class="hero-bg" viewBox="0 0 1200 400" preserveAspectRatio="xMidYMid slice">
+    <defs>
+      <linearGradient id="heroGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#0d1117"/>
+        <stop offset="30%" stop-color="#161b22"/>
+        <stop offset="60%" stop-color="#2d333b"/>
+        <stop offset="100%" stop-color="#5B4AE8"/>
+      </linearGradient>
+      <pattern id="gridP" width="40" height="40" patternUnits="userSpaceOnUse">
+        <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+      </pattern>
+    </defs>
+    <rect width="1200" height="400" fill="url(#heroGrad)"/>
+    <rect width="1200" height="400" fill="url(#gridP)"/>
+    <!-- Decorative: funnel narrowing left to right -->
+    <polygon points="100,80 400,160 400,240 100,320" fill="none" stroke="rgba(232,99,74,0.15)" stroke-width="2"/>
+    <polygon points="400,160 650,185 650,215 400,240" fill="none" stroke="rgba(232,180,74,0.15)" stroke-width="2"/>
+    <polygon points="650,185 850,192 850,208 650,215" fill="none" stroke="rgba(91,174,138,0.15)" stroke-width="2"/>
+    <circle cx="920" cy="200" r="16" fill="none" stroke="rgba(91,174,138,0.2)" stroke-width="2"/>
+    <!-- X marks for failed projects -->
+    <g stroke="rgba(232,99,74,0.12)" stroke-width="2">
+      <line x1="170" y1="140" x2="190" y2="160"/><line x1="190" y1="140" x2="170" y2="160"/>
+      <line x1="220" y1="240" x2="240" y2="260"/><line x1="240" y1="240" x2="220" y2="260"/>
+      <line x1="280" y1="120" x2="300" y2="140"/><line x1="300" y1="120" x2="280" y2="140"/>
+      <line x1="310" y1="270" x2="330" y2="290"/><line x1="330" y1="270" x2="310" y2="290"/>
+      <line x1="160" y1="200" x2="180" y2="220"/><line x1="180" y1="200" x2="160" y2="220"/>
+      <line x1="350" y1="150" x2="370" y2="170"/><line x1="370" y1="150" x2="350" y2="170"/>
+    </g>
+    <!-- Checkmark for the one that ships -->
+    <polyline points="912,198 920,208 932,190" fill="none" stroke="rgba(91,174,138,0.3)" stroke-width="3"/>
+    <!-- Faded percentage -->
+    <text x="1060" y="340" text-anchor="middle" font-family="Figtree,sans-serif" font-size="42" font-weight="700" fill="rgba(255,255,255,0.04)">5%</text>
+  </svg>
+  <div class="content">
+    <h1>The Build Trap</h1>
+    <p class="post-subtitle">Why most AI products solve the wrong problem.</p>
+  </div>
+</div>
+
+<main class="content">
+<article>
+
+<section class="intro">
+  <p class="intro-text">95% of GenAI pilots produce zero return on investment. Not because the models are bad. Because teams start with &ldquo;Step 1: use LLMs. Step 2: figure out what for.&rdquo; The successful 5% all share one trait: they picked one specific internal pain point, quantified it in dollars, and executed with the simplest tool that could solve it. This explainer shows you why the problem is almost never the model, and what to do instead.</p>
+</section>
+
+<nav class="toc">
+  <h4>Contents</h4>
+  <ol>
+    <li><a href="#section-1">The Failure Landscape</a></li>
+    <li><a href="#section-2">The Accuracy Trap</a></li>
+    <li><a href="#section-3">The Reframing Effect</a></li>
+    <li><a href="#section-4">Build vs Buy vs Prompt</a></li>
+    <li><a href="#section-5">The Production Gap</a></li>
+    <li><a href="#section-6">What to Measure Instead</a></li>
+  </ol>
+</nav>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- SECTION 1: THE FAILURE LANDSCAPE                          -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+
+<div id="section-1" class="section-header fade-in">
+  <span class="section-number">1</span>
+  <h2>The Failure Landscape</h2>
+</div>
+
+<p class="fade-in">The numbers are stark. RAND found that AI projects fail at twice the rate of regular IT projects. MIT&rsquo;s NANDA lab tracked $30&ndash;40 billion in enterprise GenAI investment and found that 95% of pilots saw zero return. S&amp;P Global reported that 42% of companies abandoned most of their AI initiatives in 2025, up from 17% the year before. More money did not solve the problem. It made it worse, because it funded more projects that started from the wrong end.</p>
+
+<p class="fade-in">PwC&rsquo;s 2026 CEO survey found that only 12% of CEOs globally report AI has delivered both cost and revenue benefits. 56% report neither. That&rsquo;s after years of investment and executive attention. The pattern is consistent across industries and geographies: most organizations are spending real money to build things that don&rsquo;t work.</p>
+
+<p class="fade-in">The named failures are instructive. IBM spent roughly $5 billion on Watson for Oncology. Doctors rejected its treatment recommendations 88% of the time, in part because the system was trained on synthetic cases rather than real patient data. Zillow&rsquo;s Offers program used ML to price homes for instant buying. It lost over $500 million in a single quarter when its models couldn&rsquo;t keep up with a shifting market. Amazon built an ML recruiting tool that systematically penalized resumes containing the word &ldquo;women&rsquo;s&rdquo; because its training data reflected historical hiring patterns. They couldn&rsquo;t fix it. They abandoned it. Klarna replaced 700 customer service agents with an OpenAI-powered bot, claiming it handled 2.3 million conversations. Within a year, the CEO publicly admitted service quality had suffered. They started rehiring humans.</p>
+
+<p class="fade-in">Each failure had a different surface cause. But the root cause was the same: they started with the technology and worked backward to find a problem for it to solve.</p>
+
+<figure class="demo-container fade-in" id="widget-1">
+  <div class="label">Interactive: AI Project Failure Tracker</div>
+  <div class="controls" id="w1-controls"></div>
+  <svg id="w1-svg" viewBox="0 0 636 360" width="100%" role="img" aria-label="Bar chart showing AI project failure rates across different surveys"></svg>
+  <div class="stat-grid" id="w1-stats"></div>
+  <figcaption>Sources: RAND (2024), MIT NANDA (2025), PwC (2026), S&amp;P Global (2025)</figcaption>
+  <noscript><p>AI projects fail at alarming rates. RAND reports 80% failure (2x regular IT). MIT found 95% of GenAI pilots saw zero ROI. PwC found only 12% of CEOs report both cost and revenue benefits from AI. S&amp;P Global found 42% of companies abandoned most AI initiatives in 2025.</p></noscript>
+</figure>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- SECTION 2: THE ACCURACY TRAP                              -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+
+<div id="section-2" class="section-header fade-in">
+  <span class="section-number">2</span>
+  <h2>The Accuracy Trap</h2>
+</div>
+
+<p class="fade-in">A model can score 95% accuracy and deliver zero business value. This is not a theoretical concern. It is the single most common way AI projects fail quietly.</p>
+
+<p class="fade-in">Consider a fraud detection system. Only 1% of transactions are fraudulent. A model that predicts &ldquo;not fraud&rdquo; for every single transaction scores 99% accuracy. It also catches zero fraud. The number on the dashboard looks great. The finance team is losing millions.</p>
+
+<p class="fade-in">This is the class imbalance trap, and it shows up everywhere that matters: fraud (1% positive), medical screening (2% positive), churn prediction (5% positive), manufacturing defects (0.1% positive). The rarer the thing you&rsquo;re trying to catch, the more misleading accuracy becomes. What you actually need to think about is precision (how many of your alarms are real) and recall (how many real cases you catch). Those two are in tension. Pushing one up usually pushes the other down.</p>
+
+<p class="fade-in">The right balance between precision and recall is a business decision, not a statistical one. Akismet, the spam filter that protects WordPress, optimizes for precision above 99.99% because losing a real email is worse than letting some spam through. A call center spending $10 million a year on human agents found that an AI classifier only needed to exceed 50% accuracy to be worth deploying. The bar for &ldquo;useful&rdquo; was far lower than anyone assumed, because speed and consistency mattered more than getting every case right.</p>
+
+<p class="fade-in">McKinsey found that 30&ndash;40% of potential AI impact is lost to misaligned incentives, even when the models perform well. The model works. The metric it optimizes for just does not connect to the outcome the business cares about.</p>
+
+<figure class="demo-container fade-in" id="widget-2">
+  <div class="label">Interactive: Accuracy vs Utility Explorer</div>
+  <div class="controls" id="w2-controls"></div>
+  <div class="controls" id="w2-slider-row"></div>
+  <svg id="w2-svg" viewBox="0 0 636 380" width="100%" role="img" aria-label="Confusion matrix and business cost visualization showing how accuracy relates to utility"></svg>
+  <div class="stat-grid" id="w2-stats"></div>
+  <figcaption>Drag the slider to see how accuracy maps (or doesn&rsquo;t) to business value</figcaption>
+  <noscript><p>A model can achieve 99% accuracy yet catch zero fraud if the dataset is 99% non-fraudulent. Precision and recall matter more than raw accuracy for rare events. The right metric balance depends on business costs, not statistics. A call center AI only needed 50% accuracy to beat a $10M/year human process.</p></noscript>
+</figure>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- SECTION 3: THE REFRAMING EFFECT                           -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+
+<div id="section-3" class="section-header fade-in">
+  <span class="section-number">3</span>
+  <h2>The Reframing Effect</h2>
+</div>
+
+<p class="fade-in">The most dramatic improvements in applied ML almost never come from better models. They come from reframing the question.</p>
+
+<p class="fade-in">Netflix started with a classification problem: will this user like this movie? The answer was a score. But the real problem was not scoring individual movies. It was deciding the order of the entire page. Switching from &ldquo;will they like it?&rdquo; to &ldquo;what order maximizes engagement?&rdquo; required a completely different architecture, and it transformed the product. Item popularity, they discovered, is the opposite of personalization. It produces the same ordering for everyone.</p>
+
+<p class="fade-in">Uber&rsquo;s DeepETA team tried to predict arrival times from scratch. The predictions were mediocre. Then they reframed: instead of predicting the ETA, predict the error in the existing ETA. The existing system was always wrong, but it was wrong in consistent, predictable ways. By modeling the systematic error and correcting it, they reduced average ETA error by more than 50% in some cities. Same data, same compute budget, completely different question.</p>
+
+<p class="fade-in">Spotify reframed recommendation from &ldquo;predict what users will like&rdquo; to an explore/exploit tradeoff. Pure exploitation (recommend based on history) traps users in a filter bubble and starves new artists. Adding deliberate exploration through a multi-armed bandit framework improved both user satisfaction and platform health over time.</p>
+
+<p class="fade-in">Stitch Fix did something even more counterintuitive. Instead of automating the entire styling process, they designed a system where algorithms handle structured data (fit likelihood, collaborative filtering) and human stylists apply context, emotional judgment, and trend awareness. The human-AI hybrid reduced returns by 30% and helped double revenue from $1.7 billion to $3.2 billion in four years. Full automation would have been worse than the combination.</p>
+
+<figure class="demo-container fade-in" id="widget-3">
+  <div class="label">Interactive: Problem Framing Explorer</div>
+  <div class="controls" id="w3-controls"></div>
+  <svg id="w3-svg" viewBox="0 0 636 360" width="100%" role="img" aria-label="Before and after comparison of how reframing ML problems leads to dramatic improvements"></svg>
+  <div class="stat-grid" id="w3-stats"></div>
+  <figcaption>Same business problem, different ML question, dramatically different outcome</figcaption>
+  <noscript><p>Netflix shifted from classification to ranking and transformed their product. Uber cut ETA error by 50% by predicting the error in existing estimates instead of predicting from scratch. Spotify used explore/exploit bandits instead of pure recommendation. Stitch Fix designed a human-AI hybrid that outperformed full automation, reducing returns 30% and doubling revenue.</p></noscript>
+</figure>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- SECTION 4: BUILD VS BUY VS PROMPT                         -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+
+<div id="section-4" class="section-header fade-in">
+  <span class="section-number">4</span>
+  <h2>Build vs Buy vs Prompt</h2>
+</div>
+
+<p class="fade-in">Google&rsquo;s first rule of machine learning: &ldquo;Don&rsquo;t be afraid to launch a product without machine learning.&rdquo; Their third rule: &ldquo;Choose machine learning over a complex heuristic.&rdquo; Read those together and the message is clear. Start with the simplest thing that works. A handwritten rule. A regex. A lookup table. Only add ML when maintaining the heuristic becomes impossible.</p>
+
+<p class="fade-in">In 2026, many teams that think they need fine-tuning or RAG discover that a well-structured prompt with a few examples gets them 80% of the way there at near-zero cost. Research on reasoning models like o1 found that few-shot prompting actually <em>worsened</em> performance compared to simpler methods. More complexity is not always better.</p>
+
+<p class="fade-in">When you do need more than a prompt, the landscape breaks into three options. RAG (retrieval-augmented generation) takes 2&ndash;6 weeks to build and works best when your knowledge changes frequently, like product catalogs, regulations, or support documentation. Fine-tuning takes weeks to months but produces a specialized model that runs cheaper and faster at high volume. It wins when the domain is stable and tone consistency matters. Agents combine multiple LLM calls with tool use for multi-step reasoning, but each call adds tokens, latency, and debugging complexity.</p>
+
+<p class="fade-in">MIT found that buying AI tools from specialized vendors succeeds about 67% of the time, while internal builds succeed only one-third as often. The RAND report explicitly calls out a pattern: training custom models for problems that API calls would solve, resulting in impressive technology that nobody uses. Regex beats LLMs for structured patterns (IP addresses, phone numbers, credit card formats) at near-zero latency. With 1M+ token context windows now available, loading static documents directly into the prompt takes 2&ndash;5 developer-days versus 2&ndash;6 weeks for production RAG.</p>
+
+<p class="fade-in">The right question is not &ldquo;which approach is best?&rdquo; It is &ldquo;what is the simplest approach that meets our actual requirements?&rdquo;</p>
+
+<figure class="demo-container fade-in" id="widget-4">
+  <div class="label">Interactive: Approach Decision Calculator</div>
+  <div id="w4-questions"></div>
+  <svg id="w4-svg" viewBox="0 0 636 400" width="100%" role="img" aria-label="Decision matrix comparing Prompt, RAG, Fine-tune, and Agent approaches"></svg>
+  <div class="stat-grid" id="w4-stats"></div>
+  <figcaption>Answer the questions to see which approach fits your situation</figcaption>
+  <noscript><p>Prompt engineering works for stable-knowledge tasks at the lowest cost and complexity. RAG suits rapidly changing knowledge where citations are needed. Fine-tuning wins for high-volume, stable-domain tasks. Agents are best for multi-step reasoning across systems. Most teams start with more complexity than needed. MIT found buying beats building 2:1 for AI tools.</p></noscript>
+</figure>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- SECTION 5: THE PRODUCTION GAP                             -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+
+<div id="section-5" class="section-header fade-in">
+  <span class="section-number">5</span>
+  <h2>The Production Gap</h2>
+</div>
+
+<p class="fade-in">For every 33 AI prototypes built, only 4 make it to production. IDC published that number, and it matches what everyone in the industry sees: a notebook that looks 90% complete is actually about 10% done for production deployment.</p>
+
+<p class="fade-in">Google Duplex is the canonical demo trap. At I/O 2018, it stunned the audience by calling a restaurant and booking a reservation, complete with human-like &ldquo;ums&rdquo; and pauses. The demo was later revealed to be heavily curated. In production, Duplex achieved only 80% autonomous success. The other 20% required human call center operators to take over. The gap between a polished demo and a reliable system is not a matter of debugging. It is a matter of architecture, monitoring, fallbacks, and all the things that don&rsquo;t fit on a slide.</p>
+
+<p class="fade-in">COVID was the ultimate stress test for this gap. MIT Technology Review documented how hundreds of AI tools were built to help diagnose and treat COVID. None of them actually helped. The models were trained on mislabeled data, data from unknown sources, and early pandemic patterns that didn&rsquo;t generalize. Epic&rsquo;s hospital severity prediction system &ldquo;didn&rsquo;t perform very well at all&rdquo; when patient characteristics shifted during the pandemic. Healthcare AI models saw accuracy degrade within days of deployment.</p>
+
+<p class="fade-in">This is the problem of distribution shift. Your model learns patterns from training data. When the real world changes, those patterns break. A retailer&rsquo;s demand forecasting model failed when a mobile app promotion shifted shopping patterns from in-store to online. A credit risk model that doesn&rsquo;t adjust to economic shifts will approve high-risk loans. In fraud detection, adversaries deliberately shift their patterns to evade your model. The world is not stationary, and your model was trained on a snapshot of it.</p>
+
+<figure class="demo-container fade-in" id="widget-5">
+  <div class="label">Interactive: Prototype to Production Stack</div>
+  <div class="controls" id="w5-slider-row"></div>
+  <svg id="w5-svg" viewBox="0 0 636 360" width="100%" role="img" aria-label="Stacked requirements showing how production needs grow beyond the model"></svg>
+  <div class="stat-grid" id="w5-stats"></div>
+  <figcaption>Drag the slider to see requirements stack up from notebook to production</figcaption>
+  <noscript><p>For every 33 AI prototypes, only 4 reach production. What looks 90% complete in a notebook is 10% done for production. Requirements stack up: data pipelines, monitoring, drift detection, edge-case handling, security, compliance, and scaling. Google Duplex achieved only 80% autonomous success despite a flawless demo. COVID broke hundreds of AI diagnostic tools within weeks.</p></noscript>
+</figure>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- SECTION 6: WHAT TO MEASURE INSTEAD                        -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+
+<div id="section-6" class="section-header fade-in">
+  <span class="section-number">6</span>
+  <h2>What to Measure Instead</h2>
+</div>
+
+<p class="fade-in">F1 score does not capture business value. A recommendation model that scores 1% better in offline precision may produce no measurable difference in a live A/B test, because offline evaluation assumes historical behavior reflects future preferences. It ignores real-time feedback loops. It cannot account for the cold start problem. The correlation between offline metrics and online results is, in many domains, weak.</p>
+
+<p class="fade-in">Gartner puts it bluntly: &ldquo;Login rates and tool usage tell you nothing about value. Workforce impact and decision quality tell you everything.&rdquo; The metrics that matter sit in a different category entirely. For a customer support bot, teams typically measure accuracy and latency. What actually matters is resolution rate (did the user&rsquo;s problem get solved?) and escalation frequency (how often does a human have to step in?). For fraud detection, F1 and precision matter less than dollars saved from prevented fraud minus dollars lost to false positives that block legitimate customers. For content recommendation, click-through rate is a proxy at best. Engagement depth, retention, and revenue per user tell you whether the system is working.</p>
+
+<p class="fade-in">Anthropic&rsquo;s approach to agent evaluation is instructive. They advocate eval-driven development: define the capabilities you want <em>before</em> the agent can fulfill them. Start with 20&ndash;50 tasks drawn from real failures. Prioritize volume over quality in early evaluations, because more questions with automated grading beats fewer hand-graded evals. Early changes have large effect sizes, so you want to iterate fast.</p>
+
+<p class="fade-in">The production evaluation stack has two tracks. Offline evaluation catches obvious failures before deployment. Online evaluation (live A/B tests, continuous monitoring, user feedback loops) catches the things that only show up in the real world. Together, they can reduce mean time to detection of quality issues from hours to minutes. Separately, each one is blind to what the other sees.</p>
+
+<figure class="demo-container fade-in" id="widget-6">
+  <div class="label">Interactive: Metric Alignment Checker</div>
+  <div class="controls" id="w6-controls"></div>
+  <svg id="w6-svg" viewBox="0 0 636 400" width="100%" role="img" aria-label="Diagram showing which technical metrics connect to business outcomes and which don't"></svg>
+  <div class="stat-grid" id="w6-stats"></div>
+  <figcaption>What teams measure vs what actually matters, and where the gaps are</figcaption>
+  <noscript><p>F1 score does not capture business value. Offline metrics diverge from online A/B results. For support bots, measure resolution rate not accuracy. For fraud, measure dollars saved not precision. For recommendations, measure engagement depth not click-through rate. Anthropic advocates eval-driven development with 20-50 tasks drawn from real failures.</p></noscript>
+</figure>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- CONCLUSION                                                -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+
+<div class="section-header fade-in" style="border-top: 1px solid rgb(220,218,214);">
+  <h2 style="font-size:36px;">The First Rule of AI Products</h2>
+</div>
+
+<p class="fade-in">The pattern across every failure in this explainer is the same. Teams started with technology and worked backward to find problems. Watson started with &ldquo;we have a cognitive computing platform&rdquo; and looked for diseases to diagnose. Zillow started with &ldquo;we have a pricing model&rdquo; and looked for houses to buy. Klarna started with &ldquo;we have an AI assistant&rdquo; and looked for agents to replace.</p>
+
+<p class="fade-in">The pattern across every success is also the same. They started with a specific, quantifiable pain and chose the simplest tool that could solve it. Uber did not build a new ETA model. They modeled the error in their existing one. Stitch Fix did not automate stylists. They gave stylists better data. Lumen Technologies did not &ldquo;apply AI to sales.&rdquo; They eliminated a specific 4-hour research bottleneck, saving $50 million a year.</p>
+
+<p class="fade-in">Ines Montani, the creator of spaCy and Prodigy, has a line that captures this better than anything: the hard part of applied AI is not the &ldquo;how.&rdquo; It is the &ldquo;what.&rdquo; Deciding what to build, what to measure, and what counts as success. The learner is just a compiler. Your examples, your framing, your evaluation criteria are the actual program.</p>
+
+<div class="callout fade-in">
+  <p><strong>Google&rsquo;s Rule #1 of Machine Learning:</strong> Don&rsquo;t be afraid to launch a product without machine learning.</p>
+  <p>The best AI product might not use AI at all.</p>
+</div>
+
+<p class="fade-in" style="margin-top:40px;"><strong>References</strong></p>
+<ul class="fade-in" style="font-size:17px;line-height:1.6;margin-bottom:40px;">
+  <li>RAND Corporation, <a href="https://www.rand.org/pubs/research_reports/RRA2680-1.html">The Root Causes of Failure for Artificial Intelligence Projects</a>, 2024</li>
+  <li>MIT NANDA, <a href="https://fortune.com/2025/08/18/mit-report-95-percent-generative-ai-pilots-at-companies-failing-cfo/">The GenAI Divide: State of AI in Business</a>, 2025</li>
+  <li>PwC, <a href="https://www.pwc.com/gx/en/issues/c-suite-insights/ceo-survey.html">29th Annual Global CEO Survey</a>, 2026</li>
+  <li>S&amp;P Global Market Intelligence, <a href="https://www.spglobal.com/market-intelligence/en/news-insights/research/ai-experiences-rapid-adoption-but-with-mixed-outcomes-highlights-from-vote-ai-machine-learning">AI Adoption Survey</a>, 2025</li>
+  <li>HBR, <a href="https://hbr.org/2025/08/beware-the-ai-experimentation-trap">Beware the AI Experimentation Trap</a>, 2025</li>
+  <li>Anthropic, <a href="https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents">Demystifying Evals for AI Agents</a></li>
+  <li>Google, <a href="https://developers.google.com/machine-learning/guides/rules-of-ml">Rules of Machine Learning</a></li>
+  <li>Ines Montani, <a href="https://explosion.ai/blog/applied-nlp-thinking">Applied NLP Thinking</a>, Explosion, 2021</li>
+</ul>
+
+</article>
+</main>
+
+<footer class="site-footer">
+  <p><a href="/">Danish Khan</a></p>
+  <p style="font-family:'Figtree',system-ui,sans-serif;font-size:15px;">
+    <a href="mailto:danishmohd3610@gmail.com">email</a> &middot;
+    <a href="https://github.com/DanisHack">github</a>
+  </p>
+  <p class="footer-tagline">Compounding intelligence.</p>
+</footer>
+
+<script>
+// ════════════════════════════════════════════════════
+// SIDENOTES
+// ════════════════════════════════════════════════════
+document.querySelectorAll('.sidenote-trigger').forEach(function(el) {
+  el.addEventListener('click', function() {
+    var sn = this.parentElement.querySelector('.sidenote');
+    if (sn) sn.classList.toggle('open');
+  });
+});
+
+// ════════════════════════════════════════════════════
+// WIDGET 1: AI PROJECT FAILURE TRACKER
+// ════════════════════════════════════════════════════
+(function() {
+  var datasets = [
+    {
+      name: 'All AI Projects (RAND)',
+      bars: [
+        { label: 'Failed', value: 80, color: '#E8634A' },
+        { label: 'Succeeded', value: 20, color: '#5BAE8A' }
+      ],
+      stats: [
+        { value: '80%', label: 'Failure Rate', color: '#E8634A' },
+        { value: '2x', label: 'vs Regular IT', color: '#E8B44A' },
+        { value: '20%', label: 'Success Rate', color: '#5BAE8A' },
+        { value: 'Framing', label: 'Top Cause', color: '#5B4AE8' }
+      ],
+      callout: 'AI projects fail at 2x the rate of non-AI IT projects'
+    },
+    {
+      name: 'GenAI Pilots (MIT)',
+      bars: [
+        { label: 'Zero ROI', value: 95, color: '#E8634A' },
+        { label: 'Positive ROI', value: 5, color: '#5BAE8A' }
+      ],
+      stats: [
+        { value: '95%', label: 'Zero ROI', color: '#E8634A' },
+        { value: '$30-40B', label: 'Invested', color: '#E8B44A' },
+        { value: '5%', label: 'Success Rate', color: '#5BAE8A' },
+        { value: 'Breadth', label: 'Failure Pattern', color: '#5B4AE8' }
+      ],
+      callout: 'The 5% that succeeded picked ONE pain point and executed'
+    },
+    {
+      name: 'CEO Survey (PwC)',
+      bars: [
+        { label: 'No Benefit', value: 56, color: '#E8634A' },
+        { label: 'Cost OR Revenue', value: 32, color: '#E8B44A' },
+        { label: 'Cost AND Revenue', value: 12, color: '#5BAE8A' }
+      ],
+      stats: [
+        { value: '56%', label: 'No Benefit', color: '#E8634A' },
+        { value: '32%', label: 'Partial Benefit', color: '#E8B44A' },
+        { value: '12%', label: 'Full Benefit', color: '#5BAE8A' },
+        { value: '2026', label: 'Survey Year', color: '#5B4AE8' }
+      ],
+      callout: 'Only 12% of CEOs report AI delivered both cost AND revenue benefits'
+    },
+    {
+      name: 'Abandonment (S&P)',
+      bars: [
+        { label: 'Abandoned (2025)', value: 42, color: '#E8634A' },
+        { label: 'Abandoned (2024)', value: 17, color: '#E8B44A' },
+        { label: 'Still Active', value: 58, color: '#5BAE8A' }
+      ],
+      stats: [
+        { value: '42%', label: 'Abandoned 2025', color: '#E8634A' },
+        { value: '17%', label: 'Abandoned 2024', color: '#E8B44A' },
+        { value: '2.5x', label: 'YoY Increase', color: '#5B4AE8' },
+        { value: '58%', label: 'Still Active', color: '#5BAE8A' }
+      ],
+      callout: 'Abandonment rate jumped from 17% to 42% in one year'
+    }
+  ];
+
+  var current = 0;
+  var controlsEl = document.getElementById('w1-controls');
+  var svg = document.getElementById('w1-svg');
+  var statsEl = document.getElementById('w1-stats');
+
+  // Build toggle buttons
+  var btnsHtml = '';
+  for (var i = 0; i < datasets.length; i++) {
+    btnsHtml += '<button class="toggle-btn' + (i === 0 ? ' active' : '') + '" data-idx="' + i + '">' + datasets[i].name + '</button>';
+  }
+  controlsEl.innerHTML = btnsHtml;
+
+  var btns = controlsEl.querySelectorAll('.toggle-btn');
+  for (var i = 0; i < btns.length; i++) {
+    btns[i].addEventListener('click', function() {
+      current = parseInt(this.getAttribute('data-idx'));
+      for (var j = 0; j < btns.length; j++) btns[j].classList.remove('active');
+      this.classList.add('active');
+      render();
+    });
+  }
+
+  function render() {
+    var d = datasets[current];
+    var bars = d.bars;
+    var html = '';
+
+    // Background
+    html += '<rect width="636" height="360" fill="none"/>';
+
+    // Chart area
+    var chartLeft = 140;
+    var chartRight = 600;
+    var chartTop = 40;
+    var barHeight = 44;
+    var barGap = 20;
+    var maxVal = 100;
+    var chartWidth = chartRight - chartLeft;
+
+    // Grid lines
+    for (var g = 0; g <= 100; g += 25) {
+      var gx = chartLeft + (g / maxVal) * chartWidth;
+      html += '<line x1="' + gx + '" y1="' + (chartTop - 10) + '" x2="' + gx + '" y2="' + (chartTop + bars.length * (barHeight + barGap)) + '" stroke="rgb(220,218,214)" stroke-width="1"/>';
+      html += '<text x="' + gx + '" y="' + (chartTop - 16) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="11" fill="rgb(140,140,140)">' + g + '%</text>';
+    }
+
+    // Bars
+    for (var b = 0; b < bars.length; b++) {
+      var by = chartTop + b * (barHeight + barGap);
+      var bw = (bars[b].value / maxVal) * chartWidth;
+
+      // Label
+      html += '<text x="' + (chartLeft - 10) + '" y="' + (by + barHeight / 2 + 5) + '" text-anchor="end" font-family="Figtree,sans-serif" font-size="13" font-weight="600" fill="rgb(60,60,60)">' + bars[b].label + '</text>';
+
+      // Bar background
+      html += '<rect x="' + chartLeft + '" y="' + by + '" width="' + chartWidth + '" height="' + barHeight + '" rx="6" fill="rgba(200,198,194,0.2)"/>';
+
+      // Bar fill
+      html += '<rect x="' + chartLeft + '" y="' + by + '" width="' + bw + '" height="' + barHeight + '" rx="6" fill="' + bars[b].color + '" opacity="0.85"/>';
+
+      // Value
+      html += '<text x="' + (chartLeft + bw + 8) + '" y="' + (by + barHeight / 2 + 5) + '" font-family="Figtree,sans-serif" font-size="15" font-weight="700" fill="' + bars[b].color + '">' + bars[b].value + '%</text>';
+    }
+
+    // Callout text
+    var calloutY = chartTop + bars.length * (barHeight + barGap) + 40;
+    html += '<rect x="20" y="' + (calloutY - 18) + '" width="596" height="40" rx="8" fill="rgba(91,74,232,0.06)"/>';
+    html += '<text x="318" y="' + (calloutY + 6) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="13" font-weight="600" fill="#5B4AE8">' + d.callout + '</text>';
+
+    svg.innerHTML = html;
+
+    // Stats
+    var statsHtml = '';
+    for (var s = 0; s < d.stats.length; s++) {
+      statsHtml += '<div class="stat-card"><div class="stat-value" style="color:' + d.stats[s].color + '">' + d.stats[s].value + '</div><div class="stat-label">' + d.stats[s].label + '</div></div>';
+    }
+    statsEl.innerHTML = statsHtml;
+  }
+
+  render();
+})();
+
+// ════════════════════════════════════════════════════
+// WIDGET 2: ACCURACY VS UTILITY EXPLORER
+// ════════════════════════════════════════════════════
+(function() {
+  var scenarios = [
+    {
+      name: 'Fraud Detection',
+      prevalence: 0.01,
+      costFP: 50,
+      costFN: 5000,
+      costTP: -4800,
+      costTN: 0,
+      volume: 100000,
+      fpLabel: 'Blocked legit transaction',
+      fnLabel: 'Missed fraud'
+    },
+    {
+      name: 'Spam Filter',
+      prevalence: 0.05,
+      costFP: 200,
+      costFN: 0.10,
+      costTP: -0.08,
+      costTN: 0,
+      volume: 100000,
+      fpLabel: 'Lost real email',
+      fnLabel: 'Spam in inbox'
+    },
+    {
+      name: 'Medical Screening',
+      prevalence: 0.02,
+      costFP: 500,
+      costFN: 50000,
+      costTP: -48000,
+      costTN: 0,
+      volume: 10000,
+      fpLabel: 'Unnecessary follow-up',
+      fnLabel: 'Missed diagnosis'
+    }
+  ];
+
+  var currentScenario = 0;
+  var currentAccuracy = 90;
+
+  var controlsEl = document.getElementById('w2-controls');
+  var sliderRow = document.getElementById('w2-slider-row');
+  var svg = document.getElementById('w2-svg');
+  var statsEl = document.getElementById('w2-stats');
+
+  // Build scenario buttons
+  var btnsHtml = '';
+  for (var i = 0; i < scenarios.length; i++) {
+    btnsHtml += '<button class="toggle-btn' + (i === 0 ? ' active' : '') + '" data-idx="' + i + '">' + scenarios[i].name + '</button>';
+  }
+  controlsEl.innerHTML = btnsHtml;
+
+  // Build slider
+  sliderRow.innerHTML = '<label>Model Accuracy</label><input type="range" id="w2-range" min="50" max="99" value="90" step="1"><span class="value-display" id="w2-val">90%</span>';
+
+  var btns = controlsEl.querySelectorAll('.toggle-btn');
+  var slider = document.getElementById('w2-range');
+  var valDisplay = document.getElementById('w2-val');
+
+  for (var i = 0; i < btns.length; i++) {
+    btns[i].addEventListener('click', function() {
+      currentScenario = parseInt(this.getAttribute('data-idx'));
+      for (var j = 0; j < btns.length; j++) btns[j].classList.remove('active');
+      this.classList.add('active');
+      render();
+    });
+  }
+
+  slider.addEventListener('input', function() {
+    currentAccuracy = parseInt(this.value);
+    valDisplay.textContent = currentAccuracy + '%';
+    render();
+  });
+
+  function render() {
+    var s = scenarios[currentScenario];
+    var acc = currentAccuracy / 100;
+    var vol = s.volume;
+    var prev = s.prevalence;
+
+    // Compute confusion matrix
+    var positives = Math.round(vol * prev);
+    var negatives = vol - positives;
+
+    // Model at given accuracy: assume equal error distribution scaled by class
+    var tp = Math.round(positives * acc);
+    var fn = positives - tp;
+    var tn = Math.round(negatives * acc);
+    var fp = negatives - tn;
+
+    var precision = tp + fp > 0 ? tp / (tp + fp) : 0;
+    var recall = tp + fn > 0 ? tp / (tp + fn) : 0;
+
+    // Business value
+    var value = (tp * s.costTP) + (fp * s.costFP) + (fn * s.costFN) + (tn * s.costTN);
+    var costPerError = (fp + fn) > 0 ? (fp * s.costFP + fn * s.costFN) / (fp + fn) : 0;
+
+    var html = '';
+    html += '<rect width="636" height="380" fill="none"/>';
+
+    // Confusion matrix (left side)
+    var mx = 40, my = 40, cellW = 120, cellH = 70;
+
+    html += '<text x="' + (mx + cellW) + '" y="' + (my - 8) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="11" font-weight="600" fill="rgb(100,100,100)">Predicted +</text>';
+    html += '<text x="' + (mx + cellW * 2) + '" y="' + (my - 8) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="11" font-weight="600" fill="rgb(100,100,100)">Predicted -</text>';
+    html += '<text x="' + (mx + cellW / 2 - 10) + '" y="' + (my + cellH / 2 + 4) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="11" font-weight="600" fill="rgb(100,100,100)">Actual +</text>';
+    html += '<text x="' + (mx + cellW / 2 - 10) + '" y="' + (my + cellH + cellH / 2 + 4) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="11" font-weight="600" fill="rgb(100,100,100)">Actual -</text>';
+
+    // TP cell
+    html += '<rect x="' + (mx + cellW / 2 + 10) + '" y="' + my + '" width="' + cellW + '" height="' + cellH + '" rx="6" fill="rgba(91,174,138,0.15)" stroke="#5BAE8A" stroke-width="1.5"/>';
+    html += '<text x="' + (mx + cellW + 10) + '" y="' + (my + 30) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="20" font-weight="700" fill="#5BAE8A">' + tp.toLocaleString() + '</text>';
+    html += '<text x="' + (mx + cellW + 10) + '" y="' + (my + 50) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="10" fill="rgb(100,100,100)">True Positive</text>';
+
+    // FN cell
+    html += '<rect x="' + (mx + cellW * 1.5 + 20) + '" y="' + my + '" width="' + cellW + '" height="' + cellH + '" rx="6" fill="rgba(232,99,74,0.15)" stroke="#E8634A" stroke-width="1.5"/>';
+    html += '<text x="' + (mx + cellW * 2 + 20) + '" y="' + (my + 30) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="20" font-weight="700" fill="#E8634A">' + fn.toLocaleString() + '</text>';
+    html += '<text x="' + (mx + cellW * 2 + 20) + '" y="' + (my + 50) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="10" fill="rgb(100,100,100)">False Negative</text>';
+
+    // FP cell
+    html += '<rect x="' + (mx + cellW / 2 + 10) + '" y="' + (my + cellH + 10) + '" width="' + cellW + '" height="' + cellH + '" rx="6" fill="rgba(232,180,74,0.15)" stroke="#E8B44A" stroke-width="1.5"/>';
+    html += '<text x="' + (mx + cellW + 10) + '" y="' + (my + cellH + 40) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="20" font-weight="700" fill="#E8B44A">' + fp.toLocaleString() + '</text>';
+    html += '<text x="' + (mx + cellW + 10) + '" y="' + (my + cellH + 60) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="10" fill="rgb(100,100,100)">False Positive</text>';
+
+    // TN cell
+    html += '<rect x="' + (mx + cellW * 1.5 + 20) + '" y="' + (my + cellH + 10) + '" width="' + cellW + '" height="' + cellH + '" rx="6" fill="rgba(91,174,138,0.08)" stroke="rgb(200,198,194)" stroke-width="1"/>';
+    html += '<text x="' + (mx + cellW * 2 + 20) + '" y="' + (my + cellH + 40) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="20" font-weight="700" fill="rgb(100,100,100)">' + tn.toLocaleString() + '</text>';
+    html += '<text x="' + (mx + cellW * 2 + 20) + '" y="' + (my + cellH + 60) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="10" fill="rgb(100,100,100)">True Negative</text>';
+
+    // Cost breakdown (bottom)
+    var costY = 230;
+    html += '<text x="40" y="' + costY + '" font-family="Figtree,sans-serif" font-size="12" font-weight="700" fill="rgb(60,60,60)">COST BREAKDOWN</text>';
+
+    var fpCost = fp * s.costFP;
+    var fnCost = fn * s.costFN;
+    var totalCost = fpCost + fnCost;
+    var savings = -(tp * s.costTP);
+    var netValue = savings - totalCost;
+
+    var items = [
+      { label: s.fpLabel + ' (' + fp.toLocaleString() + ' x $' + s.costFP + ')', val: '$' + fpCost.toLocaleString(), color: '#E8B44A' },
+      { label: s.fnLabel + ' (' + fn.toLocaleString() + ' x $' + s.costFN.toLocaleString() + ')', val: '$' + fnCost.toLocaleString(), color: '#E8634A' },
+      { label: 'Value captured (' + tp.toLocaleString() + ' caught)', val: '$' + savings.toLocaleString(), color: '#5BAE8A' }
+    ];
+
+    for (var r = 0; r < items.length; r++) {
+      var ry = costY + 20 + r * 30;
+      html += '<circle cx="50" cy="' + (ry - 4) + '" r="4" fill="' + items[r].color + '"/>';
+      html += '<text x="62" y="' + ry + '" font-family="Figtree,sans-serif" font-size="12" fill="rgb(60,60,60)">' + items[r].label + '</text>';
+      html += '<text x="600" y="' + ry + '" text-anchor="end" font-family="Figtree,sans-serif" font-size="13" font-weight="700" fill="' + items[r].color + '">' + items[r].val + '</text>';
+    }
+
+    // Net value
+    var netY = costY + 20 + items.length * 30 + 16;
+    var netColor = netValue >= 0 ? '#5BAE8A' : '#E8634A';
+    html += '<line x1="40" y1="' + (netY - 16) + '" x2="600" y2="' + (netY - 16) + '" stroke="rgb(200,198,194)" stroke-width="1"/>';
+    html += '<text x="62" y="' + netY + '" font-family="Figtree,sans-serif" font-size="13" font-weight="700" fill="rgb(45,45,45)">Net Business Value</text>';
+    html += '<text x="600" y="' + netY + '" text-anchor="end" font-family="Figtree,sans-serif" font-size="16" font-weight="700" fill="' + netColor + '">' + (netValue >= 0 ? '+' : '-') + '$' + Math.abs(netValue).toLocaleString() + '</text>';
+
+    svg.innerHTML = html;
+
+    // Stats
+    statsEl.innerHTML =
+      '<div class="stat-card"><div class="stat-value" style="color:#5B4AE8">' + currentAccuracy + '%</div><div class="stat-label">Accuracy</div></div>' +
+      '<div class="stat-card"><div class="stat-value" style="color:#5BAE8A">' + (precision * 100).toFixed(1) + '%</div><div class="stat-label">Precision</div></div>' +
+      '<div class="stat-card"><div class="stat-value" style="color:' + netColor + '">' + (netValue >= 0 ? '+' : '') + '$' + (netValue / 1000).toFixed(0) + 'K</div><div class="stat-label">Business Value</div></div>' +
+      '<div class="stat-card"><div class="stat-value" style="color:#E8634A">$' + costPerError.toFixed(0) + '</div><div class="stat-label">Cost per Error</div></div>';
+  }
+
+  render();
+})();
+
+// ════════════════════════════════════════════════════
+// WIDGET 3: PROBLEM FRAMING EXPLORER
+// ════════════════════════════════════════════════════
+(function() {
+  var cases = [
+    {
+      name: 'Netflix',
+      beforeTitle: 'Classification',
+      beforeDesc: 'Will this user like this movie? Score each item independently.',
+      beforeMetric: '~70% accuracy',
+      afterTitle: 'Ranking',
+      afterDesc: 'What order of the entire page maximizes engagement?',
+      afterMetric: '2x engagement',
+      improvement: 'Transformed the product',
+      insight: 'Item popularity is the opposite of personalization',
+      beforeFlow: [
+        { x: 60, y: 50, w: 100, h: 36, text: 'User Profile' },
+        { x: 220, y: 50, w: 100, h: 36, text: 'Movie' },
+        { x: 140, y: 130, w: 120, h: 36, text: 'Like? Yes/No' }
+      ],
+      beforeArrows: [[110, 86, 160, 130], [270, 86, 210, 130]],
+      afterFlow: [
+        { x: 40, y: 50, w: 100, h: 36, text: 'User Profile' },
+        { x: 170, y: 50, w: 120, h: 36, text: 'All Candidates' },
+        { x: 340, y: 50, w: 100, h: 36, text: 'Page Layout' },
+        { x: 170, y: 130, w: 120, h: 36, text: 'Ranked Order' }
+      ],
+      afterArrows: [[90, 86, 190, 130], [230, 86, 230, 130], [390, 86, 260, 130]]
+    },
+    {
+      name: 'Uber',
+      beforeTitle: 'Direct Prediction',
+      beforeDesc: 'Predict arrival time from scratch using raw features.',
+      beforeMetric: 'High error',
+      afterTitle: 'Error Correction',
+      afterDesc: 'Predict the error in the existing ETA estimate and correct it.',
+      afterMetric: '50%+ error reduction',
+      improvement: '50%+ in some cities',
+      insight: 'ETAs are always wrong, but wrong in predictable ways',
+      beforeFlow: [
+        { x: 60, y: 50, w: 100, h: 36, text: 'Raw Features' },
+        { x: 220, y: 50, w: 120, h: 36, text: 'ML Model' },
+        { x: 220, y: 130, w: 100, h: 36, text: 'ETA' }
+      ],
+      beforeArrows: [[110, 86, 250, 130], [280, 86, 270, 130]],
+      afterFlow: [
+        { x: 30, y: 50, w: 100, h: 36, text: 'Existing ETA' },
+        { x: 170, y: 50, w: 120, h: 36, text: 'Error Model' },
+        { x: 340, y: 50, w: 100, h: 36, text: 'Correction' },
+        { x: 170, y: 130, w: 120, h: 36, text: 'Better ETA' }
+      ],
+      afterArrows: [[80, 86, 200, 130], [230, 86, 230, 130], [390, 86, 260, 130]]
+    },
+    {
+      name: 'Spotify',
+      beforeTitle: 'Pure Exploitation',
+      beforeDesc: 'Recommend what the user has liked before. Maximize predicted engagement.',
+      beforeMetric: 'Filter bubble',
+      afterTitle: 'Explore / Exploit',
+      afterDesc: 'Balance known preferences with deliberate discovery via multi-armed bandits.',
+      afterMetric: 'Better long-term retention',
+      improvement: 'Healthier ecosystem',
+      insight: 'Pure exploitation starves new artists and traps users',
+      beforeFlow: [
+        { x: 60, y: 50, w: 110, h: 36, text: 'Listen History' },
+        { x: 220, y: 50, w: 120, h: 36, text: 'Collab Filter' },
+        { x: 220, y: 130, w: 120, h: 36, text: 'Same Genres' }
+      ],
+      beforeArrows: [[115, 86, 250, 130], [280, 86, 280, 130]],
+      afterFlow: [
+        { x: 30, y: 50, w: 100, h: 36, text: 'History' },
+        { x: 170, y: 50, w: 100, h: 36, text: 'Bandit' },
+        { x: 320, y: 50, w: 120, h: 36, text: 'Exploration' },
+        { x: 170, y: 130, w: 120, h: 36, text: 'Balanced Mix' }
+      ],
+      afterArrows: [[80, 86, 200, 130], [220, 86, 230, 130], [380, 86, 260, 130]]
+    },
+    {
+      name: 'Stitch Fix',
+      beforeTitle: 'Full Automation',
+      beforeDesc: 'Replace stylists entirely with an ML recommendation engine.',
+      beforeMetric: 'High return rate',
+      afterTitle: 'Human-AI Hybrid',
+      afterDesc: 'ML handles data. Human stylists apply context, trends, and emotional judgment.',
+      afterMetric: '30% fewer returns, 2x revenue',
+      improvement: '$1.7B to $3.2B revenue',
+      insight: 'Algorithms handle data; people handle context',
+      beforeFlow: [
+        { x: 60, y: 50, w: 120, h: 36, text: 'Customer Data' },
+        { x: 230, y: 50, w: 120, h: 36, text: 'ML Engine' },
+        { x: 230, y: 130, w: 120, h: 36, text: 'Auto Picks' }
+      ],
+      beforeArrows: [[120, 86, 260, 130], [290, 86, 290, 130]],
+      afterFlow: [
+        { x: 20, y: 50, w: 110, h: 36, text: 'ML Shortlist' },
+        { x: 170, y: 50, w: 120, h: 36, text: 'Human Stylist' },
+        { x: 340, y: 50, w: 100, h: 36, text: 'Context' },
+        { x: 170, y: 130, w: 120, h: 36, text: 'Curated Box' }
+      ],
+      afterArrows: [[75, 86, 200, 130], [230, 86, 230, 130], [390, 86, 260, 130]]
+    }
+  ];
+
+  var current = 0;
+  var controlsEl = document.getElementById('w3-controls');
+  var svg = document.getElementById('w3-svg');
+  var statsEl = document.getElementById('w3-stats');
+
+  var btnsHtml = '';
+  for (var i = 0; i < cases.length; i++) {
+    btnsHtml += '<button class="toggle-btn' + (i === 0 ? ' active' : '') + '" data-idx="' + i + '">' + cases[i].name + '</button>';
+  }
+  controlsEl.innerHTML = btnsHtml;
+
+  var btns = controlsEl.querySelectorAll('.toggle-btn');
+  for (var i = 0; i < btns.length; i++) {
+    btns[i].addEventListener('click', function() {
+      current = parseInt(this.getAttribute('data-idx'));
+      for (var j = 0; j < btns.length; j++) btns[j].classList.remove('active');
+      this.classList.add('active');
+      render();
+    });
+  }
+
+  function drawFlow(boxes, arrows, offsetX, offsetY, color, html) {
+    // Draw arrows first (behind boxes)
+    for (var a = 0; a < arrows.length; a++) {
+      var arr = arrows[a];
+      html += '<line x1="' + (arr[0] + offsetX) + '" y1="' + (arr[1] + offsetY) + '" x2="' + (arr[2] + offsetX) + '" y2="' + (arr[3] + offsetY) + '" stroke="' + color + '" stroke-width="1.5" opacity="0.4" marker-end="url(#arrowhead)"/>';
+    }
+    // Draw boxes
+    for (var b = 0; b < boxes.length; b++) {
+      var box = boxes[b];
+      html += '<rect x="' + (box.x + offsetX) + '" y="' + (box.y + offsetY) + '" width="' + box.w + '" height="' + box.h + '" rx="6" fill="white" stroke="' + color + '" stroke-width="1.5"/>';
+      html += '<text x="' + (box.x + box.w / 2 + offsetX) + '" y="' + (box.y + box.h / 2 + 4 + offsetY) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="11" font-weight="600" fill="rgb(60,60,60)">' + box.text + '</text>';
+    }
+    return html;
+  }
+
+  function render() {
+    var c = cases[current];
+    var html = '';
+
+    // Arrow marker
+    html += '<defs><marker id="arrowhead" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="rgb(150,150,150)"/></marker></defs>';
+
+    // Headers
+    html += '<text x="159" y="28" text-anchor="middle" font-family="Figtree,sans-serif" font-size="14" font-weight="700" fill="#E8634A">BEFORE</text>';
+    html += '<text x="477" y="28" text-anchor="middle" font-family="Figtree,sans-serif" font-size="14" font-weight="700" fill="#5BAE8A">AFTER</text>';
+
+    // Before title
+    html += '<text x="159" y="52" text-anchor="middle" font-family="Figtree,sans-serif" font-size="12" fill="rgb(100,100,100)">' + c.beforeTitle + '</text>';
+    html += '<text x="477" y="52" text-anchor="middle" font-family="Figtree,sans-serif" font-size="12" fill="rgb(100,100,100)">' + c.afterTitle + '</text>';
+
+    // Divider
+    html += '<line x1="318" y1="20" x2="318" y2="340" stroke="rgb(220,218,214)" stroke-width="1" stroke-dasharray="4,4"/>';
+
+    // Flow diagrams
+    html = drawFlow(c.beforeFlow, c.beforeArrows, -10, 40, '#E8634A', html);
+    html = drawFlow(c.afterFlow, c.afterArrows, 308, 40, '#5BAE8A', html);
+
+    // Descriptions
+    var descY = 240;
+
+    // Before description
+    var beforeWords = c.beforeDesc.split(' ');
+    var beforeLine1 = '';
+    var beforeLine2 = '';
+    for (var w = 0; w < beforeWords.length; w++) {
+      if (beforeLine1.length + beforeWords[w].length < 38) {
+        beforeLine1 += (beforeLine1 ? ' ' : '') + beforeWords[w];
+      } else {
+        beforeLine2 += (beforeLine2 ? ' ' : '') + beforeWords[w];
+      }
+    }
+    html += '<text x="159" y="' + descY + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="12" fill="rgb(80,80,80)">' + beforeLine1 + '</text>';
+    if (beforeLine2) html += '<text x="159" y="' + (descY + 16) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="12" fill="rgb(80,80,80)">' + beforeLine2 + '</text>';
+
+    // After description
+    var afterWords = c.afterDesc.split(' ');
+    var afterLine1 = '';
+    var afterLine2 = '';
+    for (var w = 0; w < afterWords.length; w++) {
+      if (afterLine1.length + afterWords[w].length < 38) {
+        afterLine1 += (afterLine1 ? ' ' : '') + afterWords[w];
+      } else {
+        afterLine2 += (afterLine2 ? ' ' : '') + afterWords[w];
+      }
+    }
+    html += '<text x="477" y="' + descY + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="12" fill="rgb(80,80,80)">' + afterLine1 + '</text>';
+    if (afterLine2) html += '<text x="477" y="' + (descY + 16) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="12" fill="rgb(80,80,80)">' + afterLine2 + '</text>';
+
+    // Metrics
+    var metricY = 290;
+    html += '<rect x="60" y="' + (metricY - 16) + '" width="198" height="30" rx="6" fill="rgba(232,99,74,0.08)"/>';
+    html += '<text x="159" y="' + (metricY + 4) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="13" font-weight="700" fill="#E8634A">' + c.beforeMetric + '</text>';
+
+    html += '<rect x="378" y="' + (metricY - 16) + '" width="198" height="30" rx="6" fill="rgba(91,174,138,0.08)"/>';
+    html += '<text x="477" y="' + (metricY + 4) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="13" font-weight="700" fill="#5BAE8A">' + c.afterMetric + '</text>';
+
+    // Insight
+    var insightY = 340;
+    html += '<text x="318" y="' + insightY + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="12" font-style="italic" fill="#5B4AE8">&ldquo;' + c.insight + '&rdquo;</text>';
+
+    svg.innerHTML = html;
+
+    // Stats
+    statsEl.innerHTML =
+      '<div class="stat-card"><div class="stat-value" style="color:#E8634A">' + c.beforeMetric + '</div><div class="stat-label">Before</div></div>' +
+      '<div class="stat-card"><div class="stat-value" style="color:#5BAE8A">' + c.afterMetric + '</div><div class="stat-label">After</div></div>' +
+      '<div class="stat-card"><div class="stat-value" style="color:#5B4AE8">' + c.improvement + '</div><div class="stat-label">Improvement</div></div>' +
+      '<div class="stat-card"><div class="stat-value" style="color:rgb(60,60,60);font-size:14px;">' + c.insight + '</div><div class="stat-label">Key Insight</div></div>';
+  }
+
+  render();
+})();
+
+// ════════════════════════════════════════════════════
+// WIDGET 4: APPROACH DECISION CALCULATOR
+// ════════════════════════════════════════════════════
+(function() {
+  var questions = [
+    { text: 'Does your knowledge change weekly?', key: 'changing' },
+    { text: 'Do you need source citations?', key: 'citations' },
+    { text: 'High volume (>10K queries/day)?', key: 'volume' },
+    { text: 'Multi-step reasoning needed?', key: 'multistep' },
+    { text: 'Monthly budget over $500?', key: 'budget' }
+  ];
+
+  var answers = { changing: null, citations: null, volume: null, multistep: null, budget: null };
+
+  var approaches = [
+    {
+      name: 'Prompt',
+      time: 'Hours',
+      cost: '$10-50/mo',
+      latency: 'Low',
+      best: 'Stable knowledge, validation'
+    },
+    {
+      name: 'RAG',
+      time: '2-6 weeks',
+      cost: '$70-1K/mo',
+      latency: 'Medium',
+      best: 'Changing knowledge, citations'
+    },
+    {
+      name: 'Fine-tune',
+      time: '2-8 weeks',
+      cost: '$200-2K/mo',
+      latency: 'Low',
+      best: 'Stable domain, high volume'
+    },
+    {
+      name: 'Agent',
+      time: '4-12 weeks',
+      cost: '$500-5K/mo',
+      latency: 'High',
+      best: 'Multi-step, cross-system'
+    }
+  ];
+
+  var questionsEl = document.getElementById('w4-questions');
+  var svg = document.getElementById('w4-svg');
+  var statsEl = document.getElementById('w4-stats');
+
+  function buildQuestions() {
+    var html = '';
+    for (var i = 0; i < questions.length; i++) {
+      var q = questions[i];
+      html += '<div class="controls" style="margin:8px 0;">';
+      html += '<label style="min-width:220px;">' + q.text + '</label>';
+      html += '<button class="toggle-btn q-btn' + (answers[q.key] === true ? ' active' : '') + '" data-key="' + q.key + '" data-val="true">Yes</button>';
+      html += '<button class="toggle-btn q-btn' + (answers[q.key] === false ? ' active' : '') + '" data-key="' + q.key + '" data-val="false">No</button>';
+      html += '</div>';
+    }
+    questionsEl.innerHTML = html;
+
+    var qBtns = questionsEl.querySelectorAll('.q-btn');
+    for (var i = 0; i < qBtns.length; i++) {
+      qBtns[i].addEventListener('click', function() {
+        var key = this.getAttribute('data-key');
+        var val = this.getAttribute('data-val') === 'true';
+        answers[key] = val;
+        buildQuestions();
+        render();
+      });
+    }
+  }
+
+  function getRecommendation() {
+    var scores = [0, 0, 0, 0]; // prompt, rag, fine-tune, agent
+
+    // Changing knowledge favors RAG
+    if (answers.changing === true) { scores[1] += 3; scores[0] -= 1; scores[2] -= 2; }
+    if (answers.changing === false) { scores[0] += 1; scores[2] += 2; }
+
+    // Citations favor RAG
+    if (answers.citations === true) { scores[1] += 3; scores[0] -= 1; }
+    if (answers.citations === false) { scores[0] += 1; }
+
+    // High volume favors fine-tuning
+    if (answers.volume === true) { scores[2] += 3; scores[0] -= 1; scores[3] -= 2; }
+    if (answers.volume === false) { scores[0] += 1; }
+
+    // Multi-step favors agents
+    if (answers.multistep === true) { scores[3] += 4; scores[0] -= 2; }
+    if (answers.multistep === false) { scores[0] += 1; }
+
+    // Budget constraint favors prompt
+    if (answers.budget === false) { scores[0] += 3; scores[3] -= 3; scores[2] -= 1; }
+    if (answers.budget === true) { scores[1] += 1; scores[2] += 1; scores[3] += 1; }
+
+    var maxScore = -999;
+    var rec = 0;
+    for (var i = 0; i < scores.length; i++) {
+      if (scores[i] > maxScore) { maxScore = scores[i]; rec = i; }
+    }
+    return rec;
+  }
+
+  function render() {
+    var rec = getRecommendation();
+    var html = '';
+
+    var colW = 140;
+    var colGap = 12;
+    var startX = (636 - (colW * 4 + colGap * 3)) / 2;
+    var headerY = 30;
+
+    // Approach columns
+    for (var i = 0; i < approaches.length; i++) {
+      var a = approaches[i];
+      var cx = startX + i * (colW + colGap);
+      var isRec = (i === rec);
+      var borderColor = isRec ? '#5B4AE8' : 'rgb(220,218,214)';
+      var bgColor = isRec ? 'rgba(91,74,232,0.04)' : 'white';
+      var borderW = isRec ? 2.5 : 1;
+
+      // Column background
+      html += '<rect x="' + cx + '" y="' + headerY + '" width="' + colW + '" height="340" rx="10" fill="' + bgColor + '" stroke="' + borderColor + '" stroke-width="' + borderW + '"/>';
+
+      // Recommended badge
+      if (isRec) {
+        html += '<rect x="' + (cx + 20) + '" y="' + (headerY - 12) + '" width="100" height="24" rx="12" fill="#5B4AE8"/>';
+        html += '<text x="' + (cx + 70) + '" y="' + (headerY + 3) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="10" font-weight="700" fill="white">RECOMMENDED</text>';
+      }
+
+      // Name
+      html += '<text x="' + (cx + colW / 2) + '" y="' + (headerY + 40) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="18" font-weight="700" fill="' + (isRec ? '#5B4AE8' : 'rgb(45,45,45)') + '">' + a.name + '</text>';
+
+      // Divider
+      html += '<line x1="' + (cx + 16) + '" y1="' + (headerY + 55) + '" x2="' + (cx + colW - 16) + '" y2="' + (headerY + 55) + '" stroke="rgb(230,228,224)" stroke-width="1"/>';
+
+      // Fields
+      var fields = [
+        { label: 'TIME', value: a.time },
+        { label: 'COST', value: a.cost },
+        { label: 'LATENCY', value: a.latency },
+        { label: 'BEST FOR', value: a.best }
+      ];
+
+      for (var f = 0; f < fields.length; f++) {
+        var fy = headerY + 80 + f * 65;
+        html += '<text x="' + (cx + colW / 2) + '" y="' + fy + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="10" font-weight="700" letter-spacing="0.05em" fill="rgb(140,140,140)">' + fields[f].label + '</text>';
+
+        // Word wrap for "BEST FOR"
+        if (f === 3) {
+          var words = fields[f].value.split(' ');
+          var line1 = '';
+          var line2 = '';
+          for (var w = 0; w < words.length; w++) {
+            if (line1.length + words[w].length < 16) {
+              line1 += (line1 ? ' ' : '') + words[w];
+            } else {
+              line2 += (line2 ? ' ' : '') + words[w];
+            }
+          }
+          html += '<text x="' + (cx + colW / 2) + '" y="' + (fy + 18) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="13" font-weight="600" fill="rgb(60,60,60)">' + line1 + '</text>';
+          if (line2) html += '<text x="' + (cx + colW / 2) + '" y="' + (fy + 34) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="13" font-weight="600" fill="rgb(60,60,60)">' + line2 + '</text>';
+        } else {
+          html += '<text x="' + (cx + colW / 2) + '" y="' + (fy + 18) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="14" font-weight="600" fill="rgb(60,60,60)">' + fields[f].value + '</text>';
+        }
+      }
+    }
+
+    svg.innerHTML = html;
+
+    // Stats
+    var a = approaches[rec];
+    statsEl.innerHTML =
+      '<div class="stat-card"><div class="stat-value" style="color:#5B4AE8">' + a.name + '</div><div class="stat-label">Recommended</div></div>' +
+      '<div class="stat-card"><div class="stat-value">' + a.time + '</div><div class="stat-label">Implementation</div></div>' +
+      '<div class="stat-card"><div class="stat-value" style="color:#5BAE8A">' + a.cost + '</div><div class="stat-label">Monthly Cost</div></div>' +
+      '<div class="stat-card"><div class="stat-value">' + a.latency + '</div><div class="stat-label">Latency</div></div>';
+  }
+
+  buildQuestions();
+  render();
+})();
+
+// ════════════════════════════════════════════════════
+// WIDGET 5: PROTOTYPE TO PRODUCTION STACK
+// ════════════════════════════════════════════════════
+(function() {
+  var layers = [
+    { name: 'Model', desc: 'Train or call an API. The part everyone focuses on.', effort: '10%', color: '#5B4AE8' },
+    { name: 'Data Pipeline', desc: 'Ingestion, cleaning, feature engineering, versioning.', effort: '20%', color: '#7B6AE8' },
+    { name: 'Monitoring', desc: 'Logging, alerting, performance dashboards, cost tracking.', effort: '15%', color: '#5BAE8A' },
+    { name: 'Drift Detection', desc: 'Data drift, concept drift, adversarial drift, retraining triggers.', effort: '15%', color: '#E8B44A' },
+    { name: 'Edge Cases', desc: 'Fallbacks, graceful degradation, human-in-the-loop escalation.', effort: '20%', color: '#E8634A' },
+    { name: 'Security & Scale', desc: 'Auth, rate limiting, compliance, load balancing, multi-region.', effort: '20%', color: '#C84A8A' }
+  ];
+
+  var sliderRow = document.getElementById('w5-slider-row');
+  var svg = document.getElementById('w5-svg');
+  var statsEl = document.getElementById('w5-stats');
+
+  sliderRow.innerHTML = '<label>Stage</label><input type="range" id="w5-range" min="1" max="6" value="1" step="1"><span class="value-display" id="w5-val">Notebook</span>';
+
+  var slider = document.getElementById('w5-range');
+  var valDisplay = document.getElementById('w5-val');
+
+  var stageNames = ['Notebook', 'Data Pipeline', 'Monitoring', 'Drift Detection', 'Edge Cases', 'Production'];
+
+  slider.addEventListener('input', function() {
+    var v = parseInt(this.value);
+    valDisplay.textContent = stageNames[v - 1];
+    render();
+  });
+
+  function render() {
+    var stage = parseInt(slider.value);
+    var html = '';
+
+    var chartLeft = 160;
+    var chartRight = 600;
+    var chartTop = 30;
+    var barH = 40;
+    var barGap = 10;
+    var maxWidth = chartRight - chartLeft;
+
+    // Background
+    html += '<rect width="636" height="360" fill="none"/>';
+
+    // Each layer
+    for (var i = 0; i < layers.length; i++) {
+      var ly = chartTop + i * (barH + barGap);
+      var active = i < stage;
+      var fillColor = active ? layers[i].color : 'rgb(220,218,214)';
+      var fillOpacity = active ? 0.85 : 0.3;
+      var textColor = active ? 'rgb(45,45,45)' : 'rgb(180,180,180)';
+
+      // Label
+      html += '<text x="' + (chartLeft - 12) + '" y="' + (ly + barH / 2 + 5) + '" text-anchor="end" font-family="Figtree,sans-serif" font-size="12" font-weight="' + (active ? '700' : '400') + '" fill="' + textColor + '">' + layers[i].name + '</text>';
+
+      // Bar
+      var bw = active ? maxWidth : maxWidth * 0.15;
+      html += '<rect x="' + chartLeft + '" y="' + ly + '" width="' + bw + '" height="' + barH + '" rx="6" fill="' + fillColor + '" opacity="' + fillOpacity + '"/>';
+
+      // Effort label inside bar
+      if (active) {
+        html += '<text x="' + (chartLeft + 12) + '" y="' + (ly + barH / 2 + 1) + '" font-family="Figtree,sans-serif" font-size="11" font-weight="700" fill="white" dominant-baseline="middle">' + layers[i].effort + ' of effort</text>';
+        html += '<text x="' + (chartLeft + bw - 12) + '" y="' + (ly + barH / 2 + 1) + '" text-anchor="end" font-family="Figtree,sans-serif" font-size="10" fill="rgba(255,255,255,0.8)" dominant-baseline="middle">' + layers[i].desc + '</text>';
+      }
+    }
+
+    // Summary bar at bottom
+    var summaryY = chartTop + layers.length * (barH + barGap) + 20;
+
+    // Completion visualization
+    var completePct = Math.round((stage / 6) * 100);
+    var riskLabels = ['High', 'High', 'Medium', 'Medium', 'Low', 'Production-ready'];
+    var riskColors = ['#E8634A', '#E8634A', '#E8B44A', '#E8B44A', '#5BAE8A', '#5BAE8A'];
+
+    html += '<rect x="' + chartLeft + '" y="' + summaryY + '" width="' + maxWidth + '" height="8" rx="4" fill="rgb(220,218,214)"/>';
+    html += '<rect x="' + chartLeft + '" y="' + summaryY + '" width="' + (maxWidth * stage / 6) + '" height="8" rx="4" fill="#5B4AE8"/>';
+
+    svg.innerHTML = html;
+
+    // Stats
+    var remaining = 6 - stage;
+    var effortMultiplier = [1, 3, 5, 7, 9, 10];
+    statsEl.innerHTML =
+      '<div class="stat-card"><div class="stat-value" style="color:#5B4AE8">' + completePct + '%</div><div class="stat-label">Completion</div></div>' +
+      '<div class="stat-card"><div class="stat-value">' + remaining + '</div><div class="stat-label">Remaining Layers</div></div>' +
+      '<div class="stat-card"><div class="stat-value">' + effortMultiplier[stage - 1] + 'x</div><div class="stat-label">Effort vs Notebook</div></div>' +
+      '<div class="stat-card"><div class="stat-value" style="color:' + riskColors[stage - 1] + '">' + riskLabels[stage - 1] + '</div><div class="stat-label">Risk Level</div></div>';
+  }
+
+  render();
+})();
+
+// ════════════════════════════════════════════════════
+// WIDGET 6: METRIC ALIGNMENT CHECKER
+// ════════════════════════════════════════════════════
+(function() {
+  var useCases = [
+    {
+      name: 'Support Bot',
+      techMetrics: [
+        { name: 'Response Accuracy', connects: true, target: 0 },
+        { name: 'Latency (ms)', connects: false, target: -1 },
+        { name: 'F1 Score', connects: false, target: -1 },
+        { name: 'Intent Classification', connects: true, target: 1 }
+      ],
+      bizMetrics: [
+        { name: 'Resolution Rate' },
+        { name: 'Escalation Frequency' },
+        { name: 'Customer Satisfaction' },
+        { name: 'Cost per Ticket' }
+      ],
+      gaps: ['Latency and F1 have no direct business connection', 'Resolution rate is the metric that matters most'],
+      alignment: '50%'
+    },
+    {
+      name: 'Fraud Detection',
+      techMetrics: [
+        { name: 'Precision', connects: true, target: 0 },
+        { name: 'Recall', connects: true, target: 1 },
+        { name: 'AUC-ROC', connects: false, target: -1 },
+        { name: 'F1 Score', connects: false, target: -1 }
+      ],
+      bizMetrics: [
+        { name: '$ Prevented Fraud' },
+        { name: '$ Lost to False Blocks' },
+        { name: 'Investigation Queue Size' },
+        { name: 'Customer Friction' }
+      ],
+      gaps: ['AUC-ROC and F1 look great on dashboards but don\'t map to dollars', 'Net dollar impact = prevented fraud minus customer friction losses'],
+      alignment: '50%'
+    },
+    {
+      name: 'Recommendation',
+      techMetrics: [
+        { name: 'Click-Through Rate', connects: true, target: 0 },
+        { name: 'Offline Precision', connects: false, target: -1 },
+        { name: 'nDCG Score', connects: false, target: -1 },
+        { name: 'Coverage', connects: true, target: 2 }
+      ],
+      bizMetrics: [
+        { name: 'Engagement Depth' },
+        { name: 'Revenue per User' },
+        { name: 'Content Diversity' },
+        { name: '30-Day Retention' }
+      ],
+      gaps: ['Offline precision diverges from live A/B results', 'CTR is a proxy; engagement depth and retention tell the real story'],
+      alignment: '50%'
+    }
+  ];
+
+  var current = 0;
+  var controlsEl = document.getElementById('w6-controls');
+  var svg = document.getElementById('w6-svg');
+  var statsEl = document.getElementById('w6-stats');
+
+  var btnsHtml = '';
+  for (var i = 0; i < useCases.length; i++) {
+    btnsHtml += '<button class="toggle-btn' + (i === 0 ? ' active' : '') + '" data-idx="' + i + '">' + useCases[i].name + '</button>';
+  }
+  controlsEl.innerHTML = btnsHtml;
+
+  var btns = controlsEl.querySelectorAll('.toggle-btn');
+  for (var i = 0; i < btns.length; i++) {
+    btns[i].addEventListener('click', function() {
+      current = parseInt(this.getAttribute('data-idx'));
+      for (var j = 0; j < btns.length; j++) btns[j].classList.remove('active');
+      this.classList.add('active');
+      render();
+    });
+  }
+
+  function render() {
+    var uc = useCases[current];
+    var html = '';
+
+    // Layout
+    var leftX = 20;
+    var rightX = 380;
+    var colW = 230;
+    var startY = 50;
+    var rowH = 56;
+
+    // Headers
+    html += '<text x="' + (leftX + colW / 2) + '" y="25" text-anchor="middle" font-family="Figtree,sans-serif" font-size="13" font-weight="700" fill="rgb(100,100,100)">WHAT TEAMS MEASURE</text>';
+    html += '<text x="' + (rightX + colW / 2) + '" y="25" text-anchor="middle" font-family="Figtree,sans-serif" font-size="13" font-weight="700" fill="rgb(100,100,100)">WHAT ACTUALLY MATTERS</text>';
+
+    // Draw right side first (business metrics)
+    for (var b = 0; b < uc.bizMetrics.length; b++) {
+      var by = startY + b * rowH;
+      html += '<rect x="' + rightX + '" y="' + by + '" width="' + colW + '" height="' + (rowH - 8) + '" rx="8" fill="rgba(91,174,138,0.08)" stroke="#5BAE8A" stroke-width="1.5"/>';
+      html += '<text x="' + (rightX + colW / 2) + '" y="' + (by + (rowH - 8) / 2 + 5) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="13" font-weight="600" fill="rgb(45,45,45)">' + uc.bizMetrics[b].name + '</text>';
+    }
+
+    // Draw left side (tech metrics) and connections
+    for (var t = 0; t < uc.techMetrics.length; t++) {
+      var ty = startY + t * rowH;
+      var tm = uc.techMetrics[t];
+      var borderColor = tm.connects ? '#5B4AE8' : '#E8634A';
+      var bgColor = tm.connects ? 'rgba(91,74,232,0.06)' : 'rgba(232,99,74,0.06)';
+
+      html += '<rect x="' + leftX + '" y="' + ty + '" width="' + colW + '" height="' + (rowH - 8) + '" rx="8" fill="' + bgColor + '" stroke="' + borderColor + '" stroke-width="1.5"/>';
+      html += '<text x="' + (leftX + colW / 2) + '" y="' + (ty + (rowH - 8) / 2 + 5) + '" text-anchor="middle" font-family="Figtree,sans-serif" font-size="13" font-weight="600" fill="rgb(45,45,45)">' + tm.name + '</text>';
+
+      // Connection line or X
+      if (tm.connects && tm.target >= 0) {
+        var targetY = startY + tm.target * rowH;
+        var x1 = leftX + colW;
+        var y1 = ty + (rowH - 8) / 2;
+        var x2 = rightX;
+        var y2 = targetY + (rowH - 8) / 2;
+        var cpx = (x1 + x2) / 2;
+        html += '<path d="M' + x1 + ',' + y1 + ' C' + cpx + ',' + y1 + ' ' + cpx + ',' + y2 + ' ' + x2 + ',' + y2 + '" fill="none" stroke="#5B4AE8" stroke-width="2" opacity="0.4"/>';
+        // Arrow
+        html += '<polygon points="' + x2 + ',' + y2 + ' ' + (x2 - 8) + ',' + (y2 - 4) + ' ' + (x2 - 8) + ',' + (y2 + 4) + '" fill="#5B4AE8" opacity="0.5"/>';
+      } else if (!tm.connects) {
+        // Red X mark
+        var xCenter = leftX + colW + 20;
+        var yCenter = ty + (rowH - 8) / 2;
+        html += '<line x1="' + (xCenter - 6) + '" y1="' + (yCenter - 6) + '" x2="' + (xCenter + 6) + '" y2="' + (yCenter + 6) + '" stroke="#E8634A" stroke-width="2.5"/>';
+        html += '<line x1="' + (xCenter + 6) + '" y1="' + (yCenter - 6) + '" x2="' + (xCenter - 6) + '" y2="' + (yCenter + 6) + '" stroke="#E8634A" stroke-width="2.5"/>';
+      }
+    }
+
+    // Gap analysis at bottom
+    var gapY = startY + 4 * rowH + 20;
+    html += '<rect x="20" y="' + gapY + '" width="596" height="' + (24 + uc.gaps.length * 20) + '" rx="8" fill="rgba(232,99,74,0.05)"/>';
+    html += '<text x="36" y="' + (gapY + 18) + '" font-family="Figtree,sans-serif" font-size="11" font-weight="700" fill="#E8634A">GAPS</text>';
+    for (var g = 0; g < uc.gaps.length; g++) {
+      html += '<text x="36" y="' + (gapY + 36 + g * 18) + '" font-family="Figtree,sans-serif" font-size="11" fill="rgb(80,80,80)">' + uc.gaps[g] + '</text>';
+    }
+
+    svg.innerHTML = html;
+
+    // Stats
+    var connected = 0;
+    var disconnected = 0;
+    for (var t = 0; t < uc.techMetrics.length; t++) {
+      if (uc.techMetrics[t].connects) connected++;
+      else disconnected++;
+    }
+
+    statsEl.innerHTML =
+      '<div class="stat-card"><div class="stat-value">' + uc.techMetrics.length + '</div><div class="stat-label">Technical Metrics</div></div>' +
+      '<div class="stat-card"><div class="stat-value">' + uc.bizMetrics.length + '</div><div class="stat-label">Business Metrics</div></div>' +
+      '<div class="stat-card"><div class="stat-value" style="color:#5B4AE8">' + uc.alignment + '</div><div class="stat-label">Alignment Score</div></div>' +
+      '<div class="stat-card"><div class="stat-value" style="color:#E8634A">' + disconnected + '</div><div class="stat-label">Disconnected</div></div>';
+  }
+
+  render();
+})();
+
+// ════════════════════════════════════════════════════
+// SCROLL REVEAL
+// ════════════════════════════════════════════════════
+(function() {
+  var observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+  document.querySelectorAll('.fade-in').forEach(function(el) { observer.observe(el); });
+})();
+</script>
+</body>
+</html>

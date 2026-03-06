@@ -15,21 +15,8 @@ These are in-depth, interactive articles with hands-on visualizations. They are 
 
 ## Writing
 
-- [Learn AI from zero — a roadmap](https://supergeek.in/self-study-guide-for-learning-ai/): Step-by-step curriculum from Python to deep learning to NLP, with specific free course recommendations.
-- [You're doing RAG retrieval wrong](https://supergeek.in/biggest-misconception-in-rag/): The core argument for matching questions to questions instead of documents. Shorter version of the interactive explainer.
 - [Using agents to make RAG work on time series](https://supergeek.in/agentic-rag-pipeline-for-time-series-analysis/): Agentic RAG architecture for temporal data with tool-calling LLMs.
 - [Why LLMs forget your instructions (and a fix)](https://supergeek.in/reduce-forgetfulness-in-llm-instructions/): Techniques to reduce instruction drift in long conversations with LLMs.
 - [The AI Scientist: when AI does its own research](https://supergeek.in/the-ai-scientist/): Analysis of the AI Scientist framework that automates research ideation, experimentation, paper writing, and peer review for under $15 per paper.
 - [LLMs can't write long. AgentWrite can.](https://supergeek.in/ai-output-limit-solution-agentwrite/): Breaking the output length ceiling with agent-based sequential writing.
 - [Measuring whether your RAG actually works](https://supergeek.in/evaluate-rag-pipelines/): RAG evaluation metrics — context precision, context recall, faithfulness, and answer relevance.
-- [Datasets worth using for LLM training](https://supergeek.in/datasets-for-llm-training/): Curated list of datasets for pretraining, fine-tuning, and instruction tuning LLMs.
-- [Tools for evaluating, training, and deploying LLMs](https://supergeek.in/llm-evaluation-training-deployment/): Practical tools and frameworks across the LLM lifecycle.
-- [The papers that shaped generative AI](https://supergeek.in/llm-milestone-papers/): Annotated list of milestone papers from Transformer to GPT-4, with key contributions of each.
-- [A list of open-source LLMs worth knowing](https://supergeek.in/opem-llms/): Comparison of open-source language models with architecture details and use cases.
-
-## Optional
-
-- [Multidimensional data modeling before the warehouse](https://supergeek.in/multidimensional-data-model/): Data warehouse dimensional modeling concepts.
-- [Credit scoring, explained plainly](https://supergeek.in/whats-credit-scoring/): How credit scoring models work in lending.
-- [What I learned building a credit risk model](https://supergeek.in/credit-risk-modelling/): Practical lessons from building credit underwriting for a small finance bank.
-- [Resources for ML-based trading](https://supergeek.in/quant-machine-learning-trading/): Books, courses, and tools for quantitative trading with machine learning.

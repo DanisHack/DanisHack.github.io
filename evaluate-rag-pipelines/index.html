@@ -3,11 +3,11 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Measuring whether your RAG actually works | Danish Mohd</title>
+<title>Measuring whether your RAG actually works | Danish Khan</title>
 <meta property="og:title" content="Measuring whether your RAG actually works" />
 <meta property="og:locale" content="en_US" />
-<meta name="description" content="How to measure RAG pipeline quality: context precision, context recall, faithfulness, and answer relevance — with practical evaluation frameworks." />
-<meta property="og:description" content="How to measure RAG pipeline quality: context precision, context recall, faithfulness, and answer relevance — with practical evaluation frameworks." />
+<meta name="description" content="70% of RAG systems have no evaluation. Here are the metrics, frameworks, and CI/CD patterns that separate production systems from demos." />
+<meta property="og:description" content="70% of RAG systems have no evaluation. Here are the metrics, frameworks, and CI/CD patterns that separate production systems from demos." />
 <link rel="canonical" href="https://supergeek.in/evaluate-rag-pipelines/" />
 <meta property="og:url" content="https://supergeek.in/evaluate-rag-pipelines/" />
 <meta property="og:site_name" content="Danish Mohd" />
@@ -16,94 +16,118 @@
 <meta name="twitter:card" content="summary_large_image" />
 <meta property="twitter:title" content="Measuring whether your RAG actually works" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2024-07-14T00:00:00+05:30","datePublished":"2024-07-14T00:00:00+05:30","description":"How to measure RAG pipeline quality: context precision, context recall, faithfulness, and answer relevance — with practical evaluation frameworks.","headline":"Measuring whether your RAG actually works","mainEntityOfPage":{"@type":"WebPage","@id":"https://supergeek.in/evaluate-rag-pipelines/"},"author":{"@type":"Person","name":"Danish Mohd","url":"https://supergeek.in"},"url":"https://supergeek.in/evaluate-rag-pipelines/"}</script>
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2026-03-06T00:00:00+05:30","datePublished":"2024-07-14T00:00:00+05:30","description":"70% of RAG systems have no evaluation. Here are the metrics, frameworks, and CI/CD patterns that separate production systems from demos.","headline":"Measuring whether your RAG actually works","mainEntityOfPage":{"@type":"WebPage","@id":"https://supergeek.in/evaluate-rag-pipelines/"},"author":{"@type":"Person","name":"Danish Khan","url":"https://supergeek.in"},"url":"https://supergeek.in/evaluate-rag-pipelines/"}</script>
 
   <link rel="stylesheet" href="/assets/css/post.css">
 </head>
 <body>
   <div class="post-container">
 
-    <a class="post-back" href="/">&larr; Danish Mohd</a>
+    <a class="post-back" href="/">&larr; Danish Khan</a>
 
     <header class="post-header">
-      <div class="post-date">July 14, 2024</div>
+      <div class="post-date">July 2024 (updated March 2026)</div>
       <h1 class="post-title">Measuring whether your RAG actually works</h1>
       <hr class="post-header-rule">
     </header>
 
     <article class="post-content">
-      <p><img src="images/bbb1c16e0f2ea349f275b83fb59f62cfcc0f6bd0-431x442.png" alt="Feature Image" /></p>
 
-<h1 id="how-to-evaluate-rag-pipelines-a-simple-guide-to-getting-it-right">How to Evaluate RAG Pipelines: A Simple Guide to Getting It Right</h1>
+<p>You build a RAG pipeline. You try a few queries. The answers look reasonable. You ship it. Three weeks later, a user asks a question and the system confidently fabricates an answer from context it retrieved but misread. You have no way to know how often this happens because you never measured it.</p>
 
-<p>🤷‍♀️ Evaluating RAG pipelines is like building a house: you wouldn’t start decorating before ensuring the foundation is strong, would you? Before you add all the fancy features, you need to make sure your evaluation setup is solid. It’s crucial but often overlooked. That’s why I’ve put together this quick guide to help you navigate the process.</p>
+<p>This is the default state of most RAG systems. As of early 2026, 70% still lack systematic evaluation. The ones that work well in production all share one thing: they measure retrieval and generation independently, using metrics designed specifically for RAG.</p>
 
-<p>I’ve broken it down into two main parts because, just like a good conversation, RAG pipelines involve both listening and responding. In tech terms, that means <strong>retrieving</strong> information and then <strong>generating</strong> a response. Each part needs its own set of evaluation metrics.</p>
+<h2>The RAG Triad</h2>
 
-<h2 id="-retrieval-dimensions-the-listening-part">📖 Retrieval Dimensions: The Listening Part</h2>
+<p>Every RAG system has three moving parts: a query comes in, context gets retrieved, and a response gets generated. The <a href="https://www.trulens.org/getting_started/core_concepts/rag_triad/">RAG Triad</a>, popularized by TruLens and now adopted across all major evaluation frameworks, measures each interaction between these parts.</p>
 
-<ol>
-  <li>
-    <p><strong>Context Precision</strong>: Think of this as how well you’re tuning in to the conversation. Are you picking up the most important details first, or are you getting sidetracked? It’s about prioritizing the most relevant bits of information.</p>
-  </li>
-  <li>
-    <p><strong>Context Recall</strong>: This is your memory check. Did you remember all the key points of the conversation? It’s about making sure you retrieve information that closely matches what was asked.</p>
-  </li>
-  <li>
-    <p><strong>Context Relevance</strong>: Imagine you’re at a party, and someone asks about your favorite book. Do you respond with something on-topic, or do you start talking about your love for pizza? This dimension checks whether the retrieved context is actually relevant to the question.</p>
-  </li>
-  <li>
-    <p><strong>Context Entity Recall</strong>: Are you getting the names and places right? This checks whether all the important entities (like people, places, or things) are correctly recalled from your memory bank.</p>
-  </li>
-  <li>
-    <p><strong>Noise Robustness</strong>: Ever had someone throw random facts into a conversation, making it hard to follow? This dimension evaluates how well the model can handle irrelevant or distracting information.</p>
-  </li>
-</ol>
+<p><strong>Context relevance</strong> asks: did you retrieve the right documents? If a user asks about return policies and your retriever pulls up shipping information, no amount of good generation will save you. This is the signal-to-noise ratio of your retrieval step.</p>
 
-<h2 id="-generation-dimensions-the-responding-part">📖 Generation Dimensions: The Responding Part</h2>
+<p><strong>Faithfulness</strong> (also called groundedness) asks: is every claim in the response actually supported by the retrieved context? This is the hallucination check. The most common RAG failure mode isn't retrieving wrong documents. It's retrieving right documents and then ignoring, misinterpreting, or extrapolating beyond them. The model sounds confident either way.</p>
 
-<ol>
-  <li>
-    <p><strong>Faithfulness</strong>: This is about trustworthiness. When you generate a response, is it factually correct based on the information you retrieved? It’s like making sure you’re not just making stuff up.</p>
-  </li>
-  <li>
-    <p><strong>Answer Relevance</strong>: Imagine if someone asked you for advice and you gave them a completely unrelated answer. Not very helpful, right? This checks if the generated response actually answers the question.</p>
-  </li>
-  <li>
-    <p><strong>Information Integration</strong>: This is like being a good storyteller. Can you combine different pieces of information into a coherent and useful answer?</p>
-  </li>
-  <li>
-    <p><strong>Counterfactual Robustness</strong>: Sometimes, people get things wrong. This dimension checks if the model can spot and correct these inaccuracies, making sure it doesn’t fall for misinformation.</p>
-  </li>
-  <li>
-    <p><strong>Negative Rejection</strong>: Sometimes, the best response is no response. This measures if the model can resist the urge to answer when it doesn’t have the right information.</p>
-  </li>
-</ol>
+<p><strong>Answer relevance</strong> asks: does the response actually address the user's question? A response can be perfectly grounded in the retrieved context and still be useless if it answers a different question than the one asked.</p>
 
-<h2 id="why-all-this-matters">Why All This Matters</h2>
+<p>These three metrics are necessary and jointly sufficient for basic RAG evaluation. If all three score high, your system is retrieving relevant information, using it faithfully, and producing useful answers. If any one fails, you know exactly where to look.</p>
 
-<p>😎 Understanding these dimensions is like having a roadmap for evaluating your RAG pipeline. Without them, you’re just guessing whether it’s working well or not. Many frameworks already include these dimensions, so before you dive into your project, make sure to check them out. They’re your toolkit for building a robust and reliable system.</p>
+<h2>The metrics in detail</h2>
 
-<h2 id="metrics--frameworks">Metrics &amp; Frameworks</h2>
+<p>Beyond the triad, <a href="https://docs.ragas.io/en/stable/concepts/metrics/available_metrics/">RAGAS</a> (the most widely cited open-source RAG evaluation framework) defines several additional metrics that matter in practice.</p>
 
-<p>Just like how a chef needs the right tools to create a great dish, evaluating RAG pipelines requires the right metrics and frameworks. Here’s a quick rundown of what’s typically used:</p>
+<p><strong>Context precision</strong> measures whether relevant chunks are ranked higher than irrelevant ones in your retrieval results. You might retrieve five documents, three of which are relevant, but if the relevant ones are at positions 3, 4, and 5, the model is more likely to attend to the irrelevant ones at the top. Order matters.</p>
 
+<p><strong>Context recall</strong> measures whether all the information needed to produce a correct answer was actually retrieved. You might retrieve relevant documents but miss a critical piece. This requires ground-truth reference answers to compute, making it harder to run in production but essential during development.</p>
+
+<p><strong>Noise sensitivity</strong> measures how much irrelevant context degrades generation quality. Some models handle noise gracefully. Others weave irrelevant context into confident-sounding hallucinations. If your retriever has mediocre precision, noise sensitivity tells you how much that actually hurts your outputs.</p>
+
+<h2>LLM-as-a-Judge: the evaluation engine</h2>
+
+<p>All of these metrics need a way to compute scores at scale. The dominant approach in 2025-2026 is LLM-as-a-Judge: using a language model to evaluate the outputs of another language model.</p>
+
+<p>This sounds circular, but it works. The <a href="https://openreview.net/forum?id=jVyUlri4Rw">Judge's Verdict benchmark</a> (2025) evaluated 54 LLMs as judges and found that LLM-as-a-Judge achieves roughly 80% agreement with human preferences, which matches human-to-human consistency, at 500-5000x lower cost. Of 54 models tested, 27 achieved top-tier performance, with 23 exhibiting human-like judgment patterns.</p>
+
+<p>The key insight is that judging is easier than generating. A model that might hallucinate when writing a response can still reliably detect hallucinations in someone else's response. It's the same reason a film critic doesn't need to be a director.</p>
+
+<p>Amazon Bedrock made RAG evaluation and LLM-as-a-Judge generally available in March 2025, signaling that this approach has reached enterprise maturity. RAGAS now provides tools to align LLM judges to specific evaluation criteria, including custom rubrics calibrated against human preferences.</p>
+
+<h2>The frameworks</h2>
+
+<p>Four frameworks dominate RAG evaluation in 2026. Each takes a different philosophical approach.</p>
+
+<p><a href="https://docs.ragas.io/en/latest/concepts/metrics/">RAGAS</a> is the reference-free standard. It requires no ground-truth annotations: you can run it on live production queries. It covers context precision, context recall, faithfulness, answer relevance, noise sensitivity, and now supports agentic workflow evaluation and automatic synthetic test data generation. If you're starting from zero, start here.</p>
+
+<p><a href="https://arxiv.org/abs/2311.09476">ARES</a> (Stanford) takes a statistically rigorous approach. Instead of using a general-purpose LLM judge directly, ARES generates synthetic training data from your corpus, fine-tunes lightweight judge models on that data, then uses Prediction-Powered Inference with roughly 150 human-annotated examples to produce calibrated confidence intervals for its scores. If you need to tell your VP of engineering "faithfulness is 0.89 with a 95% confidence interval of [0.86, 0.92]," ARES is how you get there.</p>
+
+<p><a href="https://deepeval.com/guides/guides-rag-evaluation">DeepEval</a> is built for CI/CD integration. It provides 50+ metrics, is compatible with pytest, and treats RAG evaluation like unit testing. You define evaluation suites with passing thresholds, run them on every commit, and block deployment if faithfulness drops below your threshold. Every metric is debuggable: you can inspect the LLM judge's reasoning to understand why a score was assigned.</p>
+
+<p><a href="https://aclanthology.org/2025.emnlp-industry.54/">FaithJudge</a> (Vectara, EMNLP 2025) focuses specifically on hallucination detection. It benchmarks 160+ LLMs on RAG faithfulness across summarization, question-answering, and data-to-text generation. The best judge configuration (o3-mini-high) achieves 84% balanced accuracy and 82.1% F1-macro. Vectara's <a href="https://huggingface.co/vectara/hallucination_evaluation_model">HHEM-2.1</a> model provides probabilistic faithfulness scores: a score of 0.8 means 80% probability the response is factually consistent with context.</p>
+
+<h2>Multi-turn changes everything</h2>
+
+<p>Most RAG evaluation assumes single-turn interactions: one question, one retrieval, one response. Real users have conversations.</p>
+
+<p>IBM's <a href="https://arxiv.org/abs/2501.03468">MTRAG benchmark</a> (TACL 2025) is the first end-to-end human-generated multi-turn RAG benchmark. It covers 110 conversations with 842 tasks across four domains, evaluating faithfulness, appropriateness, naturalness, and completeness.</p>
+
+<p>The findings are sobering. Even state-of-the-art RAG systems struggle significantly on multi-turn conversations. Performance degrades on later turns (where context accumulation causes the same attention problems described in lost-in-the-middle research). Unanswerable questions, non-standalone questions, and cross-domain queries are particularly challenging. Single-turn metrics dramatically overestimate real-world performance.</p>
+
+<p>If your RAG system handles conversations, you need to evaluate on conversations. MTRAG is the benchmark to use.</p>
+
+<h2>Evaluation in production</h2>
+
+<p>The gap between "we evaluated during development" and "we evaluate continuously in production" is where most RAG systems fail.</p>
+
+<p>The production evaluation stack that's emerging in 2025-2026 has three layers. Pre-deployment: generate synthetic test queries from your corpus (RAGAS or RAGEval can do this automatically), run the RAG Triad plus context precision and recall, test specifically for hallucination using FaithJudge or HHEM, benchmark against MTRAG if you support conversations.</p>
+
+<p>CI/CD integration: DeepEval with pytest defines evaluation suites as code. Quality gates block deployment if metrics regress. The evaluation code lives alongside application code and runs on every commit. 60% of new RAG deployments now include systematic evaluation from day one, up from less than 30% in early 2025.</p>
+
+<p>Production monitoring: reference-free metrics (faithfulness and answer relevance via LLM-as-a-Judge) run continuously on live queries. Retrieval latency, relevance scores, and response drift detection catch unexpected changes. Braintrust captures complete execution traces from production and converts failures into test cases automatically, creating a continuous improvement loop.</p>
+
+<p>The key insight is that RAG evaluation isn't a one-time activity. Your documents change. Your users' questions change. Your retrieval index drifts. A system that scored 0.92 faithfulness last month might score 0.78 this month because someone updated the knowledge base and broke three embeddings. Without continuous evaluation, you won't know until a user complains.</p>
+
+<h2>What to do today</h2>
+
+<p>If you have a RAG system in production with no evaluation, here's the minimum viable measurement stack. Install RAGAS. Run context relevance, faithfulness, and answer relevance on a sample of production queries. This takes an afternoon and will immediately tell you whether your system has a retrieval problem, a generation problem, or both.</p>
+
+<p>If you find issues (you will), fix the worse-scoring component first. Low context relevance means your retriever needs work: better embeddings, better chunking, reranking. Low faithfulness means your generation prompt needs constraints or your model needs guardrails. Low answer relevance is usually a retrieval problem in disguise: the model is faithfully summarizing irrelevant context.</p>
+
+<p>Then add it to CI/CD. The bar for "good enough" varies by use case, but if you can't tell whether your last deployment made things better or worse, you don't have an engineering process. You have a prayer.</p>
+
+<hr />
+
+<p><strong>References</strong></p>
 <ul>
-  <li><strong>Metrics</strong>: Accuracy, Precision, Recall, Cosine Similarity, BLEU, ROUGE, and more.</li>
-  <li><strong>Frameworks</strong>: RAGas, TruLens, ARES, DeepEval, and others.</li>
+  <li>Es et al., <a href="https://arxiv.org/abs/2309.15217">RAGAS: Automated Evaluation of Retrieval Augmented Generation</a>, 2023</li>
+  <li>Saad-Falcon et al., <a href="https://arxiv.org/abs/2311.09476">ARES: An Automated Evaluation Framework for RAG Systems</a>, Stanford, 2023</li>
+  <li>Confident AI, <a href="https://deepeval.com/guides/guides-rag-evaluation">DeepEval: The Open-Source LLM Evaluation Framework</a></li>
+  <li>Mishra et al., <a href="https://aclanthology.org/2025.emnlp-industry.54/">FaithJudge: Evaluating Faithfulness in RAG</a>, EMNLP 2025</li>
+  <li>Deng et al., <a href="https://arxiv.org/abs/2501.03468">MTRAG: A Multi-Turn Conversational RAG Benchmark</a>, TACL 2025</li>
+  <li>Zhu et al., <a href="https://arxiv.org/abs/2407.11005">RAGBench: Explainable Benchmark for RAG Systems</a>, 2024</li>
 </ul>
-
-<p>The image guide I’ve shared covers these in more detail, so be sure to check it out. Whether you’re new to evaluating RAG pipelines or just need a refresher, these dimensions will help you ensure your model is both a good listener and a great responder.</p>
-
-<p>So, before you add those fancy features, make sure your foundation is solid. It’s the key to a successful and reliable RAG pipeline.</p>
-
-<p>Happy building! 🏗️</p>
 
     </article>
 
     <footer class="post-footer">
       <a href="/">&larr; Back home</a>
-      <span class="post-footer-copy">&copy; 2026 Danish Mohd</span>
+      <span class="post-footer-copy">&copy; 2026 Danish Khan</span>
     </footer>
 
   </div>

@@ -3,83 +3,120 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>The AI Scientist: when AI does its own research | Danish Mohd</title>
-<meta property="og:title" content="The AI Scientist: when AI does its own research" />
+<title>When AI does its own research | Danish Khan</title>
+<meta property="og:title" content="When AI does its own research" />
 <meta property="og:locale" content="en_US" />
-<meta name="description" content="The AI Scientist framework automates research: ideation, experiments, paper writing, and peer review — all for under $15 per paper." />
-<meta property="og:description" content="The AI Scientist framework automates research: ideation, experiments, paper writing, and peer review — all for under $15 per paper." />
+<meta name="description" content="From $15 papers to peer-reviewed publications. How automated scientific discovery went from demo to reality in 18 months." />
+<meta property="og:description" content="From $15 papers to peer-reviewed publications. How automated scientific discovery went from demo to reality in 18 months." />
 <link rel="canonical" href="https://supergeek.in/the-ai-scientist/" />
 <meta property="og:url" content="https://supergeek.in/the-ai-scientist/" />
 <meta property="og:site_name" content="Danish Mohd" />
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2024-08-27T00:00:00+05:30" />
 <meta name="twitter:card" content="summary_large_image" />
-<meta property="twitter:title" content="The AI Scientist: when AI does its own research" />
+<meta property="twitter:title" content="When AI does its own research" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2024-08-27T00:00:00+05:30","datePublished":"2024-08-27T00:00:00+05:30","description":"The AI Scientist framework automates research: ideation, experiments, paper writing, and peer review — all for under $15 per paper.","headline":"The AI Scientist: when AI does its own research","mainEntityOfPage":{"@type":"WebPage","@id":"https://supergeek.in/the-ai-scientist/"},"author":{"@type":"Person","name":"Danish Mohd","url":"https://supergeek.in"},"url":"https://supergeek.in/the-ai-scientist/"}</script>
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2026-03-06T00:00:00+05:30","datePublished":"2024-08-27T00:00:00+05:30","description":"From $15 papers to peer-reviewed publications. How automated scientific discovery went from demo to reality in 18 months.","headline":"When AI does its own research","mainEntityOfPage":{"@type":"WebPage","@id":"https://supergeek.in/the-ai-scientist/"},"author":{"@type":"Person","name":"Danish Khan","url":"https://supergeek.in"},"url":"https://supergeek.in/the-ai-scientist/"}</script>
 
   <link rel="stylesheet" href="/assets/css/post.css">
 </head>
 <body>
   <div class="post-container">
 
-    <a class="post-back" href="/">&larr; Danish Mohd</a>
+    <a class="post-back" href="/">&larr; Danish Khan</a>
 
     <header class="post-header">
-      <div class="post-date">August 27, 2024</div>
-      <h1 class="post-title">The AI Scientist: when AI does its own research</h1>
+      <div class="post-date">August 2024 (updated March 2026)</div>
+      <h1 class="post-title">When AI does its own research</h1>
       <hr class="post-header-rule">
     </header>
 
     <article class="post-content">
-      <p><img src="images/1725057209572.jpeg" alt="Feature Image" /></p>
 
-<h1 id="can-ai-replace-its-own-creators-meet-the-ai-scientist">Can AI Replace Its Own Creators? Meet “The AI Scientist”!</h1>
+<p>In August 2024, Sakana Labs released a system called <a href="https://arxiv.org/abs/2408.06292">The AI Scientist</a>. It could generate research ideas, write code, run experiments, produce figures, draft a full paper, and review its own work. The whole pipeline cost about $15 per paper.</p>
 
-<p>The question of whether AI will replace software engineers is old news. The real debate now is whether AI can replace its own creators—AI scientists! That’s right, we’re talking about AI that doesn’t just follow instructions but actually thinks, discovers, and creates on its own. Buckle up, because what you’re about to read might just blow your mind.</p>
+<p>The reaction was predictable. Some called it the end of science as we know it. Others pointed out the papers were terrible. Both groups were wrong in interesting ways.</p>
 
-<h2 id="introducing-the-ai-scientist">Introducing: The AI Scientist</h2>
+<h2>The $15 paper and its problems</h2>
 
-<p>Imagine a world where scientific discovery happens without human intervention. That’s the idea behind “The AI Scientist,” a groundbreaking framework that pushes the boundaries of what’s possible with AI. This isn’t just a tool; it’s a fully automated scientific genius in its own right!</p>
+<p>The AI Scientist v1 worked in a narrow domain: machine learning research on topics like diffusion models and grokking. It followed a template: take a human-authored code scaffold, generate a hypothesis, modify the code, run experiments, plot results, write a LaTeX paper, then use an LLM-based reviewer to score it.</p>
 
-<p>So, what exactly can The AI Scientist do? Well, it can:</p>
+<p>The claimed result was that some generated papers exceeded the acceptance threshold of a top ML conference, as judged by its own automated reviewer. This is like grading your own exam.</p>
 
-<ul>
-  <li><strong>Come up with research ideas</strong>: No more brainstorming sessions. This AI is like the Einstein of the digital age, generating fresh ideas out of thin air.</li>
-  <li><strong>Write code and run experiments</strong>: Once it has an idea, The AI Scientist can write the necessary code, execute the experiments, and even visualize the results. Imagine having a lab partner that never sleeps and never needs coffee!</li>
-  <li><strong>Draft scientific papers</strong>: But wait, there’s more! It doesn’t stop at doing research. The AI Scientist can draft full-fledged scientific papers, ready for publication.</li>
-  <li><strong>Peer review its own work</strong>: Here’s where it gets wild. The AI Scientist conducts a simulated peer review process to evaluate its own findings, ensuring that the research is up to snuff.</li>
-</ul>
+<p>An <a href="https://arxiv.org/abs/2502.14297">independent evaluation</a> in February 2025 told a different story. 42% of experiments failed due to coding errors. The literature review was simplistic keyword search, not genuine synthesis. Well-established concepts like micro-batching for SGD were incorrectly flagged as novel. In one case, the system couldn't correctly compare the magnitudes of two numbers.</p>
 
-<h2 id="the-impact-of-the-ai-scientist">The Impact of The AI Scientist</h2>
+<p>These aren't minor issues. They're fundamental. A scientist who can't tell whether their result is new, can't get their code to run half the time, and can't compare two numbers isn't really a scientist.</p>
 
-<p>Now, you might be thinking, “Surely this kind of technology must cost a fortune?” Surprisingly, each research paper generated by The AI Scientist costs less than $15. That’s pocket change in the world of research, making this AI not just powerful, but also incredibly affordable and scalable. Imagine the potential for research in underfunded areas!</p>
+<h2>Then v2 passed peer review</h2>
 
-<p>The AI Scientist has already been put to the test in diverse fields of machine learning, from diffusion modeling to language processing. And guess what? It passed with flying colors. Some of the papers generated using this framework have met the acceptance criteria for top machine learning conferences. Yes, you read that right—AI-generated papers are being recognized by experts in the field.</p>
+<p>In April 2025, Sakana released <a href="https://arxiv.org/abs/2504.08066">The AI Scientist v2</a>. The architecture changed significantly. Instead of following a human-authored template, v2 used agentic tree search: an experiment manager agent explores multiple research directions in parallel, pruning dead ends and doubling down on promising paths. A vision-language model provided iterative feedback on figure quality. The system could generalize across ML domains, not just the specific subfields v1 was scaffolded for.</p>
 
-<h2 id="automated-peer-review-the-cherry-on-top">Automated Peer Review: The Cherry on Top</h2>
+<p>Sakana submitted three AI-generated papers to an ICLR 2025 workshop. One received reviewer scores of 6, 7, and 6, placing it in roughly the top 45% of submissions. It was accepted. This was the first fully AI-generated paper to pass actual peer review at a major conference.</p>
 
-<p>What really sets The AI Scientist apart is its built-in, automated peer review system. It uses foundation models trained on human review data from established conferences to evaluate the quality of its own papers. This means it can judge the novelty, clarity, and scientific merit of its work, just like a human reviewer would.</p>
+<p>But context matters. The workshop track was "I Can't Believe It's Not Better: Challenges in Applied Deep Learning," designed to have lower requirements than standard tracks. The authors themselves stated that none of the three papers met their internal bar for an ICLR conference-track paper. Passing a workshop is not the same as passing the conference. Still, the gap between v1 (fails its own review) and v2 (passes external review) closed remarkably fast.</p>
 
-<p>The results? The automated reviewer’s performance was surprisingly close to that of human reviewers, with balanced accuracy scores of 65% vs. 66%. That’s almost on par with the experts! If AI can critique its own work as well as humans can, what does that mean for the future of scientific discovery?</p>
+<h2>Everyone else showed up</h2>
 
-<h2 id="whats-next">What’s Next?</h2>
+<p>What happened next was more interesting than The AI Scientist itself. By early 2026, automated scientific discovery had become a crowded field.</p>
 
-<p>So, where do we go from here? Are we heading towards a future where AI not only assists scientists but actually <em>becomes</em> the scientist? While it’s too early to tell, one thing is clear: The AI Scientist is a massive leap forward in the world of artificial intelligence.</p>
+<p>Google released <a href="https://research.google/blog/accelerating-scientific-breakthroughs-with-an-ai-co-scientist/">AI Co-Scientist</a> in March 2025, a multi-agent system powered by Gemini 2.0 that positioned itself not as a replacement for scientists but as a collaborator. The results were striking because they were validated in the real world. It proposed a novel gene transfer mechanism for antimicrobial resistance that was independently confirmed by researchers at Imperial College London, who had spent years studying the same question. It identified drug candidates for liver fibrosis: three novel epigenetic modifiers, two of which showed confirmed anti-fibrotic activity in hepatic organoids without toxicity, validated at Stanford. It proposed drug repurposing candidates for acute myeloid leukemia that inhibited tumor viability at clinically relevant concentrations.</p>
 
-<p>It’s a tool that could revolutionize the way we conduct research, making it faster, cheaper, and more accessible than ever before. But it also raises some big questions about the future of human involvement in scientific discovery.</p>
+<p>These aren't paper results. These are drugs that work in lab tests. That's a different category entirely.</p>
 
-<p>Is AI about to replace its own creators? Only time will tell, but one thing’s for sure—The AI Scientist is just the beginning.</p>
+<p><a href="https://arxiv.org/abs/2505.18705">AI-Researcher</a>, from the University of Hong Kong, earned a NeurIPS 2025 Spotlight. It runs a three-stage pipeline: literature review and idea generation, algorithm design and implementation, and manuscript preparation. It was evaluated against 22 benchmark papers, and its contributions were described as "frequently approaching human-level quality."</p>
+
+<p>The Allen Institute for AI launched <a href="https://allenai.org/blog/autodiscovery">AutoDiscovery</a> in February 2026, built on their <a href="https://allenai.org/blog/asta">Asta</a> open-science platform. AutoDiscovery takes a fundamentally different approach: instead of starting with a hypothesis, it starts with data. It generates hypotheses in natural language, writes and executes Python code to test them, interprets the results, and uses those findings to generate new hypotheses. It searches across 108 million academic abstracts and 12 million full-text papers. The output is a reproducible list of research directions, each with code and traceable evidence paths.</p>
+
+<h2>The math got solved too</h2>
+
+<p>While automated paper-writing was getting the headlines, automated mathematical reasoning was making arguably more profound progress.</p>
+
+<p>DeepMind's <a href="https://deepmind.google/blog/ai-solves-imo-problems-at-silver-medal-level/">AlphaProof</a>, combining reinforcement learning with Lean 4 formal proofs, solved 4 of 6 problems at the 2024 International Mathematical Olympiad, earning silver medal status (28/42 points). One of those was the competition's hardest problem, solved by only five human contestants.</p>
+
+<p>One year later, <a href="https://deepmind.google/blog/advanced-version-of-gemini-with-deep-think-officially-achieves-gold-medal-standard-at-the-international-mathematical-olympiad/">Gemini Deep Think</a> solved 5 of 6 IMO 2025 problems, scoring 35/42 for gold medal standard. It worked entirely in natural language within the 4.5-hour time limit. IMO coordinators graded the solutions using the same criteria as for students and described them as "clear, precise and most of them easy to follow." Silver to gold in one year.</p>
+
+<p>FunSearch, published in Nature in December 2023, discovered genuinely new mathematical constructions for the cap set problem, going beyond the best-known human results. It found these by searching in program space rather than solution space, which made the outputs interpretable and verifiable.</p>
+
+<h2>AI reviewing AI</h2>
+
+<p>One underappreciated piece of all this is the peer review side. If AI systems are writing papers, we need to know whether AI systems can evaluate them.</p>
+
+<p>Stanford's <a href="https://paperreview.ai/tech-overview">Agentic Reviewer</a> was tested on 297 ICLR 2025 submissions. The AI-human Spearman correlation was 0.42. The human-human Spearman correlation was 0.41. That is, the AI reviewer's agreement with humans is essentially identical to humans' agreement with each other. The AI's acceptance prediction AUC was 0.75 versus 0.84 for a single human reviewer, so it's not quite there on binary accept/reject, but the gap is smaller than most people assume.</p>
+
+<p>ICLR 2025 itself deployed AI review tools across 10,000+ submissions. The tools suggest ways reviewers could be more specific and constructive. The known limitation: LLMs are significantly less likely than humans to comment on novelty. They're biased toward checking technical validity, which is easier to verify from the text alone.</p>
+
+<p>There's also an adversarial risk. Researchers have shown that hidden instructions can be embedded in manuscripts to game AI reviewers. This is the same prompt injection problem that plagues every LLM system, just in academic clothing.</p>
+
+<h2>What actually changed</h2>
+
+<p>The honest summary of where things stand in early 2026:</p>
+
+<p>AI can produce papers that pass workshop-level peer review, but not conference-level. It can identify drug candidates that work in organoids, but not in clinical trials. It can earn IMO gold medals. It can review papers about as well as a single human reviewer.</p>
+
+<p>The limitations that persist are more interesting than the capabilities. Novelty detection remains fundamentally weak. AI systems still struggle to determine whether an idea is genuinely new versus a rediscovery of known results. Hallucination risk means all systems require external verifiers; unsupervised discovery is unreliable. Current systems work in ML and CS; extending to wet-lab sciences requires physical automation that doesn't exist yet. And every serious project, from Google to Ai2, explicitly positions as "co-scientist," not replacement.</p>
+
+<p>But the trajectory matters more than the snapshot. The AI Scientist v1 was a demo with a 42% experiment failure rate. Eighteen months later, we have validated drug candidates, IMO gold medals, and peer-reviewed publications. The question isn't whether AI will do real science. It's how long until the gap between "workshop paper" and "Nature paper" closes the way the gap between "self-graded demo" and "peer-reviewed publication" already did.</p>
 
 <hr />
 
-<p>For more details, you can check out the <a href="https://arxiv.org/pdf/2408.06292">full paper here</a>.</p>
+<p><strong>References</strong></p>
+<ul>
+  <li>Lu et al., <a href="https://arxiv.org/abs/2408.06292">The AI Scientist: Towards Fully Automated Open-Ended Scientific Discovery</a>, 2024</li>
+  <li>Lu et al., <a href="https://arxiv.org/abs/2504.08066">The AI Scientist-v2: Workshop-Level Automated Scientific Discovery via Agentic Tree Search</a>, 2025</li>
+  <li>Schmidgall et al., <a href="https://arxiv.org/abs/2502.14297">Evaluating Sakana's AI Scientist: Bold Claims, Mixed Results</a>, 2025</li>
+  <li>Google, <a href="https://research.google/blog/accelerating-scientific-breakthroughs-with-an-ai-co-scientist/">Accelerating Scientific Breakthroughs with an AI Co-Scientist</a>, 2025</li>
+  <li>Huang et al., <a href="https://arxiv.org/abs/2505.18705">AI-Researcher: Autonomous Scientific Innovation</a>, NeurIPS 2025</li>
+  <li>Allen Institute for AI, <a href="https://allenai.org/blog/autodiscovery">AutoDiscovery: Automated Scientific Discovery</a>, 2026</li>
+  <li>Trinh et al., <a href="https://www.nature.com/articles/s41586-025-09833-y">AlphaProof</a>, Nature 2025</li>
+  <li>DeepMind, <a href="https://deepmind.google/blog/advanced-version-of-gemini-with-deep-think-officially-achieves-gold-medal-standard-at-the-international-mathematical-olympiad/">Gemini Deep Think achieves IMO Gold</a>, 2025</li>
+  <li>OpenAI, <a href="https://openai.com/index/frontierscience/">FrontierScience Benchmark</a>, 2025</li>
+</ul>
 
     </article>
 
     <footer class="post-footer">
       <a href="/">&larr; Back home</a>
-      <span class="post-footer-copy">&copy; 2026 Danish Mohd</span>
+      <span class="post-footer-copy">&copy; 2026 Danish Khan</span>
     </footer>
 
   </div>

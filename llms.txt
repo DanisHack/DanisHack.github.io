@@ -15,8 +15,8 @@ These are in-depth, interactive articles with hands-on visualizations. They are 
 
 ## Writing
 
-- [Using agents to make RAG work on time series](https://supergeek.in/agentic-rag-pipeline-for-time-series-analysis/): Agentic RAG architecture for temporal data with tool-calling LLMs.
-- [Why LLMs forget your instructions (and a fix)](https://supergeek.in/reduce-forgetfulness-in-llm-instructions/): Techniques to reduce instruction drift in long conversations with LLMs.
-- [The AI Scientist: when AI does its own research](https://supergeek.in/the-ai-scientist/): Analysis of the AI Scientist framework that automates research ideation, experimentation, paper writing, and peer review for under $15 per paper.
-- [LLMs can't write long. AgentWrite can.](https://supergeek.in/ai-output-limit-solution-agentwrite/): Breaking the output length ceiling with agent-based sequential writing.
-- [Measuring whether your RAG actually works](https://supergeek.in/evaluate-rag-pipelines/): RAG evaluation metrics — context precision, context recall, faithfulness, and answer relevance.
+- [Why RAG fails on time series (and what works instead)](https://supergeek.in/agentic-rag-pipeline-for-time-series-analysis/): Why standard RAG breaks on temporal data, how agentic architectures route to specialized sub-agents, and how time series foundation models (TimesFM, Chronos-2, Lag-Llama) are changing forecasting.
+- [Why LLMs forget your instructions (and what actually fixes it)](https://supergeek.in/reduce-forgetfulness-in-llm-instructions/): The U-shaped attention curve, context rot across 18 models, KV cache competition, Writing in the Margins, and practical fixes: instruction pinning, structured prompts, compaction, multi-agent delegation, prompt caching.
+- [When AI does its own research](https://supergeek.in/the-ai-scientist/): From $15 papers to peer-reviewed publications. AI Scientist v1/v2 (Sakana), Google AI Co-Scientist (validated drug candidates), AI-Researcher (NeurIPS Spotlight), AlphaProof/Gemini Deep Think (IMO Gold), Ai2 AutoDiscovery, and the state of automated scientific discovery.
+- [Why LLMs can't write long (and what breaks the ceiling)](https://supergeek.in/ai-output-limit-solution-agentwrite/): Why LLMs hit output length limits despite million-token context windows. AgentWrite plan-then-generate pipeline, LongWriter-6k dataset (ICLR 2025), Chain of Agents, Recursive Language Models, and the training data bottleneck.
+- [Measuring whether your RAG actually works](https://supergeek.in/evaluate-rag-pipelines/): The RAG Triad (context relevance, faithfulness, answer relevance), RAGAS, ARES (Stanford), DeepEval, FaithJudge (EMNLP 2025), LLM-as-a-Judge, MTRAG multi-turn benchmark, and CI/CD quality gates for production RAG.

@@ -3,87 +3,122 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Using agents to make RAG work on time series | Danish Mohd</title>
-<meta property="og:title" content="Using agents to make RAG work on time series" />
+<title>Why RAG fails on time series (and what works instead) | Danish Khan</title>
+<meta property="og:title" content="Why RAG fails on time series (and what works instead)" />
 <meta property="og:locale" content="en_US" />
-<meta name="description" content="How to build an agentic RAG pipeline that handles time series data using tool-calling LLMs and structured temporal queries." />
-<meta property="og:description" content="How to build an agentic RAG pipeline that handles time series data using tool-calling LLMs and structured temporal queries." />
+<meta name="description" content="Standard RAG retrieves text. Time series isn't text. Here's how agentic architectures and foundation models are solving temporal reasoning." />
+<meta property="og:description" content="Standard RAG retrieves text. Time series isn't text. Here's how agentic architectures and foundation models are solving temporal reasoning." />
 <link rel="canonical" href="https://supergeek.in/agentic-rag-pipeline-for-time-series-analysis/" />
 <meta property="og:url" content="https://supergeek.in/agentic-rag-pipeline-for-time-series-analysis/" />
-<meta property="og:site_name" content="Danish Mohd" />
+<meta property="og:site_name" content="Danish Khan" />
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2024-09-01T00:00:00+05:30" />
 <meta name="twitter:card" content="summary_large_image" />
-<meta property="twitter:title" content="Using agents to make RAG work on time series" />
+<meta property="twitter:title" content="Why RAG fails on time series (and what works instead)" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2024-09-01T00:00:00+05:30","datePublished":"2024-09-01T00:00:00+05:30","description":"How to build an agentic RAG pipeline that handles time series data using tool-calling LLMs and structured temporal queries.","headline":"Using agents to make RAG work on time series","mainEntityOfPage":{"@type":"WebPage","@id":"https://supergeek.in/agentic-rag-pipeline-for-time-series-analysis/"},"author":{"@type":"Person","name":"Danish Mohd","url":"https://supergeek.in"},"url":"https://supergeek.in/agentic-rag-pipeline-for-time-series-analysis/"}</script>
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2026-03-06T00:00:00+05:30","datePublished":"2024-09-01T00:00:00+05:30","description":"Standard RAG retrieves text. Time series isn't text. Here's how agentic architectures and foundation models are solving temporal reasoning.","headline":"Why RAG fails on time series (and what works instead)","mainEntityOfPage":{"@type":"WebPage","@id":"https://supergeek.in/agentic-rag-pipeline-for-time-series-analysis/"},"author":{"@type":"Person","name":"Danish Khan","url":"https://supergeek.in"},"url":"https://supergeek.in/agentic-rag-pipeline-for-time-series-analysis/"}</script>
 
   <link rel="stylesheet" href="/assets/css/post.css">
 </head>
 <body>
   <div class="post-container">
 
-    <a class="post-back" href="/">&larr; Danish Mohd</a>
+    <a class="post-back" href="/">&larr; Danish Khan</a>
 
     <header class="post-header">
-      <div class="post-date">September 1, 2024</div>
-      <h1 class="post-title">Using agents to make RAG work on time series</h1>
+      <div class="post-date">September 2024 (updated March 2026)</div>
+      <h1 class="post-title">Why RAG fails on time series (and what works instead)</h1>
       <hr class="post-header-rule">
     </header>
 
     <article class="post-content">
-      <p><img src="images/1725307609130.jpeg" alt="Feature Image" /></p>
 
-<p>Agentic RAG (Retrieval-Augmented Generation) is quickly becoming a hot topic in AI. And now, we’re about to witness another level up—Agentic RAG, especially for time-series analysis.</p>
+<p>Ask an LLM to summarize a legal contract and it does fine. Ask it what revenue will look like next quarter, given the last three years of monthly data, and it falls apart.</p>
 
-<p>So, what is it? And why should you care?</p>
+<p>This isn't surprising. RAG was designed for text. You embed documents, retrieve relevant chunks, feed them to the model. The model reads the chunks and generates an answer. It works because language has a stable structure. A paragraph about contract termination clauses means roughly the same thing whether it was written in 2020 or 2024.</p>
 
-<h2 id="what-is-agentic-rag">What is Agentic RAG?</h2>
+<p>Time series data is nothing like this.</p>
 
-<p>Imagine you’re managing a huge project, and you’ve got a team of specialists working under you—each person assigned to a specific task. One is great at forecasting, another is a pro at spotting anomalies, and a third is skilled at classification. Now, what if I told you this is exactly how Agentic RAG works?</p>
+<h2>Why time series breaks standard RAG</h2>
 
-<p>It’s like a super-organized team of AI agents, with a master agent acting as the project manager. This “project manager” directs the “specialists” (also known as sub-agents) to focus on specific tasks. These sub-agents are like mini-AIs that handle only one job, whether it’s forecasting future trends, detecting unusual spikes, or classifying patterns in data.</p>
+<p>A time series is a sequence of numbers indexed by time. Stock prices. Server CPU usage. Monthly revenue. Daily temperature. The numbers themselves carry almost no semantic meaning in isolation. The value 47.3 means nothing until you know it's the temperature in Delhi in June, that yesterday was 46.8, and that the monsoon typically arrives by the second week.</p>
 
-<h2 id="so-how-does-it-work">So, How Does It Work?</h2>
+<p>Standard RAG can't handle this. There are three specific reasons.</p>
 
-<p>Here’s the simple breakdown:</p>
+<p>First, embeddings don't capture temporal patterns. When you embed the sentence "revenue grew 15% year over year," a text embedding model understands that. But if you embed the raw sequence [100, 108, 112, 115], the model has no idea that this represents decelerating growth. The shape of the curve matters. Text embeddings don't see shapes.</p>
 
-<ul>
-  <li><strong>Master Agent</strong>: The project manager that controls everything.</li>
-  <li><strong>Sub-agents</strong>: The specialists, each trained for specific time-series tasks like forecasting, anomaly detection, or classification.</li>
-</ul>
+<p>Second, retrieval by similarity fails when context is temporal. In text RAG, you retrieve chunks that are semantically similar to the query. But the most useful historical data for a time series forecast isn't data that "looks similar" in embedding space. It's data from the same season last year, or data from the last time the same macroeconomic conditions held. The relevance function is fundamentally different.</p>
 
-<p>But what makes these sub-agents stand out? They’re not just regular AIs. These sub-agents use smaller, pre-trained language models (SLMs), which are essentially AI models that have already learned a lot but are fine-tuned to specialize in time-series tasks.</p>
+<p>Third, time series has distribution shifts. The statistical properties of the data change over time. A model trained on pre-COVID retail data will be wrong about post-COVID retail data, even though the numbers are in the same format. Text doesn't shift this way. The meaning of a legal clause doesn't suddenly change because of a pandemic.</p>
 
-<h2 id="the-power-of-slms">The Power of SLMs</h2>
+<h2>What actually works: agents that route, not just retrieve</h2>
 
-<p>Think of SLMs like a team of apprentices who have gone through extensive training and are now experts in specific tasks. They retrieve relevant prompts—kind of like remembering key lessons or strategies—from a shared pool of knowledge. This knowledge pool holds patterns and trends from historical data, like seasonality or cyclicality.</p>
+<p>The insight behind agentic RAG for time series is simple: don't try to make one model do everything. Instead, build a system where an LLM acts as a router, directing different parts of the problem to specialized tools.</p>
 
-<p>When these sub-agents work together, they use this historical knowledge to make more accurate predictions, spot anomalies, and classify data trends.</p>
+<p>Think of it like a hospital. You don't want one doctor doing surgery, reading X-rays, and running blood tests. You want a triage nurse (the master agent) who figures out what's wrong and sends you to the right specialist (the sub-agents).</p>
 
-<h2 id="why-does-it-matter">Why Does It Matter?</h2>
+<p>Ravuru et al. formalized this in their <a href="https://arxiv.org/abs/2408.14484">KDD 2024 paper</a>. Their architecture has three layers:</p>
 
-<p>Time-series analysis isn’t new, but traditional methods can be hit-or-miss. Often, older techniques rely on rigid, task-specific tools that don’t learn as effectively from historical data. With Agentic RAG, though, you’re getting state-of-the-art performance across multiple tasks—forecasting, anomaly detection, and classification.</p>
+<p>A <strong>master agent</strong> that receives the user's question and decides what kind of time series task it is. Is this a forecasting problem? Anomaly detection? Classification?</p>
 
-<p>And here’s where it gets even more impressive: the system is optimized through <strong>instruction tuning</strong> and <strong>Direct Preference Optimization (DPO)</strong>. This means these AI sub-agents are specifically aligned with task goals, so they don’t just “kind of work.” They actually outperform other time-series analysis methods across benchmark datasets.</p>
+<p><strong>Sub-agents</strong>, each fine-tuned for one specific task. These aren't general-purpose LLMs. They're smaller language models (think 7B parameters, not 70B) that have been instruction-tuned on time series data with Direct Preference Optimization. They're specialists.</p>
 
-<h2 id="final-thoughts">Final Thoughts</h2>
+<p>A <strong>shared prompt pool</strong> that stores distilled knowledge about historical patterns: seasonality, cyclicality, trend shapes. When a sub-agent needs context, it retrieves from this pool. This is where the "retrieval" in RAG happens, but it's retrieval of patterns, not paragraphs.</p>
 
-<p>Agentic RAG isn’t just another buzzword. It’s a game-changing architecture designed to handle complex time-series analysis in a way that’s efficient, accurate, and scalable. With this multi-agent setup, you can finally get the most out of your time-series data without juggling different tools or models.</p>
+<p>The key result: this multi-agent setup outperforms single-model approaches across forecasting, anomaly detection, and classification benchmarks. Not because the individual models are better, but because the routing is better. Each model only handles the problem it was trained for.</p>
 
-<p>In other words, it’s like having a dedicated team of experts who are always ready to take on your most challenging tasks—and they don’t even need coffee breaks.</p>
+<h2>The foundation model wave</h2>
 
-<p>So, keep an eye out for startups pitching this to investors. With the way things are heading, Agentic RAG might just be the next big thing in AI innovation.</p>
+<p>While the agentic approach solves the routing problem, there's a parallel revolution happening: foundation models built specifically for time series.</p>
+
+<p>The analogy to LLMs is precise. GPT-3 showed that a model pre-trained on a huge text corpus could do well on tasks it was never explicitly trained for. The same thing is now happening with time series.</p>
+
+<p>Google's <a href="https://research.google/blog/a-decoder-only-foundation-model-for-time-series-forecasting/">TimesFM</a> is a decoder-only transformer pre-trained on 100 billion real-world time points. It treats patches of time series values the way an LLM treats tokens. The latest version (TimesFM-2.5) uses 200M parameters, half the size of its predecessor, while ranking #1 on GIFT-Eval for both point accuracy and probabilistic accuracy in zero-shot forecasting. No fine-tuning needed. You just feed it a time series and it predicts what comes next.</p>
+
+<p>Amazon's Chronos-2 processes 300+ forecasts per second on a single GPU, consistently beating tuned statistical models out of the box. Lag-Llama, built on the LLaMA architecture, does probabilistic forecasting, outputting full probability distributions rather than point estimates.</p>
+
+<p>These models are doing to ARIMA and Prophet what LLMs did to rule-based NLP. Not replacing them everywhere (ARIMA still wins on clean, stationary data), but making the default choice dramatically easier. You no longer need a statistician to hand-tune seasonal decomposition parameters for every new dataset.</p>
+
+<h2>Where RAG meets time series (properly)</h2>
+
+<p>The most interesting recent work combines retrieval with these foundation models, but does it right.</p>
+
+<p><a href="https://arxiv.org/abs/2411.08249">Retrieval Augmented Forecasting</a> (Tire et al., 2024) doesn't retrieve text. It retrieves time series. When you want to forecast a particular series, it searches a database for historical series with similar shapes and dynamics, then concatenates those retrieved patterns with your input. The foundation model sees both your data and the most relevant historical precedent.</p>
+
+<p>This works because time series has a property that text doesn't: the same pattern often repeats across different domains. Electricity demand in Mumbai and water consumption in Bangalore might follow nearly identical weekly cycles. By retrieving these cross-domain analogues, the model gets useful context it couldn't get from the input series alone. The improvement is largest on out-of-domain data, exactly where you'd expect retrieval to help most.</p>
+
+<p><a href="https://arxiv.org/abs/2508.04231">DCATS</a> (Yeh et al., 2025) takes the agent idea further. Instead of focusing on model architecture, it uses an LLM agent to improve data quality. The agent examines metadata, cleans the input data, filters out irrelevant series, and selects the right subset for training. This data-centric approach achieves a 6% error reduction across all tested models. The insight: sometimes the bottleneck isn't the model, it's the data you feed it.</p>
+
+<h2>What this means practically</h2>
+
+<p>If you're building a system that needs to reason about temporal data, here's what actually matters:</p>
+
+<p>Don't embed time series as text. If you're converting numbers to strings and throwing them into a vector database alongside your documents, you'll get bad results. Time series needs its own retrieval mechanism, one that understands shapes, seasonality, and temporal distance.</p>
+
+<p>Use foundation models as your forecasting backbone. TimesFM-2.5, Chronos-2, or Lag-Llama will outperform hand-tuned ARIMA on most datasets with zero configuration. Start there.</p>
+
+<p>Use agents for routing, not just retrieval. The value of an LLM in a time series pipeline isn't in doing the math. It's in deciding <em>what</em> math to do. Is this a forecasting problem or an anomaly detection problem? Does this data need deseasonalizing first? Should we use the last 30 days or the last 3 years? These are judgment calls that agents handle well.</p>
+
+<p>Retrieve series, not documents. When you need context, retrieve historical time series that look like your current data. Cross-domain retrieval (finding similar patterns in unrelated datasets) is surprisingly effective.</p>
+
+<p>The gap between "ask an AI about numbers" and "ask an AI about text" is closing fast. But it's closing because people stopped trying to make text tools work on numbers, and started building tools that understand what numbers actually are.</p>
 
 <hr />
 
-<p><a href="https://arxiv.org/pdf/2408.14484">Link to the paper</a></p>
+<p><strong>References</strong></p>
+<ul>
+  <li>Ravuru et al., <a href="https://arxiv.org/abs/2408.14484">Agentic Retrieval-Augmented Generation for Time Series Analysis</a>, KDD 2024</li>
+  <li>Das et al., <a href="https://research.google/blog/a-decoder-only-foundation-model-for-time-series-forecasting/">TimesFM: A decoder-only foundation model for time-series forecasting</a>, ICML 2024</li>
+  <li>Tire et al., <a href="https://arxiv.org/abs/2411.08249">Retrieval Augmented Time Series Forecasting</a>, 2024</li>
+  <li>Yeh et al., <a href="https://arxiv.org/abs/2508.04231">Empowering Time Series Forecasting with LLM-Agents (DCATS)</a>, 2025</li>
+  <li>Rasul et al., <a href="https://arxiv.org/abs/2310.08278">Lag-Llama: Towards Foundation Models for Probabilistic Time Series Forecasting</a>, 2023</li>
+</ul>
 
     </article>
 
     <footer class="post-footer">
       <a href="/">&larr; Back home</a>
-      <span class="post-footer-copy">&copy; 2026 Danish Mohd</span>
+      <span class="post-footer-copy">&copy; 2026 Danish Khan</span>
     </footer>
 
   </div>

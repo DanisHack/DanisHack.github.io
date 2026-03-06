@@ -3,84 +3,136 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Why LLMs forget your instructions (and a fix) | Danish Mohd</title>
-<meta property="og:title" content="Why LLMs forget your instructions (and a fix)" />
+<title>Why LLMs forget your instructions (and what actually fixes it) | Danish Khan</title>
+<meta property="og:title" content="Why LLMs forget your instructions (and what actually fixes it)" />
 <meta property="og:locale" content="en_US" />
-<meta name="description" content="LLMs lose track of instructions in long conversations. Practical techniques to reduce instruction drift and maintain compliance." />
-<meta property="og:description" content="LLMs lose track of instructions in long conversations. Practical techniques to reduce instruction drift and maintain compliance." />
+<meta name="description" content="LLMs don't have bad memory. They have an attention problem. Here's the science behind instruction drift and the techniques that actually work." />
+<meta property="og:description" content="LLMs don't have bad memory. They have an attention problem. Here's the science behind instruction drift and the techniques that actually work." />
 <link rel="canonical" href="https://supergeek.in/reduce-forgetfulness-in-llm-instructions/" />
 <meta property="og:url" content="https://supergeek.in/reduce-forgetfulness-in-llm-instructions/" />
-<meta property="og:site_name" content="Danish Mohd" />
+<meta property="og:site_name" content="Danish Khan" />
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2024-08-31T00:00:00+05:30" />
 <meta name="twitter:card" content="summary_large_image" />
-<meta property="twitter:title" content="Why LLMs forget your instructions (and a fix)" />
+<meta property="twitter:title" content="Why LLMs forget your instructions (and what actually fixes it)" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2024-08-31T00:00:00+05:30","datePublished":"2024-08-31T00:00:00+05:30","description":"LLMs lose track of instructions in long conversations. Practical techniques to reduce instruction drift and maintain compliance.","headline":"Why LLMs forget your instructions (and a fix)","mainEntityOfPage":{"@type":"WebPage","@id":"https://supergeek.in/reduce-forgetfulness-in-llm-instructions/"},"author":{"@type":"Person","name":"Danish Mohd","url":"https://supergeek.in"},"url":"https://supergeek.in/reduce-forgetfulness-in-llm-instructions/"}</script>
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2026-03-06T00:00:00+05:30","datePublished":"2024-08-31T00:00:00+05:30","description":"LLMs don't have bad memory. They have an attention problem. Here's the science behind instruction drift and the techniques that actually work.","headline":"Why LLMs forget your instructions (and what actually fixes it)","mainEntityOfPage":{"@type":"WebPage","@id":"https://supergeek.in/reduce-forgetfulness-in-llm-instructions/"},"author":{"@type":"Person","name":"Danish Khan","url":"https://supergeek.in"},"url":"https://supergeek.in/reduce-forgetfulness-in-llm-instructions/"}</script>
 
   <link rel="stylesheet" href="/assets/css/post.css">
 </head>
 <body>
   <div class="post-container">
 
-    <a class="post-back" href="/">&larr; Danish Mohd</a>
+    <a class="post-back" href="/">&larr; Danish Khan</a>
 
     <header class="post-header">
-      <div class="post-date">August 31, 2024</div>
-      <h1 class="post-title">Why LLMs forget your instructions (and a fix)</h1>
+      <div class="post-date">August 2024 (updated March 2026)</div>
+      <h1 class="post-title">Why LLMs forget your instructions (and what actually fixes it)</h1>
       <hr class="post-header-rule">
     </header>
 
     <article class="post-content">
-      <p><img src="images/1725278428243.jpeg" alt="Feature Image" /></p>
 
-<blockquote>
-  <p>Boost Your LLM Accuracy with “Writing in the Margins”</p>
-</blockquote>
+<p>You write a careful system prompt. You tell the model to always respond in JSON. For the first few turns it works perfectly. By turn fifteen, it's back to prose. You didn't change anything. The model just... forgot.</p>
 
-<p>Let’s talk about something we all face when working with Large Language Models (LLMs) – the more instructions you add, the worse they seem to perform. It’s like trying to juggle more and more balls; eventually, something’s going to drop. But what if I told you there’s a way to keep everything in the air, no matter how complex your prompt gets? Enter “Writing in the Margins.”</p>
+<p>This isn't a bug in any particular model. It's a structural property of how transformers process long sequences. And understanding why it happens is the first step to fixing it.</p>
 
-<h2 id="the-problem-with-long-prompts">The Problem with Long Prompts</h2>
+<h2>The attention curve is a U-shape</h2>
 
-<p>When you keep adding details to your LLM prompts, the model starts to struggle. It’s as if the model is trying to hold onto too much information at once, and the result? It forgets some of the details. Imagine trying to remember a grocery list that just keeps getting longer and longer; eventually, you’re going to forget the milk or eggs. This is where “Writing in the Margins” comes in to save the day.</p>
+<p>In 2023, Liu et al. published a paper called <a href="https://arxiv.org/abs/2307.03172">"Lost in the Middle"</a> that made one of the cleanest observations in LLM research. They gave models a long context with a key fact buried at various positions, then asked the model to retrieve it. The result was a U-shaped curve: models attended well to information at the beginning of the context, attended well to the end, and largely ignored the middle.</p>
 
-<h2 id="what-exactly-is-writing-in-the-margins">What Exactly is “Writing in the Margins”?</h2>
+<p>Think about what this means for a conversation. Your system prompt is at the beginning. The user's latest message is at the end. Everything in between, all those earlier turns, the clarifications, the examples you provided three messages ago, sits in the dead zone. The model can see it, technically. It just doesn't pay much attention to it.</p>
 
-<p>Okay, so picture this: you have a super long prompt, kind of like a big, complicated story. Normally, the LLM uses something called the chunked prefill method to break that story into manageable parts, or “chunks.” It processes each chunk one at a time, updating its memory (the KV cache) as it goes. This is supposed to help the model handle long prompts without running out of memory, but it doesn’t always keep everything straight. Important details can slip through the cracks.</p>
+<p>This is why instruction drift happens gradually. The system prompt doesn't disappear. It gets diluted. Each new turn pushes the conversation further from the system prompt and adds more tokens to the middle. The model's effective attention to your original instructions decays with every exchange.</p>
 
-<p>Now, here’s where “Writing in the Margins” switches things up:</p>
+<h2>Context rot is worse than you think</h2>
 
-<ol>
-  <li>
-    <p><strong>Breaking It Down</strong>: Just like before, the prompt is divided into segments. But instead of just moving on to the next chunk, this method adds a little twist.</p>
-  </li>
-  <li>
-    <p><strong>Extractive Instructions</strong>: Each segment gets an extractive instruction – think of it as a mini-summary or a note in the margin of your book. These are called “margins.” They’re checked to make sure they’re still on point with the task.</p>
-  </li>
-  <li>
-    <p><strong>Building It Back Up</strong>: Once the model has these “margins,” it combines the relevant ones and puts them back into the context. This way, nothing gets forgotten along the way, and the final instruction has all the info it needs to get things right.</p>
-  </li>
-</ol>
+<p>Chroma's <a href="https://research.trychroma.com/context-rot">context rot study</a> quantified this across 18 leading models, including GPT-4, Claude, and Gemini. The numbers are stark.</p>
 
-<h2 id="why-does-this-matter">Why Does This Matter?</h2>
+<p>Even with 100% perfect retrieval of relevant information, performance degrades 13.9% to 85% as input length grows. Models that scored over 95% accuracy on short prompts fell to 60-70% on longer contexts. Adding full conversation history (around 113K tokens) dropped accuracy by 30% compared to a focused 300-token version of the same information.</p>
 
-<p>This approach does more than just sound cool; it actually works. “Writing in the Margins” boosts the model’s performance by over 7.5% in tasks that require multi-step thinking, like solving a problem that needs you to remember details from earlier steps. It gets even better with tasks that involve combining information from different parts of the prompt – here, the improvement is more than 30%.</p>
+<p>The degradation patterns vary by model. Claude models decay the slowest but tend to refuse on very long tasks. GPT-4.1 showed erratic outputs, at one point inserting lowercase fragments where proper nouns should be. Gemini 1.5 Pro nosedived starting at just 500-750 words of context.</p>
 
-<h2 id="the-takeaway">The Takeaway</h2>
+<p>The takeaway: a bigger context window doesn't mean a better context window. Having 200K tokens of capacity means nothing if the model stops paying attention after 8K.</p>
 
-<p>If you’re working with LLMs, especially on tasks with long prompts or complex instructions, “Writing in the Margins” is like giving your model a cheat sheet. It helps the model keep track of everything, remember the important stuff, and deliver better results. So next time you’re trying to get your LLM to do some heavy lifting, remember – a little margin writing can go a long way.</p>
+<h2>What's actually happening: the KV cache problem</h2>
 
-<blockquote>
-  <p>I hope that makers of mainstream LLMs like Chatgpt and Claude integrate this in their LLMs so that we can leverage this.</p>
-</blockquote>
+<p>To understand why this happens, you need to understand the KV cache. During inference, the model stores key-value pairs for every token it has processed. This is the mechanism that lets it "remember" earlier parts of the conversation without reprocessing them from scratch.</p>
 
-<p><a href="https://arxiv.org/pdf/2408.14906">Read the full paper here</a></p>
+<p>But the attention mechanism isn't uniform. Each layer has a fixed number of attention heads, each with a fixed capacity. As the sequence grows, every token competes for attention with every other token. Your carefully worded instruction to "always respond in JSON" is competing with hundreds of user messages, tool outputs, and previous responses. It's not that the model forgets. It's that your instruction gets outcompeted.</p>
+
+<p>Xiao et al. discovered something interesting about this in their <a href="https://arxiv.org/abs/2309.17453">attention sink paper</a> (2023). The first few tokens in a sequence receive disproportionately high attention regardless of their content. This is why system prompts work at all: they benefit from this positional advantage. But the advantage is finite. Pile on enough tokens and even the attention sink gets overwhelmed.</p>
+
+<h2>Writing in the Margins: a structural fix</h2>
+
+<p>The most elegant approach to this problem came from Russak et al. in 2024 with a technique called <a href="https://arxiv.org/abs/2408.14906">Writing in the Margins</a> (WiM).</p>
+
+<p>The idea is simple once you see it. Instead of processing the entire context as one sequence and hoping the model attends to the right parts, WiM processes the context in chunks and generates intermediate notes ("margins") for each chunk. These margins are mini-summaries that extract only the task-relevant information. Then, instead of feeding the full context to the model for the final answer, it feeds just the margins plus the question.</p>
+
+<p>Imagine you're reading a 200-page contract to answer one specific question. You could read the whole thing and try to hold it all in your head. Or you could read it section by section, jotting a one-line note in the margin whenever you hit something relevant, then answer the question using only your notes. The second approach is WiM.</p>
+
+<p>The results: 7.5% accuracy improvement on multi-hop reasoning tasks (HotpotQA, MultiHop-RAG) and over 30% F1 improvement on aggregation tasks. No fine-tuning. Works on off-the-shelf models. The overhead is marginal because the margin generation happens during the chunked prefill that the model does anyway.</p>
+
+<h2>What works in practice (2025-2026)</h2>
+
+<p>Research techniques like WiM are important, but most people building with LLMs need practical solutions today. Here's what actually works, ranked by impact.</p>
+
+<h3>1. Put instructions last, not just first</h3>
+
+<p>The U-shaped attention curve has two peaks: beginning and end. Most people only use the beginning (system prompt). But you can exploit recency bias by repeating your critical constraints at the end of the context, right before the model generates.</p>
+
+<p>Concretely: if your system prompt says "respond in JSON," add a final user message or assistant prefill that says "Remember: JSON only." This alone eliminates most instruction drift in production systems. It's ugly but it works because you're putting the instruction where the model is actually looking.</p>
+
+<h3>2. Structure creates salience</h3>
+
+<p>A wall of text is easy to lose attention on. Structured formatting, XML tags, markdown headers, numbered lists, creates visual landmarks that the attention mechanism can latch onto. This isn't metaphorical. The tokenizer produces distinct tokens for structural elements like <code>&lt;instruction&gt;</code> tags, and the model learns during training that these tokens signal important boundaries.</p>
+
+<p>Anthropic's <a href="https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/long-context-tips">long context prompting guide</a> explicitly recommends XML delimiters for this reason. The difference between "respond only in JSON format" buried in a paragraph and <code>&lt;output_format&gt;JSON only&lt;/output_format&gt;</code> is measurable.</p>
+
+<h3>3. Compaction over accumulation</h3>
+
+<p>The single biggest cause of instruction drift in agent systems is context accumulation. Every tool call, every intermediate result, every previous turn gets appended to the context. By turn 30, the model is processing 50K tokens, of which maybe 2K actually matter.</p>
+
+<p>The fix is compaction: periodically summarize the conversation history, discard the raw messages, and continue with just the summary plus the system prompt. Anthropic calls this <a href="https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents">context engineering</a> and considers it more important than prompt engineering. Claude Code does this automatically, compressing conversation history while preserving architectural decisions and unresolved issues.</p>
+
+<p>The key insight: you're not losing information by compacting. You're losing noise. And noise is what causes the model to forget your instructions.</p>
+
+<h3>4. Multi-agent delegation</h3>
+
+<p>If compaction is a band-aid, multi-agent architectures are the proper fix. Instead of one model processing an ever-growing context, a manager agent delegates subtasks to worker agents, each running in a fresh context window. The worker gets a clean context with just the system prompt and the specific subtask. It does its work, returns a summary, and the manager continues.</p>
+
+<p>This is how Claude Code, Cursor, and most production coding agents work in 2025. Each sub-agent sees the minimum context required. No context rot because there's no context to rot.</p>
+
+<h3>5. Prompt caching changes the economics</h3>
+
+<p>OpenAI and Anthropic now cache the KV states of system prompts across requests. This means your system prompt, the part you want the model to attend to most strongly, gets processed once and reused. Anthropic's cache reduces costs by up to 90% on cached tokens. OpenAI offers 50% discount on cached tokens for prompts over 1024 tokens.</p>
+
+<p>This isn't just a cost optimization. It's architecturally significant. Cached prompts occupy the same position in the attention pattern every time, reinforcing the attention sink effect. The model doesn't just "remember" the system prompt; it consistently allocates attention to it because the KV states are identical across requests.</p>
+
+<h2>The deeper lesson</h2>
+
+<p>Instruction drift isn't really about forgetting. Models don't forget the way humans do. They attend. Attention is a finite resource, and every token you add to the context competes for it.</p>
+
+<p>Once you internalize this, the solutions become obvious. Keep contexts short. Put critical instructions where attention is highest (beginning and end). Use structure to create attention anchors. Compress aggressively. And when one context window isn't enough, use multiple clean ones.</p>
+
+<p>The models aren't getting worse at following instructions. We're just getting better at understanding where their attention actually goes.</p>
+
+<hr />
+
+<p><strong>References</strong></p>
+<ul>
+  <li>Liu et al., <a href="https://arxiv.org/abs/2307.03172">Lost in the Middle: How Language Models Use Long Contexts</a>, 2023</li>
+  <li>Xiao et al., <a href="https://arxiv.org/abs/2309.17453">Efficient Streaming Language Models with Attention Sinks</a>, 2023</li>
+  <li>Russak et al., <a href="https://arxiv.org/abs/2408.14906">Writing in the Margins: Better Inference Pattern for Long Context Retrieval</a>, 2024</li>
+  <li>Chroma Research, <a href="https://research.trychroma.com/context-rot">Context Rot: How Increasing Input Tokens Impacts LLM Performance</a>, 2025</li>
+  <li>Anthropic, <a href="https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents">Effective Context Engineering for AI Agents</a>, 2025</li>
+</ul>
 
     </article>
 
     <footer class="post-footer">
       <a href="/">&larr; Back home</a>
-      <span class="post-footer-copy">&copy; 2026 Danish Mohd</span>
+      <span class="post-footer-copy">&copy; 2026 Danish Khan</span>
     </footer>
 
   </div>

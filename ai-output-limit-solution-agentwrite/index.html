@@ -3,77 +3,115 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>LLMs can't write long. AgentWrite can. | Danish Mohd</title>
-<meta property="og:title" content="LLMs can’t write long. AgentWrite can." />
+<title>Why LLMs can't write long (and what breaks the ceiling) | Danish Khan</title>
+<meta property="og:title" content="Why LLMs can't write long (and what breaks the ceiling)" />
 <meta property="og:locale" content="en_US" />
-<meta name="description" content="LLMs hit output length limits. AgentWrite breaks long-form writing into agent-managed sequential chunks to overcome the ceiling." />
-<meta property="og:description" content="LLMs hit output length limits. AgentWrite breaks long-form writing into agent-managed sequential chunks to overcome the ceiling." />
+<meta name="description" content="LLMs can read millions of tokens but struggle to write beyond 2,000 words. The bottleneck isn't architecture. It's training data." />
+<meta property="og:description" content="LLMs can read millions of tokens but struggle to write beyond 2,000 words. The bottleneck isn't architecture. It's training data." />
 <link rel="canonical" href="https://supergeek.in/ai-output-limit-solution-agentwrite/" />
 <meta property="og:url" content="https://supergeek.in/ai-output-limit-solution-agentwrite/" />
 <meta property="og:site_name" content="Danish Mohd" />
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2024-08-25T00:00:00+05:30" />
 <meta name="twitter:card" content="summary_large_image" />
-<meta property="twitter:title" content="LLMs can’t write long. AgentWrite can." />
+<meta property="twitter:title" content="Why LLMs can't write long (and what breaks the ceiling)" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2024-08-25T00:00:00+05:30","datePublished":"2024-08-25T00:00:00+05:30","description":"LLMs hit output length limits. AgentWrite breaks long-form writing into agent-managed sequential chunks to overcome the ceiling.","headline":"LLMs can't write long. AgentWrite can.","mainEntityOfPage":{"@type":"WebPage","@id":"https://supergeek.in/ai-output-limit-solution-agentwrite/"},"author":{"@type":"Person","name":"Danish Mohd","url":"https://supergeek.in"},"url":"https://supergeek.in/ai-output-limit-solution-agentwrite/"}</script>
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2026-03-06T00:00:00+05:30","datePublished":"2024-08-25T00:00:00+05:30","description":"LLMs can read millions of tokens but struggle to write beyond 2,000 words. The bottleneck isn't architecture. It's training data.","headline":"Why LLMs can't write long (and what breaks the ceiling)","mainEntityOfPage":{"@type":"WebPage","@id":"https://supergeek.in/ai-output-limit-solution-agentwrite/"},"author":{"@type":"Person","name":"Danish Khan","url":"https://supergeek.in"},"url":"https://supergeek.in/ai-output-limit-solution-agentwrite/"}</script>
 
   <link rel="stylesheet" href="/assets/css/post.css">
 </head>
 <body>
   <div class="post-container">
 
-    <a class="post-back" href="/">&larr; Danish Mohd</a>
+    <a class="post-back" href="/">&larr; Danish Khan</a>
 
     <header class="post-header">
-      <div class="post-date">August 25, 2024</div>
-      <h1 class="post-title">LLMs can't write long. AgentWrite can.</h1>
+      <div class="post-date">August 2024 (updated March 2026)</div>
+      <h1 class="post-title">Why LLMs can't write long (and what breaks the ceiling)</h1>
       <hr class="post-header-rule">
     </header>
 
     <article class="post-content">
-      <p><img src="images/1724876819754.jpeg" alt="Feature Image" /></p>
 
-<h1 id="reality-is-llms-can-read-a-lot-but-they-cant-write-a-lot">Reality is LLM’s can read a lot, but they can’t write a lot</h1>
+<p>GPT-5.2 can process over a million tokens of input. Claude can hold 200K tokens in its context window. Gemini 2.5 Pro handles a million. But ask any of them to write a 10,000-word essay, and you'll get a strange result: the model will either stop early, start repeating itself, or quietly degrade in quality after the first couple thousand words.</p>
 
-<p>In the evolving world of AI, we keep hearing about how powerful language models (LLMs) have become. They can process vast amounts of text, learn from millions of examples, and generate coherent responses in a variety of contexts. But there’s a hidden limitation that often gets overlooked: while many LLMs can handle a huge number of input tokens (think of them as chunks of text), they often struggle to produce long outputs. In simple terms, they can read a lot, but they can’t write as much as you might expect.</p>
+<p>The asymmetry is striking. These models can read a novel but can't write one. And the reason turns out to be surprisingly simple.</p>
 
-<h2 id="why-does-this-matter">Why Does This Matter?</h2>
+<h2>The training data ceiling</h2>
 
-<p>At first glance, this might not seem like a big deal. After all, most tasks we use LLMs for don’t require extremely long responses—usually, a few thousand words will do. But imagine a future where we want these models to write entire movie scripts, novels, or even complex research papers. Suddenly, this limitation becomes a significant roadblock.</p>
+<p>LLMs learn to generate text by imitating their training data. During supervised fine-tuning (SFT), models see thousands of instruction-response pairs: "summarize this article," "write a function that sorts a list," "explain quantum entanglement." The responses in these pairs are almost always short. Across standard SFT datasets, the longest outputs are around 2,000 words.</p>
 
-<h2 id="the-core-issue-limited-training-data">The Core Issue: Limited Training Data</h2>
+<p>The model learns an implicit length distribution. It learns that responses are a few hundred words, maybe a thousand, rarely more. When you ask for 10,000 words, you're asking it to extrapolate beyond anything it has seen. It's like training a runner exclusively on 5K races and then entering them in a marathon. The cardiovascular system might be capable, but the pacing strategy, the mental model of "how long this is supposed to take," is all wrong.</p>
 
-<p>So, why do LLMs hit this wall when it comes to output length? The answer lies in their training. The models are usually trained on data where the longest examples are about 2,000 words. Because of this, they get really good at producing outputs around that length, but they struggle to go much beyond it. It’s like being a runner who’s trained for 5K races—no matter how fit they are, running a marathon is a different challenge altogether.</p>
+<p>This isn't a theoretical observation. Bai et al. demonstrated it empirically in their <a href="https://arxiv.org/abs/2408.07055">LongWriter paper</a> (ICLR 2025). They showed that models with 128K-token context windows could only produce outputs of 2,000 words or fewer, with quality dropping sharply at the boundary. The architecture supported longer output. The training data didn't.</p>
 
-<h2 id="introducing-agentwrite-breaking-through-llms-output-limitations">Introducing AgentWrite: Breaking Through LLM’s Output Limitations</h2>
+<h2>AgentWrite: plan, then write in pieces</h2>
 
-<p>To tackle this problem, researchers have come up with a smart solution called “AgentWrite.” Think of it as a tool that helps LLMs manage their workload better. Instead of trying to write a massive document in one go, AgentWrite breaks down the task into smaller, more manageable parts. It’s like writing a book one chapter at a time, rather than trying to pen the whole thing in a single sitting. This method allows LLMs to generate much longer texts—over 20,000 words—with ease and coherence.</p>
+<p>The first solution Bai et al. proposed was AgentWrite, a divide-and-conquer agent pipeline. The idea is simple. Instead of asking the model to write 10,000 words in one pass, you break the task into two stages.</p>
 
-<h2 id="the-longwriter-6k-dataset-training-for-the-long-haul">The LongWriter-6k Dataset: Training for the Long Haul</h2>
+<p>First, the model creates a detailed writing plan: section titles, key points for each section, and target word counts per section. This is a short-output task, well within the model's comfort zone.</p>
 
-<p>With AgentWrite in action, the researchers created a new dataset called LongWriter-6k. This dataset is like a special training program for LLMs, filled with examples where the output ranges from 2,000 to 32,000 words. By feeding this dataset to the models, they learned to produce much longer outputs without losing the thread of the conversation or the quality of the writing. In fact, the models trained with LongWriter-6k can now generate over 10,000 words smoothly, opening up new possibilities for future applications.</p>
+<p>Second, the model writes each section independently, following the plan. Each section is a few hundred words. The model is good at this. You concatenate the sections and get a coherent long document.</p>
 
-<h2 id="setting-a-new-benchmark-with-longbench-write">Setting a New Benchmark with LongBench-Write</h2>
+<p>AgentWrite produced outputs of up to 20,000 words using models that normally capped out at 2,000. No fine-tuning, no architecture changes. Just a smarter way of using the model's existing capabilities.</p>
 
-<p>To measure the success of their approach, the researchers introduced LongBench-Write, a new benchmark specifically designed to evaluate how well LLMs handle ultra-long generation tasks. And here’s the exciting part—their 9 billion parameter model, which was further fine-tuned using a technique called Direct Preference Optimization (DPO), outperformed even larger, proprietary models on this benchmark. This means that not only can these models generate longer texts, but they can do it better than ever before.</p>
+<p>The analogy is to how humans write long documents. Nobody writes a book by starting at page one and typing continuously until the end. You outline first. You write chapters. You revise. AgentWrite does the same thing, mechanically.</p>
 
-<h2 id="what-does-this-mean-for-the-future">What Does This Mean for the Future?</h2>
+<h2>The real fix: training data</h2>
 
-<p>The advancements introduced by AgentWrite and the LongWriter-6k dataset mark a significant step forward in the capabilities of LLMs. We’re now closer than ever to a future where these models can take on more complex, long-form tasks, from writing entire books to crafting detailed reports. The ability to generate longer, high-quality outputs will open up new avenues for creativity, research, and communication.</p>
+<p>AgentWrite solved the immediate problem, but it also revealed something deeper: if the ceiling comes from training data, why not just fix the training data?</p>
 
-<p>In a nutshell, while today’s LLMs are already impressive, innovations like AgentWrite are pushing the boundaries even further. And as we continue to develop these models, the possibilities of what they can achieve are virtually limitless.</p>
+<p>Using AgentWrite's pipeline, the authors generated <a href="https://github.com/THUDM/LongWriter">LongWriter-6k</a>: 6,000 SFT examples with output lengths ranging from 2,000 to 32,000 words. They incorporated this dataset into standard SFT training. The result: models could now generate 10,000+ words natively, without the agent pipeline, without quality degradation.</p>
 
-<p>So next time you read about AI-generated text, remember: the best is yet to come.</p>
+<p>The best model, LongWriter-9B-DPO, was further refined with Direct Preference Optimization. On their LongBench-Write benchmark, this 9-billion-parameter model outperformed much larger proprietary models. The DPO step alone added a 5% overall quality improvement and an 18% improvement in depth and breadth of content.</p>
+
+<p>The takeaway is almost embarrassingly simple: models can write long if they've seen long writing during training. The output ceiling was never architectural. It was a data gap.</p>
+
+<h2>Where things stand now (early 2026)</h2>
+
+<p>The output token limits across frontier models have expanded dramatically since mid-2024. GPT-5.2 supports 128K output tokens. Claude supports 128K in extended thinking mode. Gemini 2.5 Pro and Flash both support 65K. These numbers would have seemed absurd two years ago.</p>
+
+<p>But raw token limits don't tell the whole story. The quality of generation at those lengths still varies. <a href="https://arxiv.org/abs/2409.16191">HelloBench</a>, a benchmark specifically designed to evaluate long-form generation, found that even well-performing models like GPT-4o struggle to maintain quality past 4,000 words. More troublingly, models enhanced for long-context understanding sometimes perform worse at long-form generation. The skills are inversely correlated in some architectures.</p>
+
+<p>Several new approaches have emerged beyond the original AgentWrite paradigm.</p>
+
+<p><a href="https://arxiv.org/abs/2406.02818">Chain of Agents</a> (Google Research) uses worker agents that process chunks sequentially, passing summaries to the next agent, with a manager agent synthesizing the final output. It requires no fine-tuning and works with off-the-shelf models.</p>
+
+<p><a href="https://arxiv.org/abs/2512.24601">Recursive Language Models</a> treat long prompts as an external environment that the LLM can programmatically examine, decompose, and recursively call itself over. They demonstrate strong performance even at the 10-million-token scale, dramatically outperforming other approaches, often by double-digit percentage gains.</p>
+
+<p><a href="https://aclanthology.org/2025.acl-long.500.pdf">NEXUSSUM</a> (ACL 2025) uses a hierarchical multi-agent framework that achieved a 30% improvement in long-form narrative summarization, particularly on BookSum, where hierarchical processing mitigates context truncation.</p>
+
+<p>The multimodal extension is happening too. <a href="https://arxiv.org/abs/2502.14834">LongWriter-V</a> (ACM MM 2025) adapted the same paradigm for vision-language models, creating a 22K-example dataset with multiple input images and outputs up to 10,000 words. A 7B parameter model outperformed GPT-4o on their benchmarks.</p>
+
+<h2>The practical lesson</h2>
+
+<p>If you need an LLM to produce long-form output today, there are three tiers of solution.</p>
+
+<p>The simplest is plan-then-generate: have the model outline the document, then write each section independently. This works with any model, requires no fine-tuning, and is easy to implement. The quality ceiling is determined by the model's per-section capability, which is usually good.</p>
+
+<p>If you can fine-tune, include long-output examples in your SFT data. Even a few thousand examples with outputs in the 2K-32K word range will dramatically extend the model's native output capability. This is the LongWriter insight, and it remains the most impactful finding in this space.</p>
+
+<p>If you need truly unbounded generation, multi-agent architectures (Chain of Agents, hierarchical expansion) handle the orchestration, ensuring each agent works within its comfortable range while the system as a whole produces arbitrarily long, coherent output.</p>
+
+<p>The underlying lesson applies beyond just output length. Whenever an LLM seems unable to do something, the first question to ask is: did it see enough examples of this during training? The answer is usually no, and the fix is usually data.</p>
 
 <hr />
 
-<p><strong>Read the full paper here: <a href="https://arxiv.org/pdf/2408.07055">Link to the Paper</a></strong></p>
+<p><strong>References</strong></p>
+<ul>
+  <li>Bai et al., <a href="https://arxiv.org/abs/2408.07055">LongWriter: Unleashing 10,000+ Word Generation from Long Context LLMs</a>, ICLR 2025</li>
+  <li>Huang et al., <a href="https://arxiv.org/abs/2409.16191">HelloBench: Evaluating Long Text Generation Capabilities</a>, 2024</li>
+  <li>Zhang et al., <a href="https://arxiv.org/abs/2512.24601">Recursive Language Models</a>, 2025</li>
+  <li>Huang et al., <a href="https://arxiv.org/abs/2406.02818">Chain of Agents: Large Language Models Collaborating on Long-Context Tasks</a>, Google Research, 2024</li>
+  <li>Tu et al., <a href="https://arxiv.org/abs/2502.14834">LongWriter-V: Enabling Ultra-Long Generation in Vision-Language Models</a>, ACM MM 2025</li>
+  <li>Wei et al., <a href="https://arxiv.org/abs/2409.02076">LongGenBench: Long-Form Generation Benchmark</a>, ICLR 2025</li>
+</ul>
+
     </article>
 
     <footer class="post-footer">
       <a href="/">&larr; Back home</a>
-      <span class="post-footer-copy">&copy; 2026 Danish Mohd</span>
+      <span class="post-footer-copy">&copy; 2026 Danish Khan</span>
     </footer>
 
   </div>

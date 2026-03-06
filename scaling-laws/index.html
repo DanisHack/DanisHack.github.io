@@ -4,11 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>The Scaling Laws That Predict Everything</title>
-<meta name="description" content="From mouse hearts to neural networks — the same power law governs biology, cities, and AI. An interactive explainer with 7 hands-on demos.">
+<meta name="description" content="From mouse hearts to neural networks, the same power law governs biology, cities, and AI. An interactive explainer with 7 hands-on demos.">
 
 <!-- Open Graph -->
 <meta property="og:title" content="The Scaling Laws That Predict Everything">
-<meta property="og:description" content="From mouse hearts to neural networks — the same power law governs biology, cities, and AI. Interactive explainer with 7 hands-on demos.">
+<meta property="og:description" content="From mouse hearts to neural networks, the same power law governs biology, cities, and AI. Interactive explainer with 7 hands-on demos.">
 <meta property="og:url" content="https://supergeek.in/scaling-laws/">
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="Danish Mohd">
@@ -19,7 +19,7 @@
 <meta property="og:image" content="https://supergeek.in/scaling-laws/og.png" />
 <meta property="twitter:image" content="https://supergeek.in/scaling-laws/og.png" />
 <meta name="twitter:title" content="The Scaling Laws That Predict Everything">
-<meta name="twitter:description" content="From mouse hearts to neural networks — the same power law governs biology, cities, and AI.">
+<meta name="twitter:description" content="From mouse hearts to neural networks, the same power law governs biology, cities, and AI.">
 
 <!-- Canonical -->
 <link rel="canonical" href="https://supergeek.in/scaling-laws/">
@@ -30,7 +30,7 @@
   "@context": "https://schema.org",
   "@type": "Article",
   "headline": "The Scaling Laws That Predict Everything",
-  "description": "From mouse hearts to neural networks — the same power law governs biology, cities, and AI. An interactive explainer with 7 hands-on demos.",
+  "description": "From mouse hearts to neural networks, the same power law governs biology, cities, and AI. An interactive explainer with 7 hands-on demos.",
   "author": {
     "@type": "Person",
     "name": "Danish Mohd",
@@ -439,7 +439,7 @@ input[type="range"]::-webkit-slider-thumb {
   </svg>
   <div class="content">
     <h1>The Scaling Laws That Predict Everything</h1>
-    <p class="post-subtitle">From mouse hearts to neural networks — the same math, the same line, the same question.</p>
+    <p class="post-subtitle">From mouse hearts to neural networks: the same math, the same line, the same question.</p>
   </div>
 </div>
 
@@ -448,7 +448,7 @@ input[type="range"]::-webkit-slider-thumb {
 <article>
 
 <section class="intro">
-  <p class="intro-text">A mouse heart beats 600 times a minute. An elephant's, 30. The mouse lives two years. The elephant, seventy. But here's the thing that should stop you cold: both get about one billion heartbeats total. So does a cat. So does a horse. So does a whale. This isn't a coincidence. It's a law. And the same law — the exact same mathematical pattern — shows up in cities, in companies, and now in artificial intelligence. If you take the pattern seriously, it tells you something specific about where AI is going.</p>
+  <p class="intro-text">A mouse heart beats 600 times a minute. An elephant's, 30. The mouse lives two years. The elephant, seventy. But here's the thing that should stop you cold: both get about one billion heartbeats total. So does a cat. So does a horse. So does a whale. This isn't a coincidence. It's a law. And the same law, the exact same mathematical pattern, shows up in cities, in companies, and now in artificial intelligence. If you take the pattern seriously, it tells you something specific about where AI is going.</p>
 </section>
 
 <nav class="toc">
@@ -496,10 +496,10 @@ input[type="range"]::-webkit-slider-thumb {
       </svg>
     </div>
     <figcaption>Drag the slider from mouse to elephant. Watch the heart rate change but the total beats stay roughly constant.</figcaption>
-    <noscript><p>A mouse heart beats 600 times per minute and lives about 2 years. An elephant's heart beats 30 times per minute and lives about 70 years. Both accumulate approximately 1 billion total heartbeats across their lifespan. This relationship — heart rate proportional to mass^(-0.25) — holds across nearly all mammals, from a 25-gram mouse to a 100-tonne blue whale.</p></noscript>
+    <noscript><p>A mouse heart beats 600 times per minute and lives about 2 years. An elephant's heart beats 30 times per minute and lives about 70 years. Both accumulate approximately 1 billion total heartbeats across their lifespan. This relationship (heart rate proportional to mass^(-0.25)) holds across nearly all mammals, from a 25-gram mouse to a 100-tonne blue whale.</p></noscript>
   </div>
 
-  <p>This pattern was noticed in the 1930s by a biologist named Max Kleiber. He wasn't looking at heartbeats — he was looking at metabolic rate. How much energy does an animal burn per day? And what he found was one of the most robust quantitative laws in all of biology.</p>
+  <p>This pattern was noticed in the 1930s by a biologist named Max Kleiber. He wasn't looking at heartbeats. He was looking at metabolic rate. How much energy does an animal burn per day? And what he found was one of the most robust quantitative laws in all of biology.</p>
 </section>
 
 <!-- ───────────────────── II ───────────────────── -->
@@ -509,23 +509,23 @@ input[type="range"]::-webkit-slider-thumb {
     <h2>Kleiber's Law</h2>
   </div>
 
-  <p>Here's what Kleiber found. If you plot metabolic rate against body mass for different animals, you get a messy scatter. Big animals burn more energy — obviously. But how much more?</p>
+  <p>Here's what Kleiber found. If you plot metabolic rate against body mass for different animals, you get a messy scatter. Big animals burn more energy, obviously. But how much more?</p>
 
   <p>If metabolism were proportional to mass, you'd expect a straight line with slope 1. A 1000x heavier animal would burn 1000x more energy. But it doesn't. A 1000x heavier animal burns only about 180x more energy.</p>
 
   <p>The relationship is: <strong>metabolic rate ∝ mass<sup>0.75</sup></strong></p>
 
-  <p>That three-quarter exponent is the key. Not 1. Not 2/3 (which you'd get from surface area). Three-quarters. And the beautiful thing is, when you plot this on a log-log scale — taking the logarithm of both mass and metabolic rate — the messy scatter becomes a perfectly straight line.</p>
+  <p>That three-quarter exponent is the key. Not 1. Not 2/3 (which you'd get from surface area). Three-quarters. And the beautiful thing is, when you plot this on a log-log scale, taking the logarithm of both mass and metabolic rate, the messy scatter becomes a perfectly straight line.</p>
 
   <div class="demo-container" id="kleiber-demo">
-    <p class="label">Kleiber's Law — Metabolic Rate vs Body Mass</p>
+    <p class="label">Kleiber's Law: Metabolic Rate vs Body Mass</p>
     <div class="controls">
       <button class="toggle-btn active" id="kleiber-log-btn" onclick="toggleKleiberScale()">Log Scale</button>
       <button class="toggle-btn" id="kleiber-lin-btn" onclick="toggleKleiberScale()">Linear Scale</button>
     </div>
     <svg id="kleiber-svg" viewBox="0 0 636 380" width="100%"></svg>
     <figcaption>Click "Linear Scale" to see the mess. Click "Log Scale" to see the law. The dashed line has slope 0.75.</figcaption>
-    <noscript><p>Kleiber's Law states that metabolic rate scales with body mass to the power of 0.75. On a linear plot, data from 13 animals (mouse through blue whale) appears as a messy scatter. On a log-log plot, the same data falls on a nearly perfect straight line with slope 0.75 — the signature of a power law discovered by Max Kleiber in the 1930s.</p></noscript>
+    <noscript><p>Kleiber's Law states that metabolic rate scales with body mass to the power of 0.75. On a linear plot, data from 13 animals (mouse through blue whale) appears as a messy scatter. On a log-log plot, the same data falls on a nearly perfect straight line with slope 0.75, the signature of a power law discovered by Max Kleiber in the 1930s.</p></noscript>
   </div>
 
   <p>That straight line on a log-log plot is the signature of a <strong>power law</strong>. And once you know what to look for, you see it everywhere.</p>
@@ -540,20 +540,20 @@ input[type="range"]::-webkit-slider-thumb {
 
   <p>Geoffrey West, the physicist who spent decades studying scaling, calls power laws "the most fundamental regularities in nature." They show up in:</p>
 
-  <p><strong>Cities.</strong> When a city doubles in population, its infrastructure — roads, gas stations, power lines — doesn't double. It grows by about 85%. That's a power law with exponent 0.85. But wages, patents, and GDP per capita grow by about 115%. Exponent 1.15. Cities are sublinear in stuff and superlinear in ideas.<span class="sidenote-trigger" onclick="toggleSidenote('sn1')">[1]</span></p>
+  <p><strong>Cities.</strong> When a city doubles in population, its infrastructure (roads, gas stations, power lines) doesn't double. It grows by about 85%. That's a power law with exponent 0.85. But wages, patents, and GDP per capita grow by about 115%. Exponent 1.15. Cities are sublinear in stuff and superlinear in ideas.<span class="sidenote-trigger" onclick="toggleSidenote('sn1')">[1]</span></p>
   <div class="sidenote" id="sn1"><p>This was shown rigorously by Bettencourt, Lobo, Helbing, Kühnert, and West in a 2007 paper analyzing data from hundreds of cities across multiple countries. The exponents are remarkably consistent across cultures.</p></div>
 
-  <p><strong>Companies.</strong> Revenue scales with employee count, but sublinearly. Companies get less efficient as they grow — the opposite of cities. The typical half-life of a Fortune 500 company is about 10.5 years.<span class="sidenote-trigger" onclick="toggleSidenote('sn2')">[2]</span></p>
+  <p><strong>Companies.</strong> Revenue scales with employee count, but sublinearly. Companies get less efficient as they grow, the opposite of cities. The typical half-life of a Fortune 500 company is about 10.5 years.<span class="sidenote-trigger" onclick="toggleSidenote('sn2')">[2]</span></p>
   <div class="sidenote" id="sn2"><p>West and colleagues showed that companies, unlike cities, have bounded growth. They follow sigmoidal curves and eventually die. Cities almost never die.</p></div>
 
   <p><strong>Languages.</strong> The most common word in English ("the") appears about twice as often as the second most common ("of"), three times as often as the third, and so on. Zipf's law. Power law.</p>
 
   <p><strong>Earthquakes.</strong> The Gutenberg-Richter law: for every magnitude-5 earthquake, there are about ten magnitude-4 earthquakes. Power law.</p>
 
-  <p>The pattern is the same every time: a straight line on a log-log plot. The only thing that changes is the slope. And that slope — the exponent — tells you something deep about how the system works.</p>
+  <p>The pattern is the same every time: a straight line on a log-log plot. The only thing that changes is the slope. And that slope, the exponent, tells you something deep about how the system works.</p>
 
   <div class="callout">
-    <p><strong>The exponent is the story.</strong> An exponent less than 1 (sublinear) means economies of scale — you need less per unit as you grow. Greater than 1 (superlinear) means increasing returns — each unit produces more. Exactly 1 means boring linear growth. The exponent tells you whether the system rewards scale or punishes it.</p>
+    <p><strong>The exponent is the story.</strong> An exponent less than 1 (sublinear) means economies of scale: you need less per unit as you grow. Greater than 1 (superlinear) means increasing returns: each unit produces more. Exactly 1 means boring linear growth. The exponent tells you whether the system rewards scale or punishes it.</p>
   </div>
 </section>
 
@@ -566,16 +566,16 @@ input[type="range"]::-webkit-slider-thumb {
 
   <p>In January 2020, a team at OpenAI published a paper titled "Scaling Laws for Neural Language Models." It should have been front-page news. It wasn't.</p>
 
-  <p>What Kaplan, McCandlish, Henighan, and colleagues showed was this: the performance of a language model — measured as the cross-entropy loss on held-out text — follows a power law with respect to three variables:</p>
+  <p>What Kaplan, McCandlish, Henighan, and colleagues showed was this: the performance of a language model, measured as the cross-entropy loss on held-out text, follows a power law with respect to three variables:</p>
 
   <p>1. The number of parameters in the model<br>
   2. The size of the training dataset<br>
   3. The amount of compute used for training</p>
 
-  <p>Each of these, plotted on a log-log scale against loss, gives a straight line. Just like Kleiber's animals. The model doesn't care whether you give it more parameters or more data or more compute — as long as you give it <em>more of something</em>, performance improves along a predictable power law.</p>
+  <p>Each of these, plotted on a log-log scale against loss, gives a straight line. Just like Kleiber's animals. The model doesn't care whether you give it more parameters or more data or more compute; as long as you give it <em>more of something</em>, performance improves along a predictable power law.</p>
 
   <div class="demo-container" id="loss-demo">
-    <p class="label">Neural Scaling — Loss vs Compute</p>
+    <p class="label">Neural Scaling: Loss vs Compute</p>
     <div class="controls">
       <label>Compute (FLOPs):</label>
       <input type="range" id="loss-slider" min="17" max="25.5" step="0.01" value="17">
@@ -586,7 +586,7 @@ input[type="range"]::-webkit-slider-thumb {
     <noscript><p>Kaplan et al. (2020) showed that language model cross-entropy loss follows a power law with respect to training compute: loss decreases predictably with exponent approximately -0.05. From 10^17 FLOPs (small models) to 10^25 FLOPs (GPT-4 scale), the relationship holds on a log-log plot as a straight line. Each 10x increase in compute yields a consistent decrease in loss.</p></noscript>
   </div>
 
-  <p>This was a breakthrough not because it was surprising — people had noticed the trend — but because it was <strong>precise</strong>. You could write an equation, plug in a compute budget, and predict the loss before training the model. The curves didn't just fit the data. They <em>predicted</em> the data.</p>
+  <p>This was a breakthrough not because it was surprising (people had noticed the trend) but because it was <strong>precise</strong>. You could write an equation, plug in a compute budget, and predict the loss before training the model. The curves didn't just fit the data. They <em>predicted</em> the data.</p>
 
   <p>And the exponent? For compute vs. loss, it's about -0.05. That means every 10x increase in compute gives you a predictable decrease in loss. Not huge, but relentless. And it keeps going.</p>
 </section>
@@ -612,8 +612,8 @@ input[type="range"]::-webkit-slider-thumb {
       <label>more data →</label>
     </div>
     <svg id="chinchilla-svg" viewBox="0 0 636 320" width="100%"></svg>
-    <figcaption>Drag the slider to allocate your compute budget. The curve shows predicted loss. The sweet spot isn't in the middle — and GPT-3 missed it.</figcaption>
-    <noscript><p>The Chinchilla paper (Hoffmann et al., 2022) showed that for a fixed compute budget, there is an optimal split between model parameters and training data. GPT-3 used 175B parameters on 300B tokens — too many parameters, too little data. Chinchilla achieved better performance with 70B parameters on 1.4T tokens using the same compute. The optimal allocation favors more data than most labs expected.</p></noscript>
+    <figcaption>Drag the slider to allocate your compute budget. The curve shows predicted loss. The sweet spot isn't in the middle, and GPT-3 missed it.</figcaption>
+    <noscript><p>The Chinchilla paper (Hoffmann et al., 2022) showed that for a fixed compute budget, there is an optimal split between model parameters and training data. GPT-3 used 175B parameters on 300B tokens: too many parameters, too little data. Chinchilla achieved better performance with 70B parameters on 1.4T tokens using the same compute. The optimal allocation favors more data than most labs expected.</p></noscript>
   </div>
 
   <p>The lesson: scaling laws aren't just about "throw more compute at it." They have structure. There's an optimal frontier, and knowing where it is lets you train better models for less money. Every major lab now uses some version of this analysis before committing to a training run.</p>
@@ -626,14 +626,14 @@ input[type="range"]::-webkit-slider-thumb {
     <h2>Emergent Abilities</h2>
   </div>
 
-  <p>Here's where it gets weird. The scaling laws predict a smooth, continuous improvement in loss. But when you measure actual <em>capabilities</em> — can the model do arithmetic? can it write code? can it reason about analogies? — the improvement isn't smooth at all.</p>
+  <p>Here's where it gets weird. The scaling laws predict a smooth, continuous improvement in loss. But when you measure actual <em>capabilities</em> (can the model do arithmetic? can it write code? can it reason about analogies?) the improvement isn't smooth at all.</p>
 
   <p>It's a step function.</p>
 
-  <p>Below a certain scale, the model can't do the task. Performance is essentially random. Then at some threshold — boom. The ability appears, almost fully formed. Wei et al. called these "emergent abilities" in a 2022 paper, and the word "emergent" was chosen carefully. These abilities weren't trained explicitly. They just... showed up, once the model was big enough.</p>
+  <p>Below a certain scale, the model can't do the task. Performance is essentially random. Then at some threshold: boom. The ability appears, almost fully formed. Wei et al. called these "emergent abilities" in a 2022 paper, and the word "emergent" was chosen carefully. These abilities weren't trained explicitly. They just... showed up, once the model was big enough.</p>
 
   <div class="demo-container" id="emergent-demo">
-    <p class="label">Emergent Abilities — Accuracy vs Model Scale</p>
+    <p class="label">Emergent Abilities: Accuracy vs Model Scale</p>
     <div class="controls">
       <label>Model size:</label>
       <input type="range" id="emergent-slider" min="0" max="100" step="1" value="0">
@@ -642,13 +642,13 @@ input[type="range"]::-webkit-slider-thumb {
     <svg id="emergent-svg" viewBox="0 0 636 340" width="100%"></svg>
     <div class="legend" id="emergent-legend"></div>
     <figcaption>Drag the slider to scale up the model. Watch different abilities "turn on" at different thresholds. Below the threshold: nothing. Above: capability.</figcaption>
-    <noscript><p>Wei et al. (2022) documented emergent abilities in large language models — capabilities that appear abruptly once a model reaches a critical size. Simple Q&A emerges at small scales (~350M parameters), while chain-of-thought reasoning requires ~13B+ parameters, and complex math only appears at 175B+. Below each threshold, performance is near-random; above it, the ability appears almost fully formed.</p></noscript>
+    <noscript><p>Wei et al. (2022) documented emergent abilities in large language models, capabilities that appear abruptly once a model reaches a critical size. Simple Q&A emerges at small scales (~350M parameters), while chain-of-thought reasoning requires ~13B+ parameters, and complex math only appears at 175B+. Below each threshold, performance is near-random; above it, the ability appears almost fully formed.</p></noscript>
   </div>
 
-  <p>This is both exciting and unsettling. Exciting because it means bigger models aren't just incrementally better — they can do qualitatively new things. Unsettling because you can't always predict <em>which</em> new abilities will emerge, or when.</p>
+  <p>This is both exciting and unsettling. Exciting because it means bigger models aren't just incrementally better; they can do qualitatively new things. Unsettling because you can't always predict <em>which</em> new abilities will emerge, or when.</p>
 
   <div class="callout">
-    <p><strong>A caveat.</strong> Some researchers argue that emergent abilities are partly an artifact of how we measure. If you use a continuous metric instead of a binary pass/fail, the transition looks smoother. This is a genuine debate. But even the skeptics agree that <em>capabilities do improve with scale</em> — the disagreement is about whether it's a phase transition or a steep sigmoid.</p>
+    <p><strong>A caveat.</strong> Some researchers argue that emergent abilities are partly an artifact of how we measure. If you use a continuous metric instead of a binary pass/fail, the transition looks smoother. This is a genuine debate. But even the skeptics agree that <em>capabilities do improve with scale</em>. The disagreement is about whether it's a phase transition or a steep sigmoid.</p>
   </div>
 </section>
 
@@ -674,7 +674,7 @@ input[type="range"]::-webkit-slider-thumb {
     </div>
     <svg id="compute-svg" viewBox="0 0 636 380" width="100%"></svg>
     <figcaption>Historical data points in solid circles. Adjust the growth rate to project forward. The dashed line is what hasn't happened yet.</figcaption>
-    <noscript><p>Training compute for frontier AI models has grown at roughly 4-5x per year since 2010, faster than Moore's Law. AlexNet (2012) used approximately 10^17 FLOPs. GPT-3 (2020) used 10^23.5 FLOPs. GPT-4 (2023) reportedly used around 10^25 FLOPs — a hundred-million-fold increase in a decade, driven by better chips, larger clusters, and increased AI investment (Epoch AI).</p></noscript>
+    <noscript><p>Training compute for frontier AI models has grown at roughly 4-5x per year since 2010, faster than Moore's Law. AlexNet (2012) used approximately 10^17 FLOPs. GPT-3 (2020) used 10^23.5 FLOPs. GPT-4 (2023) reportedly used around 10^25 FLOPs, a hundred-million-fold increase in a decade, driven by better chips, larger clusters, and increased AI investment (Epoch AI).</p></noscript>
   </div>
 
   <p>The question everyone wants to answer is: will this trend continue? There are reasons it might slow down (power constraints, chip shortages, diminishing returns on investment). And reasons it might not (nation-state level investment, new architectures, algorithmic improvements that are <em>equivalent</em> to more compute).</p>
@@ -692,7 +692,7 @@ input[type="range"]::-webkit-slider-thumb {
   <p>1. <strong>Loss as a function of compute</strong> (the scaling law)<br>
   2. <strong>Compute as a function of time</strong> (the trend)</p>
 
-  <p>Combine them, and you get: <strong>loss as a function of time</strong>. And if you're willing to map loss to capabilities — which is hand-wavy but useful — you get a rough timeline for when AI systems reach various milestones.</p>
+  <p>Combine them, and you get: <strong>loss as a function of time</strong>. And if you're willing to map loss to capabilities (which is hand-wavy but useful) you get a rough timeline for when AI systems reach various milestones.</p>
 
   <p>This is, to be clear, an extrapolation. Extrapolations can break. The curves might bend. New bottlenecks might appear. But the striking thing is: so far, they haven't bent. Every time someone predicted the scaling laws would hit a wall, the next generation of models landed right on the curve.</p>
 
@@ -705,10 +705,10 @@ input[type="range"]::-webkit-slider-thumb {
     </div>
     <svg id="predict-svg" viewBox="0 0 636 380" width="100%"></svg>
     <figcaption>Adjust the scaling exponent to see how the timeline shifts. A steeper exponent (more negative) means faster progress. The threshold lines are illustrative, not precise.</figcaption>
-    <noscript><p>Combining the scaling law (loss as a function of compute) with the compute growth trend (compute as a function of time) yields loss as a function of time. With a scaling exponent of -0.05 and a compute growth rate of 4.2x per year, the curves project when AI systems might cross capability thresholds. The exact dates depend sensitively on the assumed exponent, which is why this is an extrapolation — but it is a quantitative one.</p></noscript>
+    <noscript><p>Combining the scaling law (loss as a function of compute) with the compute growth trend (compute as a function of time) yields loss as a function of time. With a scaling exponent of -0.05 and a compute growth rate of 4.2x per year, the curves project when AI systems might cross capability thresholds. The exact dates depend sensitively on the assumed exponent, which is why this is an extrapolation, but it is a quantitative one.</p></noscript>
   </div>
 
-  <p>The honest answer is: nobody knows exactly when these thresholds will be crossed, or if the curves will hold. But the scaling laws give you something you didn't have before — a <strong>quantitative framework</strong> for thinking about the question. Not vibes. Not hype. Math.</p>
+  <p>The honest answer is: nobody knows exactly when these thresholds will be crossed, or if the curves will hold. But the scaling laws give you something you didn't have before: a <strong>quantitative framework</strong> for thinking about the question. Not vibes. Not hype. Math.</p>
 </section>
 
 <!-- ───────────────────── IX ───────────────────── -->
@@ -720,11 +720,11 @@ input[type="range"]::-webkit-slider-thumb {
 
   <p>Here's the thing that should keep you up at night.</p>
 
-  <p>No fundamental architectural breakthrough was needed to go from GPT-2 to GPT-4. Same basic architecture — a transformer. Same training objective — predict the next token. The difference? More compute. More data. More parameters. Scale.</p>
+  <p>No fundamental architectural breakthrough was needed to go from GPT-2 to GPT-4. Same basic architecture: a transformer. Same training objective: predict the next token. The difference? More compute. More data. More parameters. Scale.</p>
 
   <p>GPT-2 couldn't reliably do arithmetic. GPT-4 can pass the bar exam. The same architecture. Just bigger.</p>
 
-  <p>If the scaling laws hold — if intelligence really is, in some meaningful sense, a function of scale — then the trajectory is set. We know how fast compute is growing. We know the exponents. The rest is arithmetic.</p>
+  <p>If the scaling laws hold, if intelligence really is, in some meaningful sense, a function of scale, then the trajectory is set. We know how fast compute is growing. We know the exponents. The rest is arithmetic.</p>
 
   <p>But "if" is doing a lot of work in that sentence. There are serious reasons the scaling laws might <em>not</em> hold indefinitely:</p>
 
@@ -734,7 +734,7 @@ input[type="range"]::-webkit-slider-thumb {
 
   <p><strong>The wrong metric.</strong> Cross-entropy loss on next-token prediction might not capture what we actually care about. A model can have excellent loss and still be unreliable, inconsistent, or unable to do genuinely novel reasoning.</p>
 
-  <p><strong>Energy and economics.</strong> Training frontier models already costs hundreds of millions of dollars. At 4x/year growth, costs hit national-GDP levels within a decade. Something has to give — either the economics or the trend.</p>
+  <p><strong>Energy and economics.</strong> Training frontier models already costs hundreds of millions of dollars. At 4x/year growth, costs hit national-GDP levels within a decade. Something has to give: either the economics or the trend.</p>
 
   <p>These are real constraints. But here's what's remarkable: people have been pointing out these constraints for years, and the curves <em>keep going</em>. Every predicted wall has been a speed bump so far. Maybe the next one is real. Maybe not.</p>
 

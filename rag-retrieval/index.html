@@ -19,7 +19,7 @@
 <meta property="og:image" content="https://supergeek.in/rag-retrieval/og.png" />
 <meta property="twitter:image" content="https://supergeek.in/rag-retrieval/og.png" />
 <meta name="twitter:title" content="You're Doing RAG Retrieval Wrong">
-<meta name="twitter:description" content="Your RAG pipeline retrieves the wrong chunks. Here's why — and the surprisingly simple fix.">
+<meta name="twitter:description" content="Your RAG pipeline retrieves the wrong chunks. Here's why, and the surprisingly simple fix.">
 
 <!-- Canonical -->
 <link rel="canonical" href="https://supergeek.in/rag-retrieval/">
@@ -184,7 +184,7 @@ select{font-family:'Figtree',system-ui,sans-serif;font-size:14px;font-weight:600
   </svg>
   <div class="content">
     <h1>You're Doing RAG Retrieval Wrong</h1>
-    <p class="post-subtitle">Why your pipeline retrieves the wrong chunks — and the surprisingly simple fix.</p>
+    <p class="post-subtitle">Why your pipeline retrieves the wrong chunks, and the surprisingly simple fix.</p>
   </div>
 </div>
 
@@ -193,7 +193,7 @@ select{font-family:'Figtree',system-ui,sans-serif;font-size:14px;font-weight:600
 <article>
 
 <section class="intro">
-  <p class="intro-text">You embedded your documents. You indexed them in a vector database. A user asks a question, you search for the nearest chunks, feed them to a language model, and get an answer. Except the answer is wrong. Not hallucinated — the model faithfully used the context you gave it. The problem is you gave it the wrong context. The retrieval step failed. This happens far more often than people admit, and the reason is almost always the same: you're comparing things that shouldn't be compared.</p>
+  <p class="intro-text">You embedded your documents. You indexed them in a vector database. A user asks a question, you search for the nearest chunks, feed them to a language model, and get an answer. Except the answer is wrong. Not hallucinated. The model faithfully used the context you gave it. The problem is you gave it the wrong context. The retrieval step failed. This happens far more often than people admit, and the reason is almost always the same: you're comparing things that shouldn't be compared.</p>
 </section>
 
 <nav class="toc">
@@ -217,7 +217,7 @@ select{font-family:'Figtree',system-ui,sans-serif;font-size:14px;font-weight:600
   </div>
   <p>The promise of RAG is simple: give a language model access to your data, and it can answer questions about it. No fine-tuning, no retraining. Just retrieve relevant chunks and let the model synthesize.</p>
   <p>In practice, the retrieval step is where most RAG pipelines break. And it breaks silently. The model doesn't say "I got the wrong context." It reads whatever you gave it and generates a confident, well-structured, completely wrong answer.</p>
-  <p>The root cause is what I call <strong>semantic dissonance</strong>. You're comparing a question to a document chunk using vector similarity. But questions and document chunks are fundamentally different kinds of text. A question is short, interrogative, specific. A document chunk is declarative, dense, contextual. They don't land in the same part of the embedding space — even when one is the answer to the other.</p>
+  <p>The root cause is what I call <strong>semantic dissonance</strong>. You're comparing a question to a document chunk using vector similarity. But questions and document chunks are fundamentally different kinds of text. A question is short, interrogative, specific. A document chunk is declarative, dense, contextual. They don't land in the same part of the embedding space, even when one is the answer to the other.</p>
   <p>This is like going to a library and instead of looking in the card catalog (which lists questions like "Where can I learn about X?"), you're trying to match your question directly against random paragraphs from random books. Sometimes you get lucky. Often you don't.</p>
 </section>
 
@@ -228,11 +228,11 @@ select{font-family:'Figtree',system-ui,sans-serif;font-size:14px;font-weight:600
     <h2>The Embedding Space</h2>
   </div>
   <p>To understand why retrieval fails, you need to understand where things live in embedding space.</p>
-  <p>An embedding model converts text into a vector — a point in high-dimensional space. The idea is that semantically similar texts end up near each other. "How do I reset my password?" should be close to "What's the password reset process?" That works. Both are questions about the same thing.</p>
+  <p>An embedding model converts text into a vector, a point in high-dimensional space. The idea is that semantically similar texts end up near each other. "How do I reset my password?" should be close to "What's the password reset process?" That works. Both are questions about the same thing.</p>
   <p>But here's the problem: "How do I reset my password?" is <em>not</em> necessarily close to "To reset your password, navigate to Settings > Security > Reset Password and click the reset link." One is a question. The other is an answer. They're about the same topic, but they're different <em>kinds</em> of text. And embedding models often encode the <em>kind</em> of text as strongly as the <em>topic</em>.</p>
 
   <div class="demo-container" id="embedding-demo">
-    <p class="label">2D Embedding Space — Questions vs Documents</p>
+    <p class="label">2D Embedding Space: Questions vs Documents</p>
     <svg id="embedding-svg" viewBox="0 0 636 420" width="100%"></svg>
     <div class="controls">
       <label>Move query:</label>
@@ -240,13 +240,13 @@ select{font-family:'Figtree',system-ui,sans-serif;font-size:14px;font-weight:600
       <input type="range" id="query-y" min="0" max="100" step="1" value="50">
     </div>
     <figcaption>Blue circles are questions. Orange squares are document chunks. The purple diamond is your query. Notice: the query lands near questions, not near the document that answers it. Lines show the 3 nearest neighbors.</figcaption>
-    <noscript><p>In a 2D embedding space visualization, questions cluster together in one region and document chunks cluster in a separate region. When a user query (which is a question) is embedded, it lands near other questions — not near the document chunk that actually answers it. This is semantic dissonance: the embedding model places similar text types near each other, meaning "similar" encodes text type, not answer relevance.</p></noscript>
+    <noscript><p>In a 2D embedding space visualization, questions cluster together in one region and document chunks cluster in a separate region. When a user query (which is a question) is embedded, it lands near other questions, not near the document chunk that actually answers it. This is semantic dissonance: the embedding model places similar text types near each other, meaning "similar" encodes text type, not answer relevance.</p></noscript>
   </div>
 
-  <p>This is the core insight. In embedding space, <strong>questions cluster with questions</strong> and <strong>documents cluster with documents</strong>. Your query — which is a question — will naturally be closer to other questions than to the document chunk that actually contains the answer.</p>
+  <p>This is the core insight. In embedding space, <strong>questions cluster with questions</strong> and <strong>documents cluster with documents</strong>. Your query (which is a question) will naturally be closer to other questions than to the document chunk that actually contains the answer.</p>
 
   <div class="callout">
-    <p><strong>This is semantic dissonance.</strong> The embedding model is doing its job correctly — it's placing similar text near similar text. The problem is that "similar" means "same type of text," not "contains the answer." You're asking the embedding to do something it wasn't trained to do.</p>
+    <p><strong>This is semantic dissonance.</strong> The embedding model is doing its job correctly. It's placing similar text near similar text. The problem is that "similar" means "same type of text," not "contains the answer." You're asking the embedding to do something it wasn't trained to do.</p>
   </div>
 </section>
 
@@ -257,13 +257,13 @@ select{font-family:'Figtree',system-ui,sans-serif;font-size:14px;font-weight:600
     <h2>Match Questions to Questions</h2>
   </div>
   <p>The fix is elegant. Instead of searching your query against document chunks, search it against <em>questions about</em> document chunks.</p>
-  <p>Here's how: for each chunk in your corpus, use an LLM to generate 3-5 questions that the chunk answers. Index those questions. When a user query comes in, match it against the generated questions — not the raw documents. Then retrieve the document chunk associated with the best-matching question.</p>
+  <p>Here's how: for each chunk in your corpus, use an LLM to generate 3-5 questions that the chunk answers. Index those questions. When a user query comes in, match it against the generated questions, not the raw documents. Then retrieve the document chunk associated with the best-matching question.</p>
   <p>This works because you're now comparing apples to apples. A user question matches against synthetic questions. Both are interrogative, similar in structure, similar in length. The embedding model can actually do its job.</p>
   <p>This technique is sometimes called <strong>HyDE</strong> (Hypothetical Document Embeddings) or <strong>query-to-question matching</strong>, depending on the variant.<span class="sidenote-trigger" onclick="toggleSidenote('sn1')">[1]</span></p>
-  <div class="sidenote" id="sn1"><p>HyDE, introduced by Gao et al., takes a slightly different approach: it generates a hypothetical answer to the query, then searches for documents similar to that hypothetical answer. The principle is the same — match like with like. The question-generation approach is often simpler and more reliable in practice.</p></div>
+  <div class="sidenote" id="sn1"><p>HyDE, introduced by Gao et al., takes a slightly different approach: it generates a hypothetical answer to the query, then searches for documents similar to that hypothetical answer. The principle is the same: match like with like. The question-generation approach is often simpler and more reliable in practice.</p></div>
 
   <div class="demo-container" id="retrieval-demo">
-    <p class="label">Retrieval Comparison — Naive vs Question-Matched</p>
+    <p class="label">Retrieval Comparison: Naive vs Question-Matched</p>
     <div class="controls">
       <label>User query:</label>
       <select id="query-select">
@@ -275,10 +275,10 @@ select{font-family:'Figtree',system-ui,sans-serif;font-size:14px;font-weight:600
     </div>
     <div class="result-grid" id="retrieval-results"></div>
     <figcaption>Left: naive retrieval (query matched against document chunks). Right: question-matched retrieval. Green = relevant. Red = irrelevant. Same query, dramatically different results.</figcaption>
-    <noscript><p>A side-by-side comparison of naive retrieval (matching queries directly against document chunks) versus question-matched retrieval (matching queries against synthetic questions generated from each chunk). For the query "How do I cancel my subscription?", naive retrieval returns irrelevant chunks about subscription plans (0.81 similarity) as the top result. Question-matched retrieval returns the correct cancellation instructions (0.94 similarity) as the top result — a 20-40% improvement in retrieval precision.</p></noscript>
+    <noscript><p>A side-by-side comparison of naive retrieval (matching queries directly against document chunks) versus question-matched retrieval (matching queries against synthetic questions generated from each chunk). For the query "How do I cancel my subscription?", naive retrieval returns irrelevant chunks about subscription plans (0.81 similarity) as the top result. Question-matched retrieval returns the correct cancellation instructions (0.94 similarity) as the top result, a 20-40% improvement in retrieval precision.</p></noscript>
   </div>
 
-  <p>The difference is often dramatic. In benchmarks, question-to-question matching improves retrieval precision by 20-40% over naive chunk matching. And better retrieval means better answers downstream — the LLM can only work with what you give it.</p>
+  <p>The difference is often dramatic. In benchmarks, question-to-question matching improves retrieval precision by 20-40% over naive chunk matching. And better retrieval means better answers downstream. The LLM can only work with what you give it.</p>
 </section>
 
 <!-- ─── IV ─── -->
@@ -287,11 +287,11 @@ select{font-family:'Figtree',system-ui,sans-serif;font-size:14px;font-weight:600
     <span class="section-number">IV.</span>
     <h2>The Embedding Matters</h2>
   </div>
-  <p>Even after fixing what you compare, <em>how</em> you compare still matters. Generic embedding models — the ones you get out of the box — are trained on general web text. They know that "bank" relates to "money" and "river." They don't know that in your fintech codebase, "default" means "loan default," not "default parameter value."</p>
+  <p>Even after fixing what you compare, <em>how</em> you compare still matters. Generic embedding models, the ones you get out of the box, are trained on general web text. They know that "bank" relates to "money" and "river." They don't know that in your fintech codebase, "default" means "loan default," not "default parameter value."</p>
   <p>This is the domain embedding problem. In a specialized corpus, words and phrases carry domain-specific meanings. A generic embedding model conflates them.</p>
 
   <div class="demo-container" id="domain-demo">
-    <p class="label">Embedding Space — Generic vs Domain-Specific</p>
+    <p class="label">Embedding Space: Generic vs Domain-Specific</p>
     <div class="controls">
       <button class="toggle-btn active" id="domain-gen-btn" onclick="toggleDomain('generic')">Generic Embeddings</button>
       <button class="toggle-btn" id="domain-spec-btn" onclick="toggleDomain('specific')">Domain-Specific (Finance)</button>
@@ -301,7 +301,7 @@ select{font-family:'Figtree',system-ui,sans-serif;font-size:14px;font-weight:600
     <noscript><p>Generic embedding models conflate terms with multiple meanings. In generic embedding space, "default (finance)" and "default (code)" cluster together, and "python (snake)" sits near "python (language)." Domain-specific embeddings (fine-tuned on financial text) separate these correctly: finance terms like "default," "interest rate," "bond," and "credit score" cluster together, while tech terms like "python (language)," "javascript," and "rate limiting" form a separate cluster.</p></noscript>
   </div>
 
-  <p>The solution: fine-tune your embedding model on your domain data, or use a model that's already been trained on similar text. This doesn't require massive datasets — even a few thousand domain-specific sentence pairs can significantly improve retrieval quality.</p>
+  <p>The solution: fine-tune your embedding model on your domain data, or use a model that's already been trained on similar text. This doesn't require massive datasets. Even a few thousand domain-specific sentence pairs can significantly improve retrieval quality.</p>
 </section>
 
 <!-- ─── V ─── -->
@@ -319,7 +319,7 @@ select{font-family:'Figtree',system-ui,sans-serif;font-size:14px;font-weight:600
   - <strong>Popularity</strong> (documents that users have found helpful before)</p>
 
   <div class="demo-container" id="rerank-demo">
-    <p class="label">Reranking — Cosine Score vs Combined Score</p>
+    <p class="label">Reranking: Cosine Score vs Combined Score</p>
     <div class="controls">
       <button class="toggle-btn active" id="rerank-cos-btn" onclick="toggleRerank('cosine')">Rank by Cosine</button>
       <button class="toggle-btn" id="rerank-comb-btn" onclick="toggleRerank('combined')">Rank by Combined Score</button>
@@ -329,7 +329,7 @@ select{font-family:'Figtree',system-ui,sans-serif;font-size:14px;font-weight:600
     <noscript><p>Cosine similarity alone is insufficient for ranking retrieved chunks. A chunk with 0.89 cosine similarity but low recency and specificity ranks first by cosine, but a detailed troubleshooting guide with 0.83 cosine but high recency (0.95), specificity (0.95), and quality (0.90) should rank first. Reranking with a combined score that weights cosine similarity, recency, specificity, and document quality changes the ranking order and surfaces more useful results.</p></noscript>
   </div>
 
-  <p>Cross-encoder rerankers — models specifically trained to score query-document pairs — are another powerful option. They're slower than cosine similarity but dramatically more accurate, because they see the query and document together rather than comparing pre-computed vectors.</p>
+  <p>Cross-encoder rerankers, models specifically trained to score query-document pairs, are another powerful option. They're slower than cosine similarity but dramatically more accurate, because they see the query and document together rather than comparing pre-computed vectors.</p>
 </section>
 
 <!-- ─── VI ─── -->
@@ -340,10 +340,10 @@ select{font-family:'Figtree',system-ui,sans-serif;font-size:14px;font-weight:600
   </div>
   <p>Here's a question that most RAG tutorials skip: <strong>what cosine similarity score is "good enough"?</strong></p>
   <p>The honest answer is: it depends entirely on your data. A score of 0.82 might be excellent for one corpus and mediocre for another. The distribution of scores matters far more than any individual score.</p>
-  <p>If you set the threshold too high, you miss relevant results (low recall). Too low, and you flood the LLM with junk (low precision). The right threshold lives at the intersection of these tradeoffs — and you can only find it by looking at your actual score distribution.</p>
+  <p>If you set the threshold too high, you miss relevant results (low recall). Too low, and you flood the LLM with junk (low precision). The right threshold lives at the intersection of these tradeoffs, and you can only find it by looking at your actual score distribution.</p>
 
   <div class="demo-container" id="threshold-demo">
-    <p class="label">Threshold Explorer — Precision vs Recall</p>
+    <p class="label">Threshold Explorer: Precision vs Recall</p>
     <div class="controls">
       <label>Threshold:</label>
       <input type="range" id="threshold-slider" min="0.50" max="0.95" step="0.01" value="0.75">
@@ -351,11 +351,11 @@ select{font-family:'Figtree',system-ui,sans-serif;font-size:14px;font-weight:600
     </div>
     <svg id="threshold-svg" viewBox="0 0 636 260" width="100%"></svg>
     <div class="stat-grid" id="threshold-stats"></div>
-    <figcaption>Drag the threshold. Watch precision and recall trade off. The histogram shows the actual similarity score distribution — green bars are relevant results, gray are irrelevant.</figcaption>
-    <noscript><p>A cosine similarity threshold of 0.75 yields approximately 75% precision and 80% recall (F1 ~77%). Setting the threshold too high (e.g., 0.90) raises precision to near 100% but recall drops to ~30% — most relevant results are missed. Too low (e.g., 0.60) catches everything but floods the LLM with irrelevant context. The optimal threshold depends on your specific score distribution and must be determined empirically, not by a universal magic number.</p></noscript>
+    <figcaption>Drag the threshold. Watch precision and recall trade off. The histogram shows the actual similarity score distribution: green bars are relevant results, gray are irrelevant.</figcaption>
+    <noscript><p>A cosine similarity threshold of 0.75 yields approximately 75% precision and 80% recall (F1 ~77%). Setting the threshold too high (e.g., 0.90) raises precision to near 100% but recall drops to ~30%, and most relevant results are missed. Too low (e.g., 0.60) catches everything but floods the LLM with irrelevant context. The optimal threshold depends on your specific score distribution and must be determined empirically, not by a universal magic number.</p></noscript>
   </div>
 
-  <p>In practice, the best approach is to evaluate a sample of queries with known-good answers, plot the score distribution, and pick the threshold that maximizes F1 — or whatever metric matters most for your use case. There is no universal magic number.</p>
+  <p>In practice, the best approach is to evaluate a sample of queries with known-good answers, plot the score distribution, and pick the threshold that maximizes F1, or whatever metric matters most for your use case. There is no universal magic number.</p>
 </section>
 
 <!-- ─── VII ─── -->
@@ -371,7 +371,7 @@ select{font-family:'Figtree',system-ui,sans-serif;font-size:14px;font-weight:600
   <p><strong>4. Threshold:</strong> Filter out any results below your empirically-determined quality threshold.</p>
   <p><strong>5. Generate:</strong> Pass the surviving chunks to the LLM as context.</p>
   <p>Each step removes a different class of errors. Question matching fixes semantic dissonance. Domain embeddings fix vocabulary confusion. Reranking fixes the "close but useless" problem. Thresholding prevents garbage from reaching the model.</p>
-  <p>None of these steps is novel in isolation. But the combination — and understanding <em>why</em> each matters — is what separates RAG pipelines that work from RAG pipelines that confidently produce wrong answers.</p>
+  <p>None of these steps is novel in isolation. But the combination, and understanding <em>why</em> each matters, is what separates RAG pipelines that work from RAG pipelines that confidently produce wrong answers.</p>
 
   <div class="callout">
     <p><strong>RAG isn't a search problem. It's a relevance problem.</strong> And relevance requires understanding what you're comparing, how you're comparing it, and when to stop.</p>
@@ -653,7 +653,7 @@ function toggleSidenote(id){document.getElementById(id).classList.toggle('open')
      cosine:0.89,recency:0.4,specificity:0.5,quality:0.6,combined:0.62},
     {text:'Authentication uses Bearer tokens. Include your key in the Authorization header.',
      cosine:0.87,recency:0.6,specificity:0.4,quality:0.5,combined:0.58},
-    {text:'Common auth errors: (1) Expired token — rotate keys every 90 days. (2) Wrong environment — staging keys don\'t work in prod. (3) IP not allowlisted — add your server IP in Settings > Security. (4) Rate limit exceeded — implement exponential backoff.',
+    {text:'Common auth errors: (1) Expired token; rotate keys every 90 days. (2) Wrong environment; staging keys don\'t work in prod. (3) IP not allowlisted; add your server IP in Settings > Security. (4) Rate limit exceeded; implement exponential backoff.',
      cosine:0.83,recency:0.95,specificity:0.95,quality:0.9,combined:0.91},
     {text:'API errors return standard HTTP codes. 4xx for client errors, 5xx for server errors.',
      cosine:0.81,recency:0.3,specificity:0.3,quality:0.4,combined:0.44},
